@@ -10,7 +10,7 @@
 <meta name="description" content="書けるギタリスト、弾ける作曲家。北川弘喜（Koki Kitagawa）への作曲・編曲・ギター演奏のご依頼と、ギターレッスンのお申し込み。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Oswald:wght@500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Big+Shoulders+Display:wght@600;800&family=Caveat+Brush&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0a1120; --bg2:#0e182b; --panel:#131f36; --panel2:#18263f; --line:#2a3a5c;
@@ -18,15 +18,17 @@
   --or:#e2560e; --or-top:#f06a1d; --or-hi:#ff9440; --or-soft:rgba(255,140,60,.15);
   --gr:#15803d; --gr-top:#1d9b52; --gr-hi:#4ade80; --gr-soft:rgba(74,222,128,.12);
   --lesson:#1b2a48;
-  --en:"Oswald","Arial Narrow",sans-serif;
-  --sig:"Mrs Saint Delafield","Brush Script MT",cursive;
+  --en:"Big Shoulders Display","Arial Narrow",sans-serif;
+  --sig:"Caveat Brush","Segoe Print",cursive;
+  --mincho:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --goth:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
   --dock:76px;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:#050a14;color:var(--ink);
-  font:16px/1.75 "Noto Sans JP","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;letter-spacing:.02em}
+  font:500 16px/1.75 var(--goth);letter-spacing:.03em;font-feature-settings:"palt" 0}
 a{color:inherit}
 img{display:block;max-width:100%}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -138,7 +140,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .stats div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 4px;text-align:center}
 .stats dt{font-size:11.5px;color:var(--sub);line-height:1.4}
 .stats dd{margin:0;font-family:var(--en);font-size:26px;line-height:1.2}
-.stats dd small{font-family:"Noto Sans JP",sans-serif;font-size:11px;color:var(--sub)}
+.stats dd small{font-family:var(--goth);font-size:11px;color:var(--sub)}
 .proof{margin:10px 0 0;font-size:13.5px;color:var(--sub)}
 
 /* ---------- 代表作（よこにスライド） ---------- */
@@ -187,7 +189,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .plan b{font-size:16.5px}
 .plan small{display:block;color:var(--sub);font-size:13px}
 .plan .price{font-family:var(--en);font-size:22px;white-space:nowrap;text-align:right}
-.plan .price small{font-family:"Noto Sans JP";display:inline;font-size:12px}
+.plan .price small{font-family:var(--goth);display:inline;font-size:12px}
 .plan.rec{border:2px solid var(--or-hi);background:var(--or-soft)}
 .badge{display:inline-block;background:var(--or-hi);color:#1a0d04;font-size:12px;font-weight:700;border-radius:99px;padding:1px 9px;margin-left:6px;vertical-align:2px}
 .plan.first{border-style:dashed}
@@ -263,6 +265,97 @@ footer p{margin:8px 0 0;font-size:12.5px;color:var(--faint)}
 .confirm dl{margin:0;display:grid;grid-template-columns:7.5em 1fr;gap:6px 10px;font-size:14.5px}
 .confirm dt{color:var(--sub)} .confirm dd{margin:0;word-break:break-word}
 
+
+/* =====================================================================
+   v3（2026/10/5）書体とボタンの作り直し
+   ・書体：見出し＝しっぽり明朝B1（アーティストの名刺のような静けさ）
+           本文＝Zen角ゴシックNew／英字・数字＝Big Shoulders（ライブの告知ポスター）
+           手書き＝Caveat Brush（セットリストに書きこむペンの字）
+   ・ボタン：角を1つ落とした「機材ケースの角」＋右端に「ピックの矢印」
+             さわると下の1本線＝弦がふるえる
+   ・ご用件4択：セットリストのように 01〜04 の番号で並べる
+   ===================================================================== */
+.logo{flex-direction:row;align-items:center;gap:8px}
+.logo .pick{width:18px;height:20px;flex:none;color:var(--or-hi)}
+.logo .nm{display:flex;flex-direction:column;line-height:1}
+.logo .wm{font-family:var(--en);font-weight:800;font-size:21px;letter-spacing:.14em;color:#fff}
+.logo small{font-weight:600;letter-spacing:.3em;font-size:10px;margin-top:3px}
+footer .wm{font-family:var(--en);font-weight:800;font-size:30px;letter-spacing:.14em;line-height:1}
+
+.hero h1,.h2,.formcard h2,.roomhead h1,.room b,.done b{font-family:var(--mincho);font-weight:800;letter-spacing:.06em}
+.hero h1{font-size:30px;line-height:1.4;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.hero .kicker{font-weight:800;font-size:14px;letter-spacing:.34em}
+.hero .name{font-weight:600;font-size:16px;letter-spacing:.42em}
+.h2{font-size:26px}
+.formcard h2{font-size:23px}
+.roomhead h1{font-size:34px}
+.room b{font-size:19px}
+.label .en{font-weight:800;font-size:14px;letter-spacing:.34em;color:var(--or-hi)}
+.label .no,.room .no,.roomhead .no,.timeline .y,details.shelf summary .no,.menu nav a span{font-weight:800}
+.roomhead .no{font-size:56px;color:transparent;-webkit-text-stroke:1.5px var(--or-hi)}
+.roomhead .en{font-weight:800;font-size:16px;letter-spacing:.34em}
+.room .no{font-size:30px;color:transparent;-webkit-text-stroke:1.2px var(--or-hi)}
+.room .en{font-weight:800;letter-spacing:.26em}
+.script{font-weight:400;letter-spacing:.02em}
+.photo .script{font-size:30px;transform:rotate(-6deg)}
+footer p,.guide{letter-spacing:.04em}
+
+/* 数：枠をやめ、フレットのような縦線で区切る */
+.stats{gap:0}
+.stats div{background:none;border:0;border-left:1px solid var(--line);border-radius:0;padding:4px 2px 6px}
+.stats div:first-child{border-left:0}
+.stats dd{font-weight:800;font-size:38px;line-height:1.05;letter-spacing:.02em}
+
+/* ---------- ボタン ---------- */
+.btn{--cut:13px;justify-content:space-between;gap:12px;min-height:60px;padding:0 9px 0 20px;border-radius:3px;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%);
+  font-family:var(--goth);font-weight:700;font-size:18px;letter-spacing:.08em;text-align:left;box-shadow:none;overflow:hidden}
+.btn .lab{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;min-width:0}
+.btn .lab i{font-style:normal;font-family:var(--en);font-weight:800;font-size:12.5px;letter-spacing:.3em;opacity:.9;margin-bottom:1px}
+.btn .pk{position:relative;width:40px;height:42px;flex:none;display:grid;place-items:center;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.btn .pk svg.p{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.btn .pk svg.a{position:relative;width:17px;height:17px;margin-left:-6px}
+.btn.or{background:radial-gradient(130% 160% at 0% 0%,#ff8f45 0%,#ee6418 42%,#cf4b0a 100%);color:#fff;text-shadow:0 1px 1px rgba(90,25,0,.45);box-shadow:none}
+.btn.gr{background:radial-gradient(130% 160% at 0% 0%,#3cc274 0%,#1a8d47 45%,#0e6a32 100%);color:#fff;text-shadow:0 1px 1px rgba(0,40,15,.45);box-shadow:none}
+.btn.or .pk svg.p{fill:#7a2a03} .btn.gr .pk svg.p{fill:#073f1d}
+/* 弦（1本線）：さわるとふるえる */
+.btn.or::after,.btn.gr::after{content:"";position:absolute;left:20px;right:56px;bottom:8px;height:1.5px;border-radius:2px;
+  background:linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.15));transform-origin:50% 50%}
+.btn.or:hover::after,.btn.gr:hover::after,.btn.or:active::after,.btn.gr:active::after{animation:pluck .5s ease-out}
+.btn:hover .pk{transform:rotate(-14deg)}
+.btn:hover .arr{transform:none}
+@keyframes pluck{0%{transform:translateY(0) scaleY(1)}15%{transform:translateY(-2.5px) scaleY(1.6)}35%{transform:translateY(2px) scaleY(1.4)}
+  55%{transform:translateY(-1.2px) scaleY(1.2)}75%{transform:translateY(.6px)}100%{transform:none}}
+.btn.ghost{clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);border:1.5px solid var(--sub);justify-content:center;padding:0 16px;text-align:center}
+.dock{gap:6px}
+.dock .btn{min-height:60px;padding:0 4px 0 14px;gap:4px;font-size:16.5px;letter-spacing:.04em}
+.dock .btn .pk{width:34px;height:36px}
+.dock .btn::after{left:14px;right:44px}
+
+/* ---------- ご用件4択：セットリスト ---------- */
+.types{gap:8px}
+.type{position:relative;min-height:96px;padding:10px 12px 12px 14px;border:0;border-left:4px solid var(--line);border-radius:3px;background:var(--bg2);
+  clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);justify-content:flex-start;gap:1px}
+.type .num{font-family:var(--en);font-weight:800;font-size:30px;line-height:1;color:transparent;-webkit-text-stroke:1.2px var(--sub);letter-spacing:.02em}
+.type .tg{position:absolute;right:10px;top:12px;font-family:var(--en);font-weight:800;font-size:11px;letter-spacing:.24em;color:var(--faint)}
+.type b{font-size:17.5px;margin-top:4px}
+.type.l{border-left-color:var(--or-hi);background:linear-gradient(90deg,rgba(255,140,60,.16),rgba(255,140,60,.04))}
+.type.w{border-left-color:var(--gr-hi);background:linear-gradient(90deg,rgba(74,222,128,.13),rgba(74,222,128,.03))}
+.type.l .num{-webkit-text-stroke-color:var(--or-hi)} .type.w .num{-webkit-text-stroke-color:var(--gr-hi)}
+.type.l .tg{color:var(--or-hi)} .type.w .tg{color:var(--gr-hi)}
+.type:hover .num{color:rgba(255,255,255,.08)}
+.type[aria-pressed="true"]{transform:none;box-shadow:none}
+.type.l[aria-pressed="true"]{background:linear-gradient(90deg,rgba(255,140,60,.36),rgba(255,140,60,.12));box-shadow:none}
+.type.w[aria-pressed="true"]{background:linear-gradient(90deg,rgba(74,222,128,.30),rgba(74,222,128,.10));box-shadow:none}
+.type.o[aria-pressed="true"]{background:var(--panel2);border-left-color:#fff}
+.type[aria-pressed="true"] .num{color:var(--ink);-webkit-text-stroke-color:transparent}
+.steps li{font-family:var(--goth);font-weight:500;letter-spacing:.06em}
+.steps li b{font-family:var(--en);font-weight:800;font-size:15px;margin-right:4px}
+.chips span{border-radius:4px}
+.chips input:checked+span{box-shadow:inset 3px 0 0 var(--or-hi)}
+.plan .price{font-weight:800;font-size:26px}
+.formcard{border-radius:6px}
+
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -270,26 +363,26 @@ footer p{margin:8px 0 0;font-size:12.5px;color:var(--faint)}
 <div class="wrap" id="app">
 
 <header class="top">
-  <a class="logo" href="#top" aria-label="北川弘喜 トップへ"><span class="sig">Koki Kitagawa</span><small>GUITARIST / COMPOSER</small></a>
+  <a class="logo" href="#top" aria-label="北川弘喜 トップへ"><svg class="pick" viewBox="0 0 24 26" aria-hidden="true"><path fill="currentColor" d="M12 25C8.2 21.4 2 14.3 2 9 2 4.9 6.4 2 12 2s10 2.9 10 7c0 5.3-6.2 12.4-10 16z"/></svg><span class="nm"><span class="wm">KOKI KITAGAWA</span><small>GUITARIST / COMPOSER</small></span></a>
   <button class="menu-btn" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="menu" id="menuBtn"><span></span></button>
 </header>
 
 <main id="view"></main>
 
 <footer>
-  <div class="sig">Koki Kitagawa</div>
+  <div class="wm">KOKI KITAGAWA</div>
   <div class="sns" style="margin-top:12px" id="footSns"></div>
   <p>© 2026 Koki Kitagawa</p>
 </footer>
 
 <div class="dock" id="dock">
   <button class="btn or" type="button" data-open="lesson" data-short>レッスン予約</button>
-  <button class="btn gr" type="button" data-open="compose" data-short>仕事の依頼</button>
+  <button class="btn gr" type="button" data-open="compose" data-short data-en="WORKS">仕事の依頼</button>
 </div>
 
 <div class="menu" id="menu" hidden>
   <div class="panel" role="dialog" aria-modal="true" aria-label="メニュー">
-    <div class="head"><span class="logo"><span class="sig">Koki Kitagawa</span></span><button class="close" type="button" aria-label="メニューを閉じる" id="menuClose">×</button></div>
+    <div class="head"><span class="logo"><span class="nm"><span class="wm">KOKI KITAGAWA</span></span></span><button class="close" type="button" aria-label="メニューを閉じる" id="menuClose">×</button></div>
     <nav id="menuNav"></nav>
     <div class="btns"><button class="btn or" type="button" data-open="lesson">レッスンを申し込む</button><button class="btn gr" type="button" data-open="compose">仕事を依頼する</button></div>
     <p class="guide" style="margin-top:18px">SNS</p>
@@ -303,7 +396,7 @@ footer p{margin:8px 0 0;font-size:12.5px;color:var(--faint)}
 /* ============================================================
    データは site/data/*.json と同じもの（ビルドで差しこむ）
    ============================================================ */
-const D = {"profile": {"name": "北川弘喜", "nameEn": "Koki Kitagawa", "headline": "書けるギタリスト、弾ける作曲家", "bio": ["曲を書く人と、曲を鳴らす人は、たいてい別々にいる。", "北川弘喜はその両方に立つ。B-PROJECT、星名美怜、Bunny La Crew への提供曲では、作詞・作曲・編曲からギターまでを一人で通す。SUMMER SONIC やイナズマロックフェスのステージではサポートギタリストとして音を鳴らし、CDTV では地上波のバックに立った。", "舞台の仕事も持つ。『あんさんぶるスターズ！オン・ステージ』では劇中のギターを入れ、演技指導まで担当した。楽器を弾くだけでは終わらない現場を、いくつも通っている。", "2021年から専門学校と音楽教室で指導にあたり、個人レッスンでは初心者からプロまでを見る。教えることと作ることが、同じ場所でつながっている。"], "career": [{"label": "2022年〜", "detail": "プロとして活動（東京拠点）"}, {"label": "2021年〜", "detail": "専門学校・音楽教室で指導"}, {"label": "個人レッスン", "detail": "初心者〜プロフェッショナル"}], "gear": {"publish": true, "groups": [{"name": "制作・録音", "items": ["Pro Tools", "Universal Audio Apollo Twin X", "sE Electronics sE2300", "Eclipse TD-M1"]}, {"name": "ギター", "items": ["Suhr Modern", "Gibson Custom Shop Les Paul Standard", "Fender Custom Shop Stratocaster"]}, {"name": "アンプ・キャビネット", "items": ["Bogner Ecstasy Classic", "Marshall JCM900 Hi Gain Master Volume", "Bogner 212CB", "Laney LFR-112"]}, {"name": "モデラー", "items": ["Fractal Audio Axe-Fx II XL+", "Line 6 Helix Floor"]}]}, "work": {"price": "応相談", "delivery": "デモ・編曲・ギターREC いずれも3日程度", "style": "リモートREC／スタジオ立ち会い どちらも対応", "services": [{"name": "作詞・作曲", "note": "デモ制作まで"}, {"name": "編曲・トラック制作", "note": ""}, {"name": "ギター レコーディング", "note": "リモート／立ち会い"}, {"name": "ライブサポート", "note": "ツアー・フェス・TV"}]}, "lesson": {"target": "初心者〜プロフェッショナル", "plans": [{"name": "体験レッスン", "price": "60分 3,500円", "note": "初回のみ"}, {"name": "月2回", "price": "16,000円 / 月", "note": "1回60分", "recommended": true}, {"name": "月4回", "price": "32,000円 / 月", "note": "1回60分"}, {"name": "単発", "price": "8,000円", "note": "1回60分"}], "place": "レンタルスタジオ／ご自宅／オンライン", "payment": "現金・クレジットカード（Square）"}, "links": {"spotify": "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q", "youtube": "https://www.youtube.com/@KokiKitagawa", "instagram": "https://www.instagram.com/kitagawa_kouki/", "x": "https://x.com/Gt_koki_"}, "spotifyTracks": [{"title": "FLAME", "artist": "Jams Collection", "url": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE"}, {"title": "Memory", "artist": "B-PROJECT", "url": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5"}, {"title": "視聴覚Fighter", "artist": "Pastel closet", "url": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H"}]}, "credits": [{"title": "FLAME", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": "ab67616d0000b27391252ddd166cf1d26d00ba1c", "spotify": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE", "spotifyRank": 1}, {"title": "Memory", "artist": "B-PROJECT", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": "ab67616d0000b2730a05115477078b67edc9bd9b", "spotify": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5", "spotifyRank": 2}, {"title": "視聴覚Fighter", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2026, "jacket": "ab67616d0000b2737df65844b18024309f50687c", "spotify": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H", "spotifyRank": 3}, {"title": "Now Feel Saddest!?", "artist": "星名美怜", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のエビデンス", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "鬼KawaWe!!!", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のスピード違反", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "トキメキ NEW WORLD", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "ドキドキシャッターチャンス", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "夏ときめいちゃいマッスル", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2023, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Goin Goin", "artist": "Chico", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Sense of Wonder", "artist": "寿美菜子", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Startin'", "artist": "Dream Shizuka", "category": "guitar", "roles": ["ギター"], "year": 2022, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "エピローグ", "artist": "シユイ", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "UUUM ONE PIECE MUUUSIC COVER ALBUM", "artist": "UUUM", "category": "guitar", "roles": ["ギター"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}], "live": [{"title": "REIRIE Live Tour 2025 -Bad=DoLL-", "year": 2025, "venue": "名古屋", "artist": "REIRIE", "role": "サポートギター"}, {"title": "SAKAE SP-RING 2024", "year": 2024, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "SUMMER SONIC 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "イナズマロックフェス 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 1st Live「シユイさんといっしょ #01」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 2nd Live「シユイさんといっしょ #02」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "REIRIE FreeLive「JAM」", "year": null, "venue": "新宿歌舞伎町", "artist": "REIRIE", "role": "サポートギター"}, {"title": "HUG ROCK FESTIVAL", "year": null, "venue": "", "artist": "somei", "role": "サポートギター"}], "media": [{"title": "CDTV", "year": null, "artist": "SixTONES（ジェシー・京本大我）", "role": "バックで演者参加", "type": "tv"}, {"title": "CDTV", "year": null, "artist": "川崎鷹也", "role": "バックで演者参加", "type": "tv"}, {"title": "あんさんぶるスターズ！オン・ステージ", "year": 2019, "artist": "", "role": "劇中のギター演奏／演技指導", "type": "stage"}, {"title": "シュレック・ザ・ミュージカル", "year": 2023, "artist": "", "role": "", "type": "stage"}]};
+const D = {"profile": {"name": "北川弘喜", "nameEn": "Koki Kitagawa", "headline": "書けるギタリスト、弾ける作曲家", "bio": ["曲を書く人と、曲を鳴らす人は、たいてい別々にいる。", "北川弘喜はその両方に立つ。B-PROJECT、星名美怜、Bunny La Crew への提供曲では、作詞・作曲・編曲からギターまでを一人で通す。SUMMER SONIC やイナズマロックフェスのステージではサポートギタリストとして音を鳴らし、CDTV では地上波のバックに立った。", "舞台の仕事も持つ。『あんさんぶるスターズ！オン・ステージ』では劇中のギターを入れ、演技指導まで担当した。楽器を弾くだけでは終わらない現場を、いくつも通っている。", "2021年から専門学校と音楽教室で指導にあたり、個人レッスンでは初心者からプロまでを見る。教えることと作ることが、同じ場所でつながっている。"], "career": [{"label": "2022年〜", "detail": "プロとして活動（東京拠点）"}, {"label": "2021年〜", "detail": "専門学校・音楽教室で指導"}, {"label": "個人レッスン", "detail": "初心者〜プロフェッショナル"}], "gear": {"publish": true, "groups": [{"name": "制作・録音", "items": ["Pro Tools", "Universal Audio Apollo Twin X", "sE Electronics sE2300", "Eclipse TD-M1"]}, {"name": "ギター", "items": ["Suhr Modern", "Gibson Custom Shop Les Paul Standard", "Fender Custom Shop Stratocaster"]}, {"name": "アンプ・キャビネット", "items": ["Bogner Ecstasy Classic", "Marshall JCM900 Hi Gain Master Volume", "Bogner 212CB", "Laney LFR-112"]}, {"name": "モデラー", "items": ["Fractal Audio Axe-Fx II XL+", "Line 6 Helix Floor"]}]}, "work": {"price": "応相談", "delivery": "デモ・編曲・ギターREC いずれも3日程度", "style": "リモートREC／スタジオ立ち会い どちらも対応", "services": [{"name": "作詞・作曲", "note": "デモ制作まで"}, {"name": "編曲・トラック制作", "note": ""}, {"name": "ギター レコーディング", "note": "リモート／立ち会い"}, {"name": "ライブサポート", "note": "ツアー・フェス・TV"}]}, "lesson": {"target": "初心者〜プロフェッショナル", "plans": [{"name": "体験レッスン", "price": "60分 3,500円", "note": "初回のみ"}, {"name": "月2回", "price": "16,000円 / 月", "note": "1回60分", "recommended": true}, {"name": "月4回", "price": "32,000円 / 月", "note": "1回60分"}, {"name": "単発", "price": "8,000円", "note": "1回60分"}], "place": "レンタルスタジオ／ご自宅／オンライン", "payment": "現金・クレジットカード（Square）"}, "links": {"spotify": "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q", "youtube": "https://www.youtube.com/@KokiKitagawa", "instagram": "https://www.instagram.com/kitagawa_kouki/", "x": "https://x.com/Gt_koki_"}, "spotifyTracks": [{"title": "FLAME", "artist": "Jams Collection", "url": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE"}, {"title": "Memory", "artist": "B-PROJECT", "url": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5"}, {"title": "視聴覚Fighter", "artist": "Pastel closet", "url": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H"}]}, "credits": [{"title": "FLAME", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": "ab67616d0000b27391252ddd166cf1d26d00ba1c", "spotify": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE", "spotifyRank": 1}, {"title": "Memory", "artist": "B-PROJECT", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": "ab67616d0000b2730a05115477078b67edc9bd9b", "spotify": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5", "spotifyRank": 2}, {"title": "視聴覚Fighter", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2026, "jacket": "ab67616d0000b2737df65844b18024309f50687c", "spotify": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H", "spotifyRank": 3}, {"title": "Now Feel Saddest!?", "artist": "星名美怜", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のエビデンス", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "鬼KawaWe!!!", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のスピード違反", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "トキメキ NEW WORLD", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "ドキドキシャッターチャンス", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "夏ときめいちゃいマッスル", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2023, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Goin Goin", "artist": "Chico", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Sense of Wonder", "artist": "寿美菜子", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Startin'", "artist": "Dream Shizuka", "category": "guitar", "roles": ["ギター"], "year": 2022, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "エピローグ", "artist": "シユイ", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "UUUM ONE PIECE MUUUSIC COVER ALBUM", "artist": "UUUM", "category": "guitar", "roles": ["ギター"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}], "live": [{"title": "REIRIE Live Tour 2025 -Bad=DoLL-", "year": 2025, "venue": "名古屋", "artist": "REIRIE", "role": "サポートギター"}, {"title": "SAKAE SP-RING 2024", "year": 2024, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "SUMMER SONIC 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "イナズマロックフェス 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 1st Live「シユイさんといっしょ #01」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 2nd Live「シユイさんといっしょ #02」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "REIRIE FreeLive「JAM」", "year": null, "venue": "新宿歌舞伎町", "artist": "REIRIE", "role": "サポートギター"}, {"title": "HUG ROCK FESTIVAL", "year": null, "venue": "", "artist": "somei", "role": "サポートギター"}], "media": [{"title": "CDTV", "year": null, "artist": "", "role": "バックで演者参加", "type": "tv"}, {"title": "CDTV", "year": null, "artist": "", "role": "バックで演者参加", "type": "tv"}, {"title": "あんさんぶるスターズ！オン・ステージ", "year": 2019, "artist": "", "role": "劇中のギター演奏／演技指導", "type": "stage"}, {"title": "シュレック・ザ・ミュージカル", "year": 2023, "artist": "", "role": null, "type": "stage"}]};
 const ICON = {"ig": "M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077", "yt": "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z", "x": "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z", "sp": "M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"};
 const IMG = {"hero": "img/hero-720.webp", "heroSet": "img/hero-720.webp 720w, img/hero-1080.webp 1080w", "works": "img/works-600.webp", "lesson": "img/lesson-600.webp", "profile": "img/profile-600.webp", "hands": "img/hands-720.webp", "gear": "img/gear-900.webp", "live": "img/live-720.webp"};
 
@@ -323,8 +416,10 @@ const ic = (k, cls="ico") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none
 function decorate(root=document){
   root.querySelectorAll(".btn.or,.btn.gr").forEach(b => {
     if(b.dataset.deco) return; b.dataset.deco = 1;
-    const lead = b.dataset.open ? (b.dataset.open === "lesson" ? "cal" : "bag") : null;
-    b.innerHTML = (lead ? ic(lead) : "") + `<span>${b.innerHTML}</span>` + (b.hasAttribute("data-short") ? "" : ic("arr","arr"));
+    /* 上に小さな英字、右端にピックの矢印（アイコンの使い回しをやめる） */
+    const en = b.dataset.en || (b.dataset.open ? ({lesson:"LESSON",compose:"WORKS",guitar:"PLAY"}[b.dataset.open]) : "");
+    b.innerHTML = `<span class="lab">${en ? `<i>${en}</i>` : ""}<span>${b.innerHTML}</span></span>` +
+      `<span class="pk" aria-hidden="true"><svg class="p" viewBox="0 0 24 26"><path d="M12 25C8.2 21.4 2 14.3 2 9 2 4.9 6.4 2 12 2s10 2.9 10 7c0 5.3-6.2 12.4-10 16z"/></svg>${ic("arr","a")}</span>`;
   });
 }
 
@@ -410,7 +505,7 @@ function formHTML(){
   return `<section class="formcard" id="form" aria-labelledby="formTitle">
     <span class="sample">見本：まだ送信はされません</span>
     <h2 id="formTitle">ご依頼・お問い合わせ</h2>
-    <ol class="steps" aria-label="手順"><li class="on" data-s="1">1 ご用件</li><li data-s="2">2 内容</li><li data-s="3">3 確認</li></ol>
+    <ol class="steps" aria-label="手順"><li class="on" data-s="1"><b>01</b>ご用件</li><li data-s="2"><b>02</b>内容</li><li data-s="3"><b>03</b>確認</li></ol>
     <div id="formBody"></div>
   </section>`;
 }
@@ -419,15 +514,16 @@ function renderForm(){
   document.querySelectorAll(".steps li").forEach(li => li.classList.toggle("on", +li.dataset.s === state.step));
   if(state.step === 3){ box.innerHTML = confirmHTML(); decorate(box); bindConfirm(); return; }
   if(state.step === 4){ box.innerHTML = doneHTML(); return; }
-  const TI = {lesson:"cal", compose:"note", guitar:"pick", other:"chat"};
-  const types = Object.entries(TYPES).map(([k,t]) =>
-    `<button type="button" class="type ${t.cls}" data-type="${k}" aria-pressed="${state.type===k}">${ic(TI[k])}<b>${t.name}</b><small>${t.sub}</small></button>`).join("");
+  /* セットリストのように 01〜04 で並べる */
+  const TG = {lesson:"LESSON", compose:"WRITE", guitar:"PLAY", other:"ETC"};
+  const types = Object.entries(TYPES).map(([k,t],i) =>
+    `<button type="button" class="type ${t.cls}" data-type="${k}" aria-pressed="${state.type===k}"><span class="num" aria-hidden="true">0${i+1}</span><span class="tg" aria-hidden="true">${TG[k]}</span><b>${t.name}</b><small>${t.sub}</small></button>`).join("");
   let html = `<p class="guide" style="margin:0 0 10px">${state.type ? "内容を書いて「確認へ」を押してください。" : "まず、ご用件を選んでください。押すと、その下に入力欄が開きます。"}</p>
     <div class="types" role="group" aria-label="ご用件">${types}</div>`;
   if(state.type){
     const fs = [...FIELDS[state.type], ...COMMON];
     html += `<form class="fields" id="theForm" novalidate>${fs.map(fieldHTML).join("")}
-      <div class="btns"><button class="btn ${state.type==="lesson"?"or":"gr"}" type="submit">確認へ進む</button></div></form>`;
+      <div class="btns"><button class="btn ${state.type==="lesson"?"or":"gr"}" type="submit" data-en="NEXT">確認へ進む</button></div></form>`;
   }
   box.innerHTML = html; decorate(box);
   box.querySelectorAll(".type").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; state.step = 2; renderForm(); $("#theForm input, #theForm select, #theForm textarea")?.focus({preventScroll:true}); }));
@@ -478,7 +574,7 @@ function confirmHTML(){
   const src = FROM_NAMES[from] ? `<dt>どこで知ったか</dt><dd>${FROM_NAMES[from]}（自動）</dd>` : "";
   return `<div class="confirm"><p class="guide" style="margin:0 0 10px">この内容で送ります。直すときは「戻る」を押してください。</p>
     <dl><dt>ご用件</dt><dd>${TYPES[state.type].name}</dd>${rows}${src}</dl>
-    <div class="btns"><button class="btn ${state.type==="lesson"?"or":"gr"}" type="button" id="send">この内容で送る</button><button class="btn ghost" type="button" id="back">戻る</button></div></div>`;
+    <div class="btns"><button class="btn ${state.type==="lesson"?"or":"gr"}" type="button" id="send" data-en="SEND">この内容で送る</button><button class="btn ghost" type="button" id="back">戻る</button></div></div>`;
 }
 function bindConfirm(){
   $("#back").onclick = () => { state.step = 2; renderForm(); };
@@ -509,8 +605,8 @@ function home(){
   const feat = C.filter(c => c.spotify).sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
   return `
   <section class="hero fx" aria-label="北川弘喜">
-    <img src="${IMG.hero}" srcset="${IMG.heroSet}" sizes="(max-width:480px) 100vw, 480px" alt="紫の照明の中でギターを弾く北川弘喜" fetchpriority="high">
-    <div class="script or" aria-hidden="true" style="right:14px;top:47%;font-size:34px;text-align:right;transform:rotate(-9deg)">Music<br>&nbsp;connects<br>People</div>
+    <img src="${IMG.hero}" srcset="${IMG.heroSet}" sizes="(max-width:480px) 100vw, 480px" alt="紫の照明の中、ギターのネックを斜めに構えて弾く北川弘喜" fetchpriority="high">
+    <div class="script or" aria-hidden="true" style="right:14px;top:44%;font-size:27px;text-align:right;transform:rotate(-7deg)">Music<br>&nbsp;connects<br>People</div>
     <div class="copy"><p class="kicker">GUITARIST / COMPOSER</p><h1>書けるギタリスト、<br>弾ける作曲家。</h1><p class="name">KOKI KITAGAWA</p></div>
   </section>
   ${formHTML()}
@@ -545,7 +641,7 @@ function works(){
   const comp = C.filter(c => c.category==="compose"), gtr = C.filter(c => c.category==="guitar");
   const li = c => `<li><b>${esc(c.title)}${c.title==="Memory"?'<i>仮歌も担当</i>':""}</b><span>${esc(c.artist)}${c.year?`・${c.year}`:""}</span></li>`;
   return `${roomHead(r,"作詞・作曲・編曲から、ギターの演奏まで。一人で通せるのが強みです。")}
-  <div class="photo fx"><span class="script" aria-hidden="true">Songwriting</span><img src="${IMG.works}" alt="スタジオでギターを弾く横顔" loading="lazy"></div>
+  <div class="photo fx"><span class="script" aria-hidden="true">Songwriting</span><img src="${IMG.works}" alt="紫の光に照らされた作曲デスクと、立てかけたギター" loading="lazy"></div>
   <section class="sec">
     <p class="guide">棚を押すと、曲の一覧が下に開きます。</p>
     <details class="shelf"><summary><span class="no">01</span><b>作詞・作曲・編曲</b><span class="cnt">${comp.length}曲</span></summary><ul class="list">${comp.map(li).join("")}</ul></details>
@@ -570,7 +666,7 @@ function live(){
   const row = (y, arr) => `<li><span class="y">${y}</span><ul>${arr.map(i=>`<li>${esc(i.t)}<br><small>${esc(i.s)}</small></li>`).join("")}</ul></li>`;
   const tv = D.media.filter(m => m.type==="tv");
   return `${roomHead(r,"フェス・ツアー・舞台・地上波。サポートギターとして立ってきた現場です。")}
-  <div class="photo fx"><span class="script" aria-hidden="true">Live / Stage</span><img src="${IMG.live}" alt="ライブで金色のギターを弾く北川弘喜" loading="lazy"></div>
+  <div class="photo fx"><span class="script" aria-hidden="true">Live / Stage</span><img src="${IMG.live}" alt="ライブのステージでギターを弾く北川弘喜" loading="lazy"></div>
   <section class="sec">
     <p class="label"><span class="en">STAGE</span></p><h2 class="h2">ステージ</h2>
     <ol class="timeline">${years.map(y => row(y, items.filter(i=>i.y===y))).join("")}${row("ほか", items.filter(i=>!i.y))}</ol>
@@ -586,7 +682,7 @@ function lesson(){
   const r = ROOMS[2], L = P.lesson;
   const plans = L.plans.map(p => `<li class="plan ${p.recommended?"rec":""} ${p.name==="体験レッスン"?"first":""}"><span><b>${esc(p.name)}${p.recommended?'<span class="badge">人気No.1</span>':""}</b><small>${esc(p.note)}</small></span><span class="price">${esc(p.price.replace("60分 ",""))}</span></li>`).join("");
   return `<div class="lesson-room">${roomHead(r,"現場で培った経験を、あなたのギターへ。初めての方も、プロを目指す方も。")}
-  <div class="photo fx"><span class="script or" aria-hidden="true">Let&#39;s Play!</span><img src="${IMG.lesson}" alt="ギターを手に、こちらを見てほほえむ北川弘喜" loading="lazy"></div>
+  <div class="photo fx"><span class="script or" aria-hidden="true">Let&#39;s Play!</span><img src="${IMG.lesson}" alt="ギターを持ち、こちらを見てほほえむ北川弘喜" loading="lazy"></div>
   <section class="sec">
     <ul class="tags"><li>初心者歓迎</li><li>オンライン対応</li><li>プロ志向の方も</li></ul>
   </section>
@@ -604,14 +700,14 @@ function lesson(){
   </section>
   <section class="sec" style="padding-top:0">
     <dl class="facts"><dt>場所</dt><dd>${esc(L.place)}</dd><dt>お支払い</dt><dd>${esc(L.payment)}</dd><dt>指導歴</dt><dd>2021年から専門学校・音楽教室で指導</dd></dl>
-    <div class="photo wide" style="margin:16px 0 0"><img src="${IMG.hands}" alt="ピックを持つ手元" loading="lazy"></div>
+    <div class="photo wide" style="margin:16px 0 0"><img src="${IMG.hands}" alt="ギターを弾く両手の手元" loading="lazy"></div>
   </section></div>`;
 }
 function profile(){
   const r = ROOMS[3];
   const gear = P.gear.groups.map(g => `<li><b>${esc(g.name)}</b><span style="white-space:normal;text-align:right">${g.items.map(esc).join("<br>")}</span></li>`).join("");
   return `${roomHead(r,"Guitarist / Composer")}
-  <div class="photo fx"><span class="script" aria-hidden="true">Koki Kitagawa</span><img src="${IMG.profile}" alt="ギターを持って立つ北川弘喜" loading="lazy"></div>
+  <div class="photo fx"><span class="script" aria-hidden="true">Koki Kitagawa</span><img src="${IMG.profile}" alt="椅子に座ってギターを弾く北川弘喜" loading="lazy"></div>
   <section class="sec">
     <h2 class="h2" style="font-size:28px">北川 弘喜</h2>
     <div class="bio">${P.bio.map(p=>`<p>${esc(p)}</p>`).join("")}</div>
@@ -619,7 +715,7 @@ function profile(){
   </section>
   <section class="sec" style="padding-top:0">
     <details class="shelf"><summary><span class="no">GEAR</span><b>機材</b><span class="cnt">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)}点</span></summary><ul class="list">${gear}</ul></details>
-    <div class="photo wide" style="margin:6px 0 0"><img src="${IMG.gear}" alt="3本のギター" loading="lazy"></div>
+    <div class="photo" style="margin:6px 0 0"><img src="${IMG.gear}" alt="Marshall と Bogner のアンプの前に立てた2本のギター" loading="lazy"></div>
   </section>
   <section class="sec" style="padding-top:0">
     <p class="label"><span class="en">SNS</span></p><div class="sns">${snsHTML()}</div>
