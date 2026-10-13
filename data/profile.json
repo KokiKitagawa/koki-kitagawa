@@ -109,30 +109,37 @@
         "note": "初回のみ"
       },
       {
+        "name": "単発",
+        "price": "9,000円",
+        "note": "1回60分"
+      },
+      {
         "name": "月2回",
-        "price": "16,000円 / 月",
-        "note": "1回60分",
-        "recommended": true
+        "price": "17,000円 / 月",
+        "note": "1回60分（1回あたり8,500円）"
       },
       {
         "name": "月4回",
         "price": "32,000円 / 月",
-        "note": "1回60分"
+        "note": "1回60分（1回あたり8,000円）",
+        "recommended": true
       },
       {
-        "name": "単発",
-        "price": "8,000円",
-        "note": "1回60分"
+        "name": "月8回",
+        "price": "60,000円 / 月",
+        "note": "1回60分（1回あたり7,500円）"
       }
     ],
     "place": "レンタルスタジオ／ご自宅／オンライン",
-    "payment": "現金・クレジットカード（Square）"
+    "payment": "現金・クレジットカード（Square）",
+    "priceNote": "料金はすべて税込。レンタルスタジオで行う場合、スタジオ代は別"
   },
   "links": {
     "spotify": "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q",
     "youtube": "https://www.youtube.com/@KokiKitagawa",
     "instagram": "https://www.instagram.com/kitagawa_kouki/",
-    "x": "https://x.com/Gt_koki_"
+    "x": "https://x.com/Gt_koki_",
+    "tiktok": "https://www.tiktok.com/@koki.kitagawa"
   },
   "spotifyTracks": [
     {
@@ -152,7 +159,7 @@
     }
   ],
   "email": null,
-  "contactForm": null,
+  "contactForm": "https://docs.google.com/forms/d/e/1FAIpQLSfvnTQ09UhGhzNjL7lpcy01ZUpQUyUhQizAKKZVJMnw4f4GmQ/viewform",
   "siteUrl": "https://kokikitagawa.github.io/koki-kitagawa/",
   "contactCta": {
     "label": "お仕事のご依頼",
