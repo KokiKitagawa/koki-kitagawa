@@ -1,0 +1,164 @@
+{
+  "name": "北川弘喜",
+  "nameEn": "Koki Kitagawa",
+  "roles": [
+    "ギタリスト",
+    "作曲",
+    "編曲"
+  ],
+  "headline": "書けるギタリスト、弾ける作曲家",
+  "highlights": [
+    "CDTV 出演",
+    "SUMMER SONIC 2023",
+    "B-PROJECT 楽曲提供"
+  ],
+  "bio": [
+    "曲を書く人と、曲を鳴らす人は、たいてい別々にいる。",
+    "北川弘喜はその両方に立つ。B-PROJECT、星名美怜、Bunny La Crew への提供曲では、作詞・作曲・編曲からギターまでを一人で通す。SUMMER SONIC やイナズマロックフェスのステージではサポートギタリストとして音を鳴らし、CDTV では地上波のバックに立った。",
+    "舞台の仕事も持つ。『あんさんぶるスターズ！オン・ステージ』では劇中のギターを入れ、演技指導まで担当した。楽器を弾くだけでは終わらない現場を、いくつも通っている。",
+    "2021年から専門学校と音楽教室で指導にあたり、個人レッスンでは初心者からプロまでを見る。教えることと作ることが、同じ場所でつながっている。"
+  ],
+  "career": [
+    {
+      "label": "2022年〜",
+      "detail": "プロとして活動（東京拠点）"
+    },
+    {
+      "label": "2021年〜",
+      "detail": "専門学校・音楽教室で指導"
+    },
+    {
+      "label": "個人レッスン",
+      "detail": "初心者〜プロフェッショナル"
+    }
+  ],
+  "agency": {
+    "publish": false,
+    "label": "作家エージェント契約",
+    "names": [],
+    "viaAgency": false,
+    "viaAgencyNote": "作編曲の依頼は事務所を経由しなくてよい（本人確認済み）"
+  },
+  "gear": {
+    "publish": true,
+    "groups": [
+      {
+        "name": "制作・録音",
+        "items": [
+          "Pro Tools",
+          "Universal Audio Apollo Twin X",
+          "sE Electronics sE2300",
+          "Eclipse TD-M1"
+        ]
+      },
+      {
+        "name": "ギター",
+        "items": [
+          "Suhr Modern",
+          "Gibson Custom Shop Les Paul Standard",
+          "Fender Custom Shop Stratocaster"
+        ]
+      },
+      {
+        "name": "アンプ・キャビネット",
+        "items": [
+          "Bogner Ecstasy Classic",
+          "Marshall JCM900 Hi Gain Master Volume",
+          "Bogner 212CB",
+          "Laney LFR-112"
+        ]
+      },
+      {
+        "name": "モデラー",
+        "items": [
+          "Fractal Audio Axe-Fx II XL+",
+          "Line 6 Helix Floor"
+        ]
+      }
+    ]
+  },
+  "work": {
+    "price": "応相談",
+    "delivery": "デモ・編曲・ギターREC いずれも3日程度",
+    "style": "リモートREC／スタジオ立ち会い どちらも対応",
+    "services": [
+      {
+        "name": "作詞・作曲",
+        "note": "デモ制作まで"
+      },
+      {
+        "name": "編曲・トラック制作",
+        "note": ""
+      },
+      {
+        "name": "ギター レコーディング",
+        "note": "リモート／立ち会い"
+      },
+      {
+        "name": "ライブサポート",
+        "note": "ツアー・フェス・TV"
+      }
+    ]
+  },
+  "lesson": {
+    "target": "初心者〜プロフェッショナル",
+    "plans": [
+      {
+        "name": "体験レッスン",
+        "price": "60分 3,500円",
+        "note": "初回のみ"
+      },
+      {
+        "name": "月2回",
+        "price": "16,000円 / 月",
+        "note": "1回60分",
+        "recommended": true
+      },
+      {
+        "name": "月4回",
+        "price": "32,000円 / 月",
+        "note": "1回60分"
+      },
+      {
+        "name": "単発",
+        "price": "8,000円",
+        "note": "1回60分"
+      }
+    ],
+    "place": "レンタルスタジオ／ご自宅／オンライン",
+    "payment": "現金・クレジットカード（Square）"
+  },
+  "links": {
+    "spotify": "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q",
+    "youtube": "https://www.youtube.com/@KokiKitagawa",
+    "instagram": "https://www.instagram.com/kitagawa_kouki/",
+    "x": "https://x.com/Gt_koki_"
+  },
+  "spotifyTracks": [
+    {
+      "title": "FLAME",
+      "artist": "Jams Collection",
+      "url": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE"
+    },
+    {
+      "title": "Memory",
+      "artist": "B-PROJECT",
+      "url": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5"
+    },
+    {
+      "title": "視聴覚Fighter",
+      "artist": "Pastel closet",
+      "url": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H"
+    }
+  ],
+  "email": null,
+  "contactForm": null,
+  "siteUrl": "https://kokikitagawa.github.io/koki-kitagawa/",
+  "contactCta": {
+    "label": "お仕事のご依頼",
+    "action": "Instagram の DM へ",
+    "url": "https://www.instagram.com/kitagawa_kouki/",
+    "note": "Instagram の DM が開きます。曲の尺と納期だけ書いていただければ返信します。（お問い合わせフォームは準備中です）",
+    "status": "暫定。フォームURLが来たら url を差し替え、action を「お問い合わせフォームへ」にする"
+  }
+}

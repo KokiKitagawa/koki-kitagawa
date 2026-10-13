@@ -1,0 +1,339 @@
+/* ============================================================
+   KK Portfolio — Design System v1.0
+   参照: 下町芸術祭2025 (shitamachi-artfes.com) の設計思想を分析し、
+         北川弘喜ポートフォリオ用に再構築したもの。
+         ※ 参照サイトのコードは一切コピーしていない。
+            実測した「設計のルール」だけを数値化している。
+
+   使い方: このファイルを丸ごとClaudeに渡し
+          「この design system に沿って◯◯を作って」と言うだけで
+           毎回同じトーンの出力になる。
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   0. FONTS
+   和文見出し = 明朝（Zen Old Mincho）／和文本文 = ゴシック（Noto Sans JP）
+   欧文ラベル = Ubuntu（幾何学サンセリフ、全部大文字にしない）
+   ------------------------------------------------------------ */
+/* 実際に使っているウェイトだけ取りにいく（明朝 400/600・ゴシック 300/400・欧文 400/500）。
+   ウェイトを増やすときは、ここも一緒に増やすこと。 */
+@import url("https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600&family=Noto+Sans+JP:wght@300;400&family=Ubuntu:wght@400;500&display=swap");
+/* 任意: 和文約物を詰める。無くても崩れない。
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yakuhanjp@3/dist/css/yakuhanjp.min.css"> */
+
+:root {
+  /* --------------------------------------------------------
+     1. COLOR  — 「暗室」がベース。彩度はほぼ持たせない。
+        写真を主役にするため、UI側の色は極限まで削る。
+     -------------------------------------------------------- */
+  --c-bg:        #0C1211;   /* 基調。純黒ではなく緑に3°振った黒 */
+  --c-bg-elev:   #141B1A;   /* カード/ヘッダー等、1段浮かせる面 */
+  --c-ink:       #FFFFFF;   /* 主文字 */
+  --c-ink-dim:   rgba(255,255,255,.62); /* 補足文・キャプション */
+  --c-ink-faint: rgba(255,255,255,.34); /* 非活性・年号 */
+  --c-rule:      rgba(255,255,255,.16); /* 罫線。太さは常に1px */
+  --c-accent:    #E5C15A;   /* 灯り色。1画面に1〜2箇所しか使わない */
+
+  /* 反転ブロック（協賛・料金表など「事務的な情報」を置く面）
+     暗い画面が続いたあと1枚だけ明色を挟むと、体感の情報密度が下がる */
+  --c-inv-bg:    #D5D5E3;
+  --c-inv-ink:   #101010;
+  --c-inv-rule:  rgba(16,16,16,.24);
+
+  /* --------------------------------------------------------
+     2. TYPE — 和文は「字間を開ける」ことでしか高級感が出ない。
+        見出しは必ず letter-spacing 0.1em 以上。
+     -------------------------------------------------------- */
+  --f-mincho: "Zen Old Mincho", "Yu Mincho", "YuMincho", serif;
+  --f-sans:   "Noto Sans JP", system-ui, sans-serif;
+  --f-en:     "Ubuntu", system-ui, sans-serif;
+
+  --fs-logo:    clamp(28px, 4.2vw, 46px);  /* サイトロゴ和文 */
+  --fs-display: clamp(24px, 2.4vw, 34px);  /* ヒーローの縦組みコピー */
+  --fs-h2:      clamp(26px, 2.6vw, 36px);  /* セクション主見出し（明朝） */
+  --fs-h3:      16px;                      /* カード見出し */
+  --fs-body:    14px;                      /* 本文。15pxを超えない */
+  --fs-label:   14px;                      /* 欧文ラベル */
+  --fs-vert:    18px;                      /* 縦組みラベル */
+  --fs-caption: 12px;
+
+  --ls-logo:   .28em;  /* ロゴは極端に開ける。ここが世界観の8割 */
+  --ls-display:.32em;  /* 縦組みは字間ではなく行間で開ける→下記 */
+  --ls-h2:     .10em;
+  --ls-vert:   .50em;
+  --ls-body:   .08em;
+  --ls-label:  .10em;
+
+  --lh-body:   2.1;    /* 和文本文は2.0前後。1.6は詰まって見える */
+  --lh-head:   1.5;
+
+  /* --------------------------------------------------------
+     3. SPACE — 8の倍数。セクション間は必ず --sp-9 以上あける。
+        「余白でリズムを作る」のが参照サイトの核。
+     -------------------------------------------------------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 16px; --sp-4: 24px;
+  --sp-5: 40px; --sp-6: 64px; --sp-7: 88px; --sp-8: 120px;
+  --sp-9: 160px;
+
+  --w-nav:     172px;  /* 左固定ナビの占有幅 */
+  --w-content: 1180px; /* 本文最大幅 */
+  --gutter:    40px;
+  --h-header:  96px;
+
+  /* --------------------------------------------------------
+     4. MOTION — 「ふわっと下から」1種類だけ。種類を増やさない。
+     -------------------------------------------------------- */
+  --e-out: cubic-bezier(.22,.61,.36,1);
+  --d-fast: .28s;
+  --d-base: .8s;
+  --rise:  24px;   /* fade-upの移動量。これ以上動かすと安っぽくなる */
+  --stagger: 80ms; /* 連続要素のずらし */
+
+  --z-nav: 90; --z-header: 100;
+}
+
+/* ============================================================
+   5. BASE
+   ============================================================ */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  font-weight: 300;
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+
+.container {
+  max-width: var(--w-content);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+/* 左固定ナビぶんを空ける（デスクトップのみ） */
+.shell { padding-left: var(--w-nav); }
+
+/* ============================================================
+   6. TYPE COMPONENTS
+   ============================================================ */
+.t-logo {
+  font-family: var(--f-mincho);
+  font-size: var(--fs-logo);
+  font-weight: 400;
+  letter-spacing: var(--ls-logo);
+  text-indent: var(--ls-logo); /* 字間ぶんの右寄りを打ち消す */
+  line-height: 1.2;
+  margin: 0;
+}
+.t-logo-en {
+  font-family: var(--f-en);
+  font-size: var(--fs-label);
+  letter-spacing: .06em;
+  color: var(--c-ink-dim);
+  margin: var(--sp-2) 0 0;
+}
+.t-label {                       /* 欧文セクションラベル: Concept / Works */
+  font-family: var(--f-en);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--ls-label);
+  margin: 0 0 var(--sp-3);
+}
+.t-h2 {                          /* 和文セクション見出し（明朝） */
+  font-family: var(--f-mincho);
+  font-size: var(--fs-h2);
+  font-weight: 400;
+  letter-spacing: var(--ls-h2);
+  line-height: var(--lh-head);
+  margin: 0;
+}
+.t-h3 {
+  font-family: var(--f-mincho);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: var(--ls-h2);
+  line-height: 1.7;
+  margin: 0 0 var(--sp-2);
+}
+.t-vert {                        /* 縦組みラベル。参照サイトの最大の特徴 */
+  writing-mode: vertical-rl;
+  font-family: var(--f-mincho);
+  font-size: var(--fs-vert);
+  font-weight: 600;
+  letter-spacing: var(--ls-vert);
+  margin: 0;
+}
+.t-body p { margin: 0 0 1.6em; }
+.t-caption { font-size: var(--fs-caption); color: var(--c-ink-dim); letter-spacing: .06em; }
+.t-num {                         /* 日付・数字。欧文で大きく、字間広め */
+  font-family: var(--f-en);
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 400;
+  letter-spacing: .06em;
+}
+.is-accent { color: var(--c-accent); }
+
+/* ============================================================
+   7. CHROME — 固定ヘッダー / 左固定ナビ / SNS
+   ============================================================ */
+.site-header {
+  position: fixed; inset: 0 0 auto 0; z-index: var(--z-header);
+  display: flex; align-items: center; justify-content: center;
+  height: var(--h-header);
+  pointer-events: none;                       /* ロゴ以外はクリックを通す */
+  text-align: center;
+}
+.site-header > * { pointer-events: auto; }
+
+.site-nav {
+  position: fixed; top: 50%; left: var(--gutter); z-index: var(--z-nav);
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  font-family: var(--f-en); font-size: var(--fs-label);
+  letter-spacing: var(--ls-label);
+}
+.site-nav a { position: relative; padding-left: var(--sp-4); color: var(--c-ink-dim); transition: color var(--d-fast) var(--e-out); }
+.site-nav a::before {                          /* 現在地の●。色ではなく形で示す */
+  content: ""; position: absolute; left: 0; top: 50%;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; transform: translateY(-50%) scale(0);
+  transition: transform var(--d-fast) var(--e-out);
+}
+.site-nav a:hover, .site-nav a[aria-current="page"] { color: var(--c-ink); }
+.site-nav a[aria-current="page"]::before { transform: translateY(-50%) scale(1); }
+
+.social { position: fixed; top: var(--sp-5); right: var(--gutter); z-index: var(--z-nav); display: flex; gap: var(--sp-4); }
+.social a { opacity: .8; transition: opacity var(--d-fast) var(--e-out); }
+.social a:hover { opacity: 1; }
+
+/* ============================================================
+   8. HERO — 全画面写真＋縦組みコピーを左右に振る
+   ============================================================ */
+.hero { position: relative; min-height: 100svh; display: grid; place-items: center; overflow: hidden; }
+.hero__media { position: absolute; inset: 0; }
+.hero__media img { width: 100%; height: 100%; object-fit: cover; }
+.hero__media::after {                          /* 写真の上に必ず暗幕。文字の可読性はこれで担保 */
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(12,18,17,.55) 0%, rgba(12,18,17,.15) 45%, rgba(12,18,17,.85) 100%);
+}
+.hero__copy { position: relative; z-index: 2; width: 100%; max-width: var(--w-content); padding-inline: var(--gutter); }
+.hero__vert {
+  writing-mode: vertical-rl;
+  font-family: var(--f-mincho);
+  font-size: var(--fs-display);
+  font-weight: 400;
+  line-height: 2.4;                            /* 縦組みは line-height が字間になる */
+  letter-spacing: .12em;
+}
+.hero__date { margin-top: var(--sp-5); }
+
+/* ============================================================
+   9. TWO-COLUMN — 左に読ませる文、右に写真を積む
+   ============================================================ */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6); align-items: start; }
+.split__text { position: sticky; top: calc(var(--h-header) + var(--sp-6)); } /* 文が読まれている間、写真だけ流れる */
+.split__media { display: grid; gap: var(--sp-4); }
+
+/* ============================================================
+   10. CARD RAIL — 横スクロールのカード列。
+       ★参照サイトの肝: カードの上下位置をわざと揃えない。
+       整列を崩すことで「祭り／雑多さ」の気配が出る。
+   ============================================================ */
+.rail { display: flex; gap: var(--sp-5); overflow-x: auto; padding-block: var(--sp-5); scroll-snap-type: x mandatory; scrollbar-width: none; }
+.rail::-webkit-scrollbar { display: none; }
+.card { flex: 0 0 clamp(240px, 24vw, 300px); scroll-snap-align: center; }
+.card:nth-child(3n+1) { margin-top: 0; }
+.card:nth-child(3n+2) { margin-top: 56px; }    /* ← ずらし */
+.card:nth-child(3n)   { margin-top: 24px; }
+.card img { aspect-ratio: 4/3; object-fit: cover; }
+.card__meta { display: flex; align-items: center; gap: var(--sp-2); color: var(--c-ink-dim); font-size: var(--fs-caption); }
+
+.rail-ctrl { display: flex; gap: var(--sp-3); }
+.rail-ctrl button {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid var(--c-rule); background: transparent; color: var(--c-ink);
+  cursor: pointer; transition: background var(--d-fast) var(--e-out), border-color var(--d-fast) var(--e-out);
+}
+.rail-ctrl button:hover { background: rgba(255,255,255,.08); border-color: var(--c-ink); }
+
+/* ============================================================
+   11. LIST — 罫線区切りの一覧（News / Live / 実績）
+       枠で囲わず、1pxの罫線だけで区切る
+   ============================================================ */
+.rows { border-top: 1px solid var(--c-rule); }
+.row { display: grid; grid-template-columns: 96px 1fr; gap: var(--sp-4);
+       padding: var(--sp-4) 0; border-bottom: 1px solid var(--c-rule); }
+.row__date { font-family: var(--f-en); color: var(--c-ink-faint); }
+
+/* ============================================================
+   12. INVERT — 明色ブロック。暗い画面の連続を1枚だけ断ち切る
+   ============================================================ */
+.invert { background: var(--c-inv-bg); color: var(--c-inv-ink); }
+.invert .row, .invert .rows { border-color: var(--c-inv-rule); }
+.invert .row__date { color: rgba(16,16,16,.5); }
+
+/* ============================================================
+   13. SECTION RHYTHM
+   ============================================================ */
+.section { padding-block: var(--sp-9); }
+.section__head { display: flex; align-items: flex-start; gap: var(--sp-6); margin-bottom: var(--sp-7); }
+
+/* ============================================================
+   14. MOTION — 「fade-up」1種類だけを全要素で使い回す
+       JS: IntersectionObserverで .is-in を付けるだけ
+   ============================================================ */
+.reveal { opacity: 0; transform: translateY(var(--rise)); transition: opacity var(--d-base) var(--e-out), transform var(--d-base) var(--e-out); }
+.reveal.is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   15. RESPONSIVE — 900px以下で左ナビを畳み、縦組みは維持する
+       （縦組みはスマホでこそ効く。横組みに戻さない）
+   ============================================================ */
+@media (max-width: 900px) {
+  :root { --gutter: 20px; --sp-9: 96px; --sp-7: 56px; --sp-6: 40px; }
+  .shell { padding-left: 0; }
+  .site-nav { top: auto; bottom: 0; left: 0; right: 0; transform: none;
+              flex-direction: row; justify-content: space-around; overflow-x: auto;
+              gap: var(--sp-3); padding: var(--sp-3) var(--sp-3) calc(var(--sp-3) + env(safe-area-inset-bottom));
+              background: rgba(12,18,17,.92); backdrop-filter: blur(8px); }
+  .site-nav a { padding-left: 0; }
+  .site-nav a::before { display: none; }
+  .split { grid-template-columns: 1fr; gap: var(--sp-5); }
+  .split__text { position: static; }
+  .row { grid-template-columns: 72px 1fr; gap: var(--sp-3); }
+  .card:nth-child(n) { margin-top: 0; }        /* 狭い画面ではずらしを解除 */
+}
+
+/* ============================================================
+   16. ANTI-PATTERNS — これをやると一気に崩れる
+       迷ったとき、レビューのとき、ここを読み返す。
+   ============================================================
+   × 見出しをゴシックにする
+       → 明朝／ゴシックの役割分担がこの設計の背骨。混ぜない。
+   × 字間を詰める
+       → 見出しの letter-spacing を 0 にした瞬間に別物になる。0.1em 以上を死守。
+   × セクション間の余白（--sp-9 / 160px）を削る
+       → 情報が入りきらないときに最初に削りたくなる場所。削らず、ページを分ける。
+   × アクセント色を増やす
+       → --c-accent（黄）以外を足さない。強調は色ではなく余白と級数で作る。
+   × カードに角丸と影をつける
+       → 現行のAI生成デザインの典型。この設計では角は直角、影は無し。
+   × 本文を大きくする
+       → 14px・行間2.0が下限であり上限。15pxを超えない。
+   × グラデーション背景
+       → 使ってよいのは写真の上の暗幕だけ。
+   × モーションの種類を増やす
+       → fade-up 1種類だけを全要素で使い回す。種類が増えた瞬間に安くなる。
+   × 明色反転（.invert）を2回以上使う
+       → 1ページに1回。2回目からは効果が消える。
+   ============================================================ */

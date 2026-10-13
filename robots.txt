@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kokikitagawa.github.io/koki-kitagawa/sitemap.xml

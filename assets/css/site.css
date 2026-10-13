@@ -1,0 +1,538 @@
+/* ============================================================
+   site.css — このページ固有の組み方だけを置く。
+   色・書体・字間・余白・イージングは kk-design-system.css の
+   変数だけを使う。新しいトークンをここで作らない。
+   ============================================================ */
+
+/* JavaScript が無い／読めないときは、ふわっと出す仕掛けを最初から解いておく。
+   （head の1行スクリプトが html に .js を付ける。付かなければこの行が効く） */
+html:not(.js) .reveal { opacity: 1; transform: none; }
+
+/* キーボードで辿ったとき、どこにいるかが見える（灯り色の枠） */
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
+
+/* ナビで飛んだとき、見出しが上の固定ロゴに隠れないようにする */
+main section[id], .site-footer { scroll-margin-top: calc(var(--h-header) + var(--sp-3)); }
+
+/* width/height 属性を書いた <img> が縦に伸びないようにする（レイアウトシフト防止と両立させる） */
+img { height: auto; }
+
+/* 下端の固定ナビ（900px以下）に本文が隠れないようにする。
+   8項目が横スクロール無しで収まるよう、狭い画面では字を小さくして間を詰める */
+@media (max-width: 900px) {
+  /* --h-navbar は下端ナビの高さ。--h-header と同じ性格の寸法で、色や書体の追加ではない */
+  :root { --h-navbar: 74px; }
+  body { padding-bottom: var(--h-navbar); }
+  .site-nav { gap: var(--sp-2); padding-inline: var(--sp-2); }
+  .site-nav a { font-size: var(--fs-caption); letter-spacing: .06em; padding-block: var(--sp-2); }
+}
+
+/* 指で押す的を 44px 以上にする（見た目の位置は変えない） */
+.social a { padding: var(--sp-2); margin: calc(var(--sp-2) * -1); }
+
+/* 固定ロゴの下を本文が通るので、背景と同じ色の暗幕を薄くかける
+   （新しい色ではなく --c-bg #0C1211 の透明度違い。ヒーローの暗幕と同じ考え方） */
+.site-header::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0; z-index: -1;
+  height: calc(var(--h-header) + var(--sp-5));
+  background: linear-gradient(180deg, rgba(12,18,17,.95) 0%, rgba(12,18,17,.78) 55%, rgba(12,18,17,0) 100%);
+}
+.social a { opacity: .9; }
+.site-header { padding-top: var(--sp-3); }
+
+/* ------------------------------------------------------------
+   HERO
+   ------------------------------------------------------------ */
+.hero__copy { position: absolute; inset: 0; width: auto; max-width: none; margin: 0; }
+/* 左の固定ナビが写真の明るい部分に重なっても読めるように、端だけ暗くする
+   （ヒーローの暗幕と同じ rgba(12,18,17,…)。新しい色は足していない） */
+.hero::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(12,18,17,.85) 0%, rgba(12,18,17,.35) 18%, rgba(12,18,17,0) 34%);
+}
+/* 写真は画面の端まで見せる。左の固定ナビぶんは .hero__copy の内側で空ける */
+@media (min-width: 901px) {
+  .hero { margin-left: calc(var(--w-nav) * -1); }
+  .hero__copy { left: var(--w-nav); }   /* 絶対配置の基準そのものをナビの右へ寄せる */
+}
+.hero__vert { position: absolute; margin: 0; }
+.hero__vert--main { right: var(--gutter); top: calc(var(--h-header) + var(--sp-5)); }
+.hero__vert--sub  { left: var(--gutter); bottom: var(--sp-8); font-size: var(--fs-vert); }
+.hero__bottom {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: var(--sp-4);
+  width: calc(100% - var(--gutter) * 2); max-width: var(--w-content);
+  display: grid; justify-items: center; gap: var(--sp-3);
+}
+.hero__highlights {
+  margin: 0; text-align: center;
+  font-family: var(--f-en); font-size: var(--fs-label); letter-spacing: var(--ls-label);
+  color: var(--c-ink);
+}
+.hero__scroll {
+  font-family: var(--f-en); font-size: var(--fs-caption); letter-spacing: var(--ls-label);
+  color: var(--c-ink-dim); display: grid; justify-items: center; gap: var(--sp-1);
+}
+.hero__scroll::after {
+  content: ""; width: 1px; height: 32px; background: var(--c-ink-faint);
+  animation: kk-scroll 2.4s var(--e-out) infinite;
+}
+@keyframes kk-scroll { 0%,100% { transform: translateY(0); opacity: .4 } 50% { transform: translateY(4px); opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .hero__scroll::after { animation: none } }
+
+@media (max-width: 900px) {
+  /* 狭い画面では肩書きを左上へ。下は実績1行とスクロール誘導に明け渡す */
+  .hero__vert--sub  { top: calc(var(--h-header) + var(--sp-5)); bottom: auto; }
+  .hero__bottom     { bottom: calc(var(--sp-3) + var(--h-navbar)); }
+  .hero__highlights { line-height: 1.9; }
+}
+/* 画面が低いとき（横持ちのスマホ）だけ縦組みを縮めて、1列に収める */
+@media (max-height: 680px) {
+  .hero__vert--main { top: var(--h-header); font-size: 20px; }
+  .hero__vert--sub  { font-size: 14px; }
+}
+
+/* ------------------------------------------------------------
+   ABOUT
+   ------------------------------------------------------------ */
+.about__bio { margin-top: var(--sp-5); color: var(--c-ink-dim); }
+.about__career {
+  list-style: none; margin: var(--sp-5) 0 0; padding: 0;
+  border-top: 1px solid var(--c-rule);
+}
+.about__career li {
+  display: flex; flex-wrap: wrap; gap: var(--sp-3);
+  padding: var(--sp-3) 0; border-bottom: 1px solid var(--c-rule);
+}
+.career__detail { color: var(--c-ink-faint); }
+
+/* 人物写真。元が 875px しか無いので、表示幅を 440px までに抑えて
+   引き伸ばさない（2倍密度の画面でちょうど使い切る）。
+   機材の写真は列いっぱい、人物だけ幅を狭める ── 揃えないことで主役に見せる */
+.portrait { margin: 0; max-width: 440px; }
+.portrait img { width: 100%; }
+.portrait__cap {
+  display: flex; align-items: baseline; gap: var(--sp-3);
+  margin-top: var(--sp-3); padding-top: var(--sp-3);
+  border-top: 1px solid var(--c-rule);
+  font-family: var(--f-mincho); font-size: var(--fs-body);
+  letter-spacing: var(--ls-h2); color: var(--c-ink);
+}
+.portrait__cap span {
+  font-family: var(--f-en); font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label); color: var(--c-ink-faint);
+}
+
+/* ------------------------------------------------------------
+   WORKS — ジャケット写真が1枚も無い前提で組む。
+   写真の代わりに「通し番号・曲名・波形」で1枚ずつ違う絵を作る。
+   波形の高さは曲名から決まる（render.mjs の waveBars）ので、
+   同じ曲は毎回同じ形になる。ジャケットが手に入ったら
+   .card__wave を <img> に差し替えるだけで済む組みにしてある。
+   ------------------------------------------------------------ */
+.card--song .card__frame {
+  aspect-ratio: 3 / 4;
+  border: 1px solid var(--c-rule); background: var(--c-bg-elev);
+  padding: var(--sp-4);
+  display: grid; grid-template-rows: auto 1fr auto; gap: var(--sp-4);
+}
+.card__top { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); }
+.card__index {
+  font-family: var(--f-en); font-size: var(--fs-h2); line-height: 1;
+  letter-spacing: var(--ls-label); color: var(--c-ink-faint);
+}
+.card__label { font-family: var(--f-en); font-size: var(--fs-caption); color: var(--c-ink-faint); letter-spacing: var(--ls-label); }
+.card__name { align-self: end; }
+.card__title {
+  margin: 0; font-family: var(--f-mincho); font-weight: 600;
+  font-size: var(--fs-h2); line-height: var(--lh-head); letter-spacing: var(--ls-h2);
+}
+.card__artist { margin: var(--sp-2) 0 0; font-size: var(--fs-caption); color: var(--c-ink-dim); }
+
+/* 波形。棒の高さは HTML 側の style="height:◯%" で入る */
+.card__wave { display: flex; align-items: flex-end; gap: 2px; height: 44px; }
+.card__wave span {
+  flex: 1; min-height: 2px; background: var(--c-ink-faint);
+  transition: background var(--d-fast) var(--e-out);
+}
+/* 灯り色は「1画面に1〜2箇所」。触れている1枚だけが灯るので、その範囲に収まる */
+.card--song:hover .card__wave span,
+.card--song:focus-within .card__wave span { background: var(--c-accent); }
+.card--song .card__frame { transition: border-color var(--d-fast) var(--e-out); }
+.card--song:hover .card__frame { border-color: var(--c-ink); }
+
+.card__meta { margin: var(--sp-3) 0 0; }
+.card__year { margin-left: var(--sp-2); font-family: var(--f-en); color: var(--c-ink-faint); }
+.rail__note { margin: var(--sp-3) 0 0; }
+.rail__note a { border-bottom: 1px solid var(--c-rule); }
+.rail:focus-visible { outline: 1px solid var(--c-accent); outline-offset: var(--sp-2); }
+.rail-ctrl { margin-left: auto; }
+/* 矢印は JS があるときだけ出す。display:flex が hidden に勝ってしまうので明示する */
+.rail-ctrl[hidden] { display: none; }
+
+/* ------------------------------------------------------------
+   CREDITS（絞り込み）
+   ------------------------------------------------------------ */
+.filter { display: flex; flex-wrap: wrap; gap: var(--sp-4); margin-bottom: var(--sp-5); }
+.filter__btn {
+  appearance: none; background: none; border: 0; cursor: pointer;
+  padding: var(--sp-3) 0; min-height: 44px;
+  font-family: var(--f-sans); font-size: var(--fs-body); letter-spacing: var(--ls-body);
+  color: var(--c-ink-faint); border-bottom: 1px solid transparent;
+  transition: color var(--d-fast) var(--e-out), border-color var(--d-fast) var(--e-out);
+}
+.filter__btn:hover { color: var(--c-ink-dim); }
+/* 現在の状態は「色」だけでなく「下線」でも示す */
+.filter__btn[aria-pressed="true"] { color: var(--c-ink); border-bottom-color: var(--c-accent); }
+.filter__count { margin-left: var(--sp-2); font-family: var(--f-en); font-size: var(--fs-caption); color: var(--c-ink-faint); }
+
+/* 絞り込みで付ける hidden が .row の display:grid に負けないようにする */
+.rows [hidden] { display: none; }
+
+.row__meta { margin: var(--sp-1) 0 0; color: var(--c-ink-dim); font-size: var(--fs-caption); }
+.row__type { display: block; font-family: var(--f-en); font-size: var(--fs-caption); color: var(--c-ink-faint); letter-spacing: var(--ls-label); }
+.row .t-h3 { margin: 0; }
+.invert .row__meta { color: rgba(16,16,16,.62); }
+
+/* ------------------------------------------------------------
+   LIVE
+   ------------------------------------------------------------ */
+.live__media { margin-top: var(--sp-7); }
+/* 左端まで伸ばすのはヒーローだけ。左の固定ナビは白文字なので、
+   明色ブロックや写真を端まで広げると、その上でナビが読めなくなる。
+   （ヒーローだけは .hero::before の暗幕で読めるようにしてある） */
+.live__media img { width: 100%; height: clamp(200px, 34vh, 400px); object-fit: cover; }
+
+/* ------------------------------------------------------------
+   LISTEN
+   ------------------------------------------------------------ */
+.listen { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
+.listen__item .t-label { margin-bottom: var(--sp-3); }
+.embed__link {
+  display: grid; gap: var(--sp-2); padding: var(--sp-5) var(--sp-4);
+  border: 1px solid var(--c-rule); min-height: 152px; align-content: center;
+  transition: background var(--d-fast) var(--e-out), border-color var(--d-fast) var(--e-out);
+}
+.embed__link:hover { background: rgba(255,255,255,.08); border-color: var(--c-ink); }
+.embed__label { font-family: var(--f-mincho); font-weight: 600; font-size: var(--fs-h3); letter-spacing: var(--ls-h2); }
+.embed iframe { width: 100%; height: 352px; border: 0; display: block; }
+@media (max-width: 900px) { .listen { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------
+   LESSON / CONTACT / FOOTER
+   ------------------------------------------------------------ */
+.lesson__note { margin: var(--sp-5) 0 0; color: rgba(16,16,16,.72); }
+.lesson__note a, .link { border-bottom: 1px solid currentColor; }
+.site-footer { padding-block: var(--sp-6); border-top: 1px solid var(--c-rule); }
+
+/* ------------------------------------------------------------
+   追加（2026/8/30 本人回答の反映）
+   機材 / 事務所 / Spotify先頭3曲 / 料金プラン / 制作依頼
+   ------------------------------------------------------------ */
+
+/* 事務所（掲載許可が出るまで publish:false で出力されない） */
+.about__agency { margin: var(--sp-4) 0 0; }
+
+/* 機材 */
+.gear { margin: var(--sp-6) 0 0; }
+.gear__list { margin: var(--sp-3) 0 0; border-top: 1px solid var(--c-rule); }
+.gear__group {
+  display: grid; grid-template-columns: 128px 1fr; gap: var(--sp-3);
+  padding: var(--sp-3) 0; border-bottom: 1px solid var(--c-rule);
+}
+.gear__group dt {
+  font-family: var(--f-mincho); font-weight: 600;
+  letter-spacing: var(--ls-h2); color: var(--c-ink);
+}
+.gear__group dd {
+  margin: 0; font-family: var(--f-en); font-size: var(--fs-caption);
+  line-height: 2; letter-spacing: .04em; color: var(--c-ink-dim);
+}
+
+/* 試聴：先頭3曲 */
+.listen { grid-template-columns: repeat(3, 1fr); }
+.listen__rank {
+  margin: 0 0 var(--sp-2); font-family: var(--f-en); font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label); color: var(--c-accent);
+}
+.listen__more {
+  display: flex; flex-wrap: wrap; gap: var(--sp-5);
+  margin: var(--sp-5) 0 0; font-size: var(--fs-caption);
+}
+
+/* レッスンの料金プラン（明色ブロック内） */
+.plan__price { font-weight: 500; font-family: var(--f-en); letter-spacing: .04em; }
+.plan__note {
+  display: block; font-size: var(--fs-caption); color: rgba(16,16,16,.55);
+}
+.plan__rec {
+  display: inline-block; margin-left: var(--sp-2); padding: 1px 8px;
+  font-family: var(--f-sans); font-size: 11px; letter-spacing: .08em;
+  border: 1px solid rgba(16,16,16,.45); color: var(--c-inv-ink);
+}
+/* おすすめの行は色ではなく「左の罫」と「おすすめ」の文字で示す */
+.row--rec {
+  box-shadow: inset 2px 0 0 rgba(16,16,16,.75);
+  margin-inline: calc(var(--sp-3) * -1); padding-inline: var(--sp-3);
+}
+
+/* 連絡先 */
+.contact__sub { margin: var(--sp-6) 0 var(--sp-3); }
+.contact__sub:first-of-type { margin-top: 0; }
+.contact__cta { margin: var(--sp-5) 0 0; }
+.btn {
+  display: inline-block; padding: var(--sp-3) var(--sp-5);
+  border: 1px solid var(--c-ink); color: var(--c-ink);
+  font-family: var(--f-mincho); font-weight: 600; letter-spacing: var(--ls-h2);
+  transition: background var(--d-fast) var(--e-out), color var(--d-fast) var(--e-out);
+}
+.btn:hover, .btn:focus-visible { background: var(--c-ink); color: var(--c-bg); }
+
+@media (max-width: 900px) {
+  .listen { grid-template-columns: 1fr; }
+  .gear__group { grid-template-columns: 1fr; gap: var(--sp-1); }
+  .listen__more { gap: var(--sp-3); flex-direction: column; }
+}
+
+/* ------------------------------------------------------------
+   追加（2026/9/5 その2）営業まわりの改善
+   ・ヒーローが黒一色に見える → 暗幕を薄くし、写真を少し起こす
+   ・聴けるカード ・機材を全幅へ ・発注メニューと依頼ボタン
+   ------------------------------------------------------------ */
+
+/* ヒーロー：暗幕2枚が重なって写真が沈んでいたので、両方を薄くする。
+   色は増やしていない（同じ rgba(12,18,17,…) の濃さだけを下げた） */
+.hero__media::after {
+  background: linear-gradient(180deg,
+    rgba(12,18,17,.42) 0%, rgba(12,18,17,.06) 45%, rgba(12,18,17,.78) 100%);
+}
+.hero::before {
+  background: linear-gradient(90deg,
+    rgba(12,18,17,.78) 0%, rgba(12,18,17,.22) 18%, rgba(12,18,17,0) 30%);
+}
+/* 暗い写真を少しだけ起こす。宣材写真が来たら 1 に戻してよい */
+.hero__media img { filter: brightness(1.18) contrast(1.04); }
+
+/* 聴けるカード：枠ごとリンクにする */
+.card__frame--play { display: grid; cursor: pointer; }
+.card__label--play { color: var(--c-accent); }
+.card__frame--play:hover, .card__frame--play:focus-visible { border-color: var(--c-ink); }
+.card__frame--play:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
+
+/* 機材：2カラムの外に出したので、全幅で2列に組む */
+.gear { margin-top: var(--sp-7); }
+.gear__list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--sp-6); }
+.gear__group { grid-template-columns: 160px 1fr; }
+
+/* 発注メニュー */
+.services {
+  list-style: none; margin: 0 0 var(--sp-5); padding: 0;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-3) var(--sp-5);
+}
+.services li {
+  font-family: var(--f-mincho); font-weight: 600; font-size: var(--fs-h3);
+  letter-spacing: var(--ls-h2); padding-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--c-rule);
+}
+.services__note {
+  display: block; margin-top: var(--sp-1);
+  font-family: var(--f-sans); font-weight: 300; font-size: var(--fs-caption);
+  letter-spacing: var(--ls-body); color: var(--c-ink-dim);
+}
+
+.contact__ctanote { margin: var(--sp-3) 0 0; }
+
+@media (max-width: 900px) {
+  .gear__list { grid-template-columns: 1fr; }
+  .gear__group { grid-template-columns: 1fr; }
+  .services { grid-template-columns: 1fr; }
+  .hero__media img { filter: brightness(1.12) contrast(1.03); }
+}
+
+/* ------------------------------------------------------------
+   追加（2026/9/5 その3）楽曲提供カードのジャケットとその場再生
+   ------------------------------------------------------------ */
+
+/* ジャケットは Spotify の画像CDNを --art で受け取り、背景に敷く。
+   読み込めなかったときは、下の波形カードがそのまま見えるので崩れない。
+   写真の上には必ず暗幕（design-system の作法どおり） */
+/* ジャケットのあるカード。
+   写真の上に曲名を重ねない ── ジャケット自体に曲名が入っていることが多く、
+   重ねると二重になって両方読めなくなるため、写真は正方形で見せ、文字は下に置く。
+   （※ .card--song .card__frame の background 一括指定に負けるので、
+      同じ強さ＝クラス2つ で、かつ後ろに書いて上書きしている） */
+.card--song .card__frame--art {
+  aspect-ratio: auto; padding: 0; display: block;
+  background: var(--c-bg-elev);
+}
+.card__art {
+  position: relative; display: block; aspect-ratio: 1;
+  background-image: var(--art);
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+}
+/* 写真の上には一文字も置かない。番号と「再生」は写真の下の暗い帯へ */
+.card--song .card__frame--art .card__name { padding: var(--sp-4); }
+.card--song .card__frame--art .card__top { margin-bottom: var(--sp-3); }
+.card--song .card__frame--art .card__index { font-size: var(--fs-h3); }
+
+/* 「再生」ラベルの前に小さな三角を置く（色だけで伝えない） */
+.card__label--play::before {
+  content: ""; display: inline-block; vertical-align: middle;
+  margin-right: 6px; border: 5px solid transparent;
+  border-left: 8px solid var(--c-accent); border-right: 0;
+}
+
+/* 押した後：枠の中身がプレイヤーに置き換わる */
+.card__frame.is-playing {
+  aspect-ratio: auto; padding: 0; background: none; display: block;
+}
+.card__frame.is-playing iframe { width: 100%; height: 352px; border: 0; display: block; }
+
+/* 試聴セクションは2枚だけになったので、幅を戻す */
+.listen--two { grid-template-columns: 1fr 1fr; }
+.listen__lead { margin: 0 0 var(--sp-5); }
+@media (max-width: 900px) { .listen--two { grid-template-columns: 1fr; } }
+
+/* ------------------------------------------------------------
+   導線の変更（2026/9/7）— 変更設計書 v1.0
+   見た目は変えない。色・書体・角丸・影・動きを1つも足していない。
+   ここで使っているのは kk-design-system.css の変数と、既存の .btn / .link だけ。
+   ------------------------------------------------------------ */
+
+/* 変更1｜ヘッダーに依頼ボタンを常駐（.btn を一回り小さくしただけ） */
+.social { align-items: center; }
+.btn--nav {
+  opacity: 1;                 /* SNSアイコンより一段だけ前に出す。色は足していない */
+  padding: var(--sp-2) var(--sp-4);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label);
+  line-height: 1.7;
+}
+/* 狭い画面では右上が詰まるので、下端ナビ側（変更6）に譲る */
+@media (max-width: 900px) { .btn--nav { display: none; } }
+
+/* 変更6｜スマホの下端ナビの右端に「ご依頼」。囲まない・背景も変えない */
+.site-nav__cta { display: none; }
+@media (max-width: 900px) {
+  .site-nav__cta { display: block; color: var(--c-ink); }
+  .site-nav { justify-content: space-between; }
+}
+
+/* 変更2｜ヒーローの2択CTA。主副の差は枠線の有無だけでつける */
+.hero__cta {
+  margin: 0; display: flex; align-items: center; justify-content: center;
+  gap: var(--sp-5); flex-wrap: wrap;
+}
+.hero__cta-sub {
+  font-family: var(--f-mincho); font-weight: 600;
+  letter-spacing: var(--ls-h2); color: var(--c-ink);
+}
+/* 変更3｜押した先で何が起きるかを、押す前に書く */
+.hero__ctanote { margin: 0; text-align: center; max-width: 34em; }
+
+/* 変更4｜3回目のCTAはボタンにしない。罫線1本の上に文字リンク1つ */
+.cta-quiet {
+  margin: var(--sp-6) 0 0; padding-top: var(--sp-5);
+  border-top: 1px solid var(--c-rule); text-align: center;
+}
+.cta-quiet .link {
+  font-family: var(--f-mincho); font-weight: 600;
+  font-size: var(--fs-h3); letter-spacing: var(--ls-h2);
+}
+
+/* 変更5｜畳む。JS は使わない（<details> だけ）。JS を切っても全部読める */
+.fold { border-top: 1px solid var(--c-rule); }
+.fold__sum {
+  display: flex; align-items: baseline; gap: var(--sp-3);
+  padding: var(--sp-4) 0; cursor: pointer; list-style: none;
+  font-family: var(--f-en); font-size: var(--fs-caption);
+  letter-spacing: var(--ls-label); color: var(--c-ink-dim);
+  transition: color var(--d-fast) var(--e-out);
+}
+.fold__sum::-webkit-details-marker { display: none; }
+.fold__sum:hover { color: var(--c-ink); }
+.fold__hint::after { content: " ＋"; }
+.fold[open] > .fold__sum .fold__hint::after { content: " －"; }
+.fold .rows { border-top: 0; }
+/* Gear は About の中で全幅に置く。畳んだ状態が既定 */
+.gear.fold { margin-top: var(--sp-6); }
+.gear.fold .gear__list { margin-top: 0; border-top: 0; }
+
+/* 変更5｜試聴は独立セクションをやめ、楽曲提供の下に置く */
+.listen-block { margin-top: var(--sp-6); padding-top: var(--sp-5); border-top: 1px solid var(--c-rule); }
+.listen-block__head { margin: 0 0 var(--sp-4); }
+.listen-block .listen__lead { margin: 0 0 var(--sp-4); }
+
+/* 変更5｜About の写真列。1枚ずつ縦に積むのをやめ、ポートレート＋3枚の帯にする
+   （写真は1枚も減らしていない。並べ方だけを変えた） */
+.split__media { grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); align-content: start; }
+.split__media > .portrait { grid-column: 1 / -1; }
+.split__media > div img { width: 100%; height: clamp(120px, 18vh, 220px); object-fit: cover; }
+
+/* ------------------------------------------------------------
+   北川さんの指摘への対応（2026/9/20・v1.1）
+   1｜音が重なる      → main.js 側で「鳴るのは常に1つ」に
+   2｜おすすめの改行  → 96pxの列に入らないので料金の隣へ移し、折り返さない
+   3｜SNSをロゴに     → CC0のSimple Icons を mask で塗る（色は文字色のまま）
+   4｜ヒーローに動き  → 写真は文字の背景。読み込み後にゆっくり寄る（1回だけ）
+   色・書体・角丸・影は1つも足していない。
+   ------------------------------------------------------------ */
+
+/* 2｜「月2回 おすすめ」が左の96px列で折り返していた。おすすめは料金の隣へ */
+.plan__price { display: inline-block; white-space: nowrap; }
+.plan__rec   { margin-left: var(--sp-3); white-space: nowrap; }
+.row--rec .row__date { white-space: nowrap; }
+
+/* 3｜SNSはサービスのロゴ。mask で塗るので色はサイトの文字色のまま。
+      mask が使えない環境では IG / YT / X の文字がそのまま残る（欠けない） */
+.social a { color: var(--c-ink); }
+.social .i {
+  font-family: var(--f-en); font-size: var(--fs-caption); letter-spacing: var(--ls-label);
+}
+@supports ((mask-image: url(#a)) or (-webkit-mask-image: url(#a))) {
+  .social .i {
+    display: block; width: 20px; height: 20px;
+    overflow: hidden; white-space: nowrap; text-indent: -10em;
+    background-color: currentColor;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+            mask: var(--icon) center / contain no-repeat;
+  }
+  .i--instagram { --icon: url("../img/icon-instagram.svg"); }
+  .i--youtube   { --icon: url("../img/icon-youtube.svg"); }
+  .i--x         { --icon: url("../img/icon-x.svg"); }
+}
+
+/* 4｜ヒーロー：写真は「文字の背景」。14秒かけて 1.08 → 1.00 までゆっくり寄る。
+      繰り返さない（無限ループは目が疲れる）。文字は写真の後から浮き上がる。 */
+.hero__media img {
+  transform-origin: 58% 42%;
+  animation: kk-hero-zoom 14s var(--e-out) both;
+}
+@keyframes kk-hero-zoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+
+.hero__vert--main { animation: kk-hero-rise 1.1s var(--e-out) .15s both; }
+.hero__vert--sub  { animation: kk-hero-rise 1.1s var(--e-out) .45s both; }
+/* 下の帯は translateX(-50%) で中央に置いているので、動きにもそれを含める */
+.hero__bottom     { animation: kk-hero-rise-c 1.1s var(--e-out) .75s both; }
+@keyframes kk-hero-rise   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes kk-hero-rise-c { from { opacity: 0; transform: translateX(-50%) translateY(14px); } to { opacity: 1; transform: translateX(-50%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__media img, .hero__vert--main, .hero__vert--sub, .hero__bottom { animation: none; }
+}
+
+/* 4b｜「写真は文字の背景」にする。
+   写真そのものは明るいまま（9/5に起こしたのを戻さない）。
+   文字が乗っている帯＝下3分の1と左右の端だけを濃くして、写真を背景に下げる。
+   足しているのは同じ rgba(12,18,17,…) の濃さだけで、新しい色ではない。 */
+.hero__media::after {
+  background: linear-gradient(180deg,
+    rgba(12,18,17,.46)  0%,
+    rgba(12,18,17,.06) 34%,
+    rgba(12,18,17,.52) 68%,
+    rgba(12,18,17,.90) 100%);
+}
+.hero::before {
+  background:
+    linear-gradient(90deg,  rgba(12,18,17,.80) 0%, rgba(12,18,17,.22) 17%, rgba(12,18,17,0) 30%),
+    linear-gradient(270deg, rgba(12,18,17,.72) 0%, rgba(12,18,17,.18) 14%, rgba(12,18,17,0) 26%);
+}

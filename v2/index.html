@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a1120">
+<title>北川弘喜 | ギタリスト・作曲家</title>
+<meta name="description" content="書けるギタリスト、弾ける作曲家。北川弘喜（Koki Kitagawa）への作曲・編曲・ギター演奏のご依頼と、ギターレッスンのお申し込み。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Oswald:wght@500;600&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1120; --bg2:#0e182b; --panel:#131f36; --panel2:#18263f; --line:#2a3a5c;
+  --ink:#f3f6fb; --sub:#c3cde0; --faint:#93a1bb;
+  --or:#e2560e; --or-top:#f06a1d; --or-hi:#ff9440; --or-soft:rgba(255,140,60,.15);
+  --gr:#15803d; --gr-top:#1d9b52; --gr-hi:#4ade80; --gr-soft:rgba(74,222,128,.12);
+  --lesson:#1b2a48;
+  --en:"Oswald","Arial Narrow",sans-serif;
+  --sig:"Mrs Saint Delafield","Brush Script MT",cursive;
+  --dock:76px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:#050a14;color:var(--ink);
+  font:16px/1.75 "Noto Sans JP","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;letter-spacing:.02em}
+a{color:inherit}
+img{display:block;max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--or-hi);outline-offset:3px}
+.wrap{max-width:480px;margin:0 auto;background:var(--bg);min-height:100svh;
+  padding-bottom:calc(var(--dock) + env(safe-area-inset-bottom));position:relative;overflow-x:clip}
+@media (min-width:600px){.wrap{box-shadow:0 0 0 1px #16223a,0 30px 80px rgba(0,0,0,.6)}}
+
+/* ---------- ヘッダー ---------- */
+.top{position:sticky;top:0;z-index:30;height:56px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;background:rgba(10,17,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(42,58,92,.6)}
+.logo{text-decoration:none;display:flex;flex-direction:column;line-height:1}
+.logo .sig{font-family:var(--sig);font-size:30px;line-height:.9;color:#fff}
+.logo small{font-family:var(--en);font-size:10.5px;letter-spacing:.18em;color:var(--faint);margin-top:2px}
+.menu-btn{width:48px;height:48px;border:0;background:none;display:grid;place-items:center;cursor:pointer}
+.menu-btn span{display:block;width:24px;height:2px;background:#fff;box-shadow:0 7px 0 #fff,0 -7px 0 #fff}
+
+/* ---------- ヒーロー ---------- */
+.hero{position:relative;height:clamp(320px,43svh,410px);overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:50% 18%}
+.hero::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,17,32,0) 38%,rgba(10,17,32,.86) 74%,var(--bg) 100%)}
+.hero .copy{position:absolute;left:16px;right:16px;bottom:14px;z-index:1}
+.hero .kicker{font-family:var(--en);font-size:12.5px;letter-spacing:.22em;color:var(--or-hi);margin:0}
+.hero h1{margin:4px 0 2px;font-size:27px;line-height:1.35;font-weight:900;letter-spacing:.04em}
+.hero .name{font-family:var(--en);font-size:15px;letter-spacing:.2em;color:var(--sub);margin:0}
+.hero .sig{position:absolute;right:12px;top:14px;z-index:1;font-family:var(--sig);font-size:34px;color:rgba(255,255,255,.85);transform:rotate(-8deg)}
+
+/* ---------- 写真の演出（北川さんの案の手書き文字と、ステージの光） ---------- */
+.fx{position:relative}
+.fx::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;
+  background:radial-gradient(55% 38% at 88% 6%,rgba(255,160,80,.30),transparent 70%),
+             radial-gradient(45% 32% at 6% 0%,rgba(150,120,255,.30),transparent 70%)}
+.script{position:absolute;z-index:2;font-family:var(--sig);line-height:.95;color:rgba(255,255,255,.92);
+  text-shadow:0 2px 12px rgba(0,0,0,.55);pointer-events:none;white-space:nowrap}
+.script.or{color:var(--or-hi)}
+.photo{position:relative}
+.photo .script{right:14px;bottom:10px;font-size:40px;transform:rotate(-8deg)}
+
+/* ---------- 節の見出し（数字は残す） ---------- */
+.sec{padding:28px 16px}
+.label{display:flex;align-items:baseline;gap:10px;margin:0 0 4px}
+.label .no{font-family:var(--en);font-size:22px;color:var(--or-hi);font-weight:600}
+.label .en{font-family:var(--en);font-size:13px;letter-spacing:.2em;color:var(--sub)}
+.h2{margin:0 0 6px;font-size:24px;line-height:1.4;font-weight:900}
+.lede{margin:0 0 16px;color:var(--sub)}
+.guide{margin:0 0 12px;color:var(--faint);font-size:14px}
+
+/* ---------- フォーム（いちばん上の主役） ---------- */
+.formcard{margin:0 12px;padding:16px 14px 18px;background:var(--panel);border:1px solid var(--line);border-radius:16px;scroll-margin-top:64px}
+.formcard h2{margin:0;font-size:20px;font-weight:900;line-height:1.4}
+.formcard .sample{display:inline-block;margin:0 0 6px;padding:1px 8px;border:1px solid var(--faint);border-radius:99px;font-size:12px;color:var(--faint)}
+.steps{display:flex;gap:6px;margin:10px 0 12px;font-size:12.5px;color:var(--faint)}
+.steps li{list-style:none;flex:1;text-align:center;padding:4px 0;border-bottom:3px solid var(--line)}
+.steps li.on{color:var(--ink);border-color:var(--or-hi);font-weight:700}
+.steps{padding:0}
+.types{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.type{min-height:84px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg2);text-align:left;cursor:pointer;
+  display:flex;flex-direction:column;justify-content:center;gap:2px;transition:transform .15s,border-color .15s}
+.type b{font-size:17px;line-height:1.35}
+.type .ico{width:26px;height:26px;margin-bottom:2px}
+.type.l .ico{color:var(--or-hi)} .type.w .ico{color:var(--gr-hi)} .type.o .ico{color:var(--sub)}
+.type small{font-size:12.5px;color:var(--sub);line-height:1.4}
+.type.l{border-color:rgba(255,138,76,.55);background:var(--or-soft)}
+.type.w{border-color:rgba(74,222,128,.45);background:var(--gr-soft)}
+.type[aria-pressed="true"]{transform:translateY(-1px);box-shadow:0 0 0 3px rgba(255,255,255,.18) inset}
+.type.l[aria-pressed="true"]{border-color:var(--or-hi);box-shadow:0 0 22px rgba(255,140,60,.35)} .type.w[aria-pressed="true"]{border-color:var(--gr-hi);box-shadow:0 0 22px rgba(74,222,128,.28)}
+.type .mark{display:none}
+.type.l .mark{color:var(--or-hi)} .type.w .mark{color:var(--gr-hi)} .type.o .mark{color:var(--faint)}
+
+.fields{margin-top:16px;display:grid;gap:14px}
+.field label,.field legend{display:block;font-size:14.5px;font-weight:700;margin-bottom:6px;padding:0}
+.req{font-size:11.5px;color:#ffb38a;margin-left:6px;font-weight:500}
+.opt{font-size:11.5px;color:var(--faint);margin-left:6px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;min-height:50px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);
+  background:#0b1424;color:var(--ink);font-size:16px}
+.field textarea{min-height:110px;resize:vertical}
+.field input::placeholder,.field textarea::placeholder{color:#7d8aa4}
+.field fieldset{border:0;margin:0;padding:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{margin:0;font-weight:500;font-size:14.5px}
+.chips input{position:absolute;opacity:0;width:1px;height:1px}
+.chips span{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:99px;background:#0b1424;cursor:pointer}
+.chips input:checked+span{border-color:var(--or-hi);background:var(--or-soft);font-weight:700}
+.chips input:focus-visible+span{outline:3px solid var(--or-hi);outline-offset:2px}
+.note{font-size:13.5px;color:var(--sub);background:var(--bg2);border-left:3px solid var(--or-hi);padding:8px 10px;border-radius:6px;margin:0}
+.err{color:#ffb38a;font-size:13.5px;margin:4px 0 0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ---------- ボタン ---------- */
+.btn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:0 20px;border-radius:999px;border:0;
+  font-weight:800;font-size:18.7px;letter-spacing:.06em;text-decoration:none;cursor:pointer;white-space:nowrap;width:100%;
+  transition:transform .15s,box-shadow .2s,filter .2s}
+.btn .ico{width:22px;height:22px;flex:none}
+.btn .arr{width:18px;height:18px;flex:none;margin-left:2px;transition:transform .2s}
+.btn:hover .arr{transform:translateX(3px)}
+.btn:active{transform:translateY(1px)}
+.btn.or{background:linear-gradient(180deg,var(--or-top),var(--or));color:#fff;text-shadow:0 1px 0 rgba(110,30,0,.5);
+  box-shadow:inset 0 1px 0 rgba(255,210,170,.55),inset 0 0 0 1px rgba(255,170,110,.35),0 8px 22px rgba(240,96,20,.38),0 0 26px rgba(255,140,60,.22)}
+.btn.gr{background:linear-gradient(180deg,var(--gr-top),var(--gr));color:#fff;text-shadow:0 1px 0 rgba(0,50,20,.5);
+  box-shadow:inset 0 1px 0 rgba(170,255,200,.45),inset 0 0 0 1px rgba(90,220,140,.3),0 8px 22px rgba(21,128,61,.38),0 0 26px rgba(74,222,128,.18)}
+.btn.or:hover,.btn.gr:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent;border:1.5px solid var(--sub);color:var(--ink);font-weight:500;font-size:15.5px;min-height:48px}
+.btn svg{width:20px;height:20px;flex:none}
+.btns{display:grid;gap:10px;margin-top:16px}
+
+/* ---------- 数 ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0;padding:0}
+.stats div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 4px;text-align:center}
+.stats dt{font-size:11.5px;color:var(--sub);line-height:1.4}
+.stats dd{margin:0;font-family:var(--en);font-size:26px;line-height:1.2}
+.stats dd small{font-family:"Noto Sans JP",sans-serif;font-size:11px;color:var(--sub)}
+.proof{margin:10px 0 0;font-size:13.5px;color:var(--sub)}
+
+/* ---------- 代表作（よこにスライド） ---------- */
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:72%;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:2px 16px 8px;margin:0 -16px;scrollbar-width:none;scroll-padding-inline:16px}
+.rail::-webkit-scrollbar{display:none}
+.song{scroll-snap-align:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.song .art{position:relative;aspect-ratio:1;background:#1a2540 center/cover no-repeat;display:block;width:100%;border:0;padding:0;cursor:pointer}
+.song .art .play{position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:50%;background:#1DB954;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.song .art .play::before{content:"";border-left:14px solid #0a1120;border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.song .art .fallback{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--en);font-size:22px;letter-spacing:.1em;color:var(--sub)}
+.song .meta{padding:10px 12px 12px}
+.song .meta b{display:block;font-size:16px}
+.song .meta span{font-size:13px;color:var(--sub)}
+.song iframe{display:block;width:100%;height:352px;border:0}
+.railnav{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+.railnav button{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--panel);cursor:pointer;font-size:18px}
+
+/* ---------- 部屋への入口 ---------- */
+.rooms{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.room{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:168px;padding:12px;border-radius:14px;background:var(--panel) center/cover no-repeat;
+  border:1px solid var(--line);text-decoration:none;overflow:hidden;isolation:isolate}
+.room::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,17,32,.05) 15%,rgba(10,17,32,.78) 55%,rgba(10,17,32,.96) 100%)}
+.room:hover{border-color:var(--or-hi)}
+.room .no{font-family:var(--en);color:var(--or-hi);font-size:20px;line-height:1}
+.room .en{font-family:var(--en);font-size:12px;letter-spacing:.18em;color:var(--sub)}
+.room b{font-size:17px;line-height:1.35;margin-top:2px}
+.room small{font-size:12.5px;color:var(--sub);line-height:1.45}
+
+/* ---------- 部屋（下層） ---------- */
+.roomtop{padding:12px 16px 0}
+.back{display:inline-flex;align-items:center;min-height:44px;font-size:14px;color:var(--sub);text-decoration:none}
+.roomhead{padding:6px 16px 0}
+.roomhead .no{font-family:var(--en);font-size:40px;color:var(--or-hi);line-height:1}
+.roomhead .en{font-family:var(--en);font-size:15px;letter-spacing:.24em;color:var(--sub);margin-left:8px}
+.roomhead h1{margin:6px 0 4px;font-size:30px;line-height:1.3;font-weight:900}
+.roomhead p{margin:0;color:var(--sub)}
+.photo{margin:14px 16px 0;border-radius:14px;overflow:hidden;aspect-ratio:4/5;background:#14203a}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo.wide{aspect-ratio:16/10}
+
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.tags li{border:1.5px solid var(--or-hi);border-radius:8px;padding:6px 12px;font-weight:700;font-size:14.5px}
+.plans{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.plan{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+.plan b{font-size:16.5px}
+.plan small{display:block;color:var(--sub);font-size:13px}
+.plan .price{font-family:var(--en);font-size:22px;white-space:nowrap;text-align:right}
+.plan .price small{font-family:"Noto Sans JP";display:inline;font-size:12px}
+.plan.rec{border:2px solid var(--or-hi);background:var(--or-soft)}
+.badge{display:inline-block;background:var(--or-hi);color:#1a0d04;font-size:12px;font-weight:700;border-radius:99px;padding:1px 9px;margin-left:6px;vertical-align:2px}
+.plan.first{border-style:dashed}
+table.hours{width:100%;border-collapse:collapse;font-size:14.5px}
+.hours th,.hours td{border-bottom:1px solid var(--line);padding:10px 6px;text-align:left;vertical-align:top}
+.hours th{width:30%;font-weight:700}
+.hours td small{display:block;color:var(--sub);font-size:12.5px}
+dl.facts{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:15px}
+dl.facts dt{color:var(--sub)} dl.facts dd{margin:0}
+
+details.shelf{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:10px}
+details.shelf summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:14px;min-height:60px}
+details.shelf summary::-webkit-details-marker{display:none}
+details.shelf summary .no{font-family:var(--en);color:var(--or-hi);font-size:20px}
+details.shelf summary b{flex:1;font-size:16.5px;line-height:1.4}
+details.shelf summary .cnt{font-size:13px;color:var(--sub);white-space:nowrap}
+details.shelf summary::after{content:"＋";font-size:18px;color:var(--sub);margin-left:4px}
+details.shelf[open] summary::after{content:"－"}
+.list{margin:0;padding:0 14px 12px;list-style:none}
+.list li{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:15px}
+.list li span{color:var(--sub);font-size:13px;white-space:nowrap}
+.list li i{font-style:normal;font-size:12px;color:var(--or-hi);margin-left:6px}
+.timeline{margin:0;padding:0;list-style:none}
+.timeline>li{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.timeline .y{font-family:var(--en);font-size:20px;color:var(--or-hi);line-height:1.3}
+.timeline ul{margin:0;padding:0;list-style:none}
+.timeline ul li{font-size:15px;line-height:1.6;padding:2px 0}
+.timeline ul li small{color:var(--sub);font-size:12.5px}
+.bio p{margin:0 0 12px;color:var(--sub)}
+.bio p:first-child{color:var(--ink);font-weight:700}
+
+/* レッスンの部屋は、同じ世界観のまま明度だけ上げる */
+.lesson-room{background:var(--lesson)}
+.lesson-room .plan,.lesson-room details.shelf{background:#22345a}
+
+/* ---------- SNS（各サービスの色） ---------- */
+.sns{display:flex;gap:12px;flex-wrap:wrap}
+.sns a{width:48px;height:48px;border-radius:50%;display:grid;place-items:center}
+.sns svg{width:24px;height:24px;fill:#fff}
+.sns .ig{background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%)}
+.sns .x{background:#000;border:1px solid #3b4a68}
+.sns .yt{background:#FF0000}
+.sns .sp{background:#1DB954}
+.sns .sp svg{fill:#000}
+.listen{display:grid;gap:10px}
+.listen a{display:flex;align-items:center;gap:12px;min-height:64px;padding:10px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);text-decoration:none}
+.listen a i{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.listen a i svg{width:22px;height:22px;fill:#fff}
+.listen a b{display:block;font-size:16px} .listen a small{display:block;font-size:13px;color:var(--sub)}
+
+footer{padding:24px 16px 20px;border-top:1px solid var(--line);margin-top:8px}
+footer .sig{font-family:var(--sig);font-size:34px}
+footer p{margin:8px 0 0;font-size:12.5px;color:var(--faint)}
+
+/* ---------- 下の固定帯：2つのボタン ---------- */
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:0;z-index:40;width:100%;max-width:480px;
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(10,17,32,0),rgba(10,17,32,.96) 30%)}
+.dock .btn{min-height:56px;padding:0 8px;gap:8px}
+.dock.hide{opacity:0;pointer-events:none;transform:translate(-50%,12px)}
+.dock{transition:opacity .2s,transform .2s}
+
+/* ---------- メニュー ---------- */
+.menu{position:fixed;inset:0;z-index:50;background:rgba(5,10,20,.7);display:flex;justify-content:center}
+.menu .panel{width:100%;max-width:480px;background:var(--bg);padding:12px 16px 24px;overflow:auto}
+.menu .head{display:flex;justify-content:space-between;align-items:center;height:48px}
+.menu .close{width:48px;height:48px;border:0;background:none;font-size:28px;cursor:pointer}
+.menu nav a{display:flex;justify-content:space-between;align-items:center;min-height:54px;border-bottom:1px solid var(--line);text-decoration:none;font-size:17px}
+.menu nav a span{font-family:var(--en);color:var(--or-hi);margin-right:10px}
+
+.done{text-align:center;padding:10px 0}
+.done b{display:block;font-size:20px;margin-bottom:6px}
+.confirm dl{margin:0;display:grid;grid-template-columns:7.5em 1fr;gap:6px 10px;font-size:14.5px}
+.confirm dt{color:var(--sub)} .confirm dd{margin:0;word-break:break-word}
+
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+
+<header class="top">
+  <a class="logo" href="#top" aria-label="北川弘喜 トップへ"><span class="sig">Koki Kitagawa</span><small>GUITARIST / COMPOSER</small></a>
+  <button class="menu-btn" type="button" aria-label="メニューを開く" aria-expanded="false" aria-controls="menu" id="menuBtn"><span></span></button>
+</header>
+
+<main id="view"></main>
+
+<footer>
+  <div class="sig">Koki Kitagawa</div>
+  <div class="sns" style="margin-top:12px" id="footSns"></div>
+  <p>© 2026 Koki Kitagawa</p>
+</footer>
+
+<div class="dock" id="dock">
+  <button class="btn or" type="button" data-open="lesson" data-short>レッスン予約</button>
+  <button class="btn gr" type="button" data-open="compose" data-short>仕事の依頼</button>
+</div>
+
+<div class="menu" id="menu" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-label="メニュー">
+    <div class="head"><span class="logo"><span class="sig">Koki Kitagawa</span></span><button class="close" type="button" aria-label="メニューを閉じる" id="menuClose">×</button></div>
+    <nav id="menuNav"></nav>
+    <div class="btns"><button class="btn or" type="button" data-open="lesson">レッスンを申し込む</button><button class="btn gr" type="button" data-open="compose">仕事を依頼する</button></div>
+    <p class="guide" style="margin-top:18px">SNS</p>
+    <div class="sns" id="menuSns"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ============================================================
+   データは site/data/*.json と同じもの（ビルドで差しこむ）
+   ============================================================ */
+const D = {"profile": {"name": "北川弘喜", "nameEn": "Koki Kitagawa", "headline": "書けるギタリスト、弾ける作曲家", "bio": ["曲を書く人と、曲を鳴らす人は、たいてい別々にいる。", "北川弘喜はその両方に立つ。B-PROJECT、星名美怜、Bunny La Crew への提供曲では、作詞・作曲・編曲からギターまでを一人で通す。SUMMER SONIC やイナズマロックフェスのステージではサポートギタリストとして音を鳴らし、CDTV では地上波のバックに立った。", "舞台の仕事も持つ。『あんさんぶるスターズ！オン・ステージ』では劇中のギターを入れ、演技指導まで担当した。楽器を弾くだけでは終わらない現場を、いくつも通っている。", "2021年から専門学校と音楽教室で指導にあたり、個人レッスンでは初心者からプロまでを見る。教えることと作ることが、同じ場所でつながっている。"], "career": [{"label": "2022年〜", "detail": "プロとして活動（東京拠点）"}, {"label": "2021年〜", "detail": "専門学校・音楽教室で指導"}, {"label": "個人レッスン", "detail": "初心者〜プロフェッショナル"}], "gear": {"publish": true, "groups": [{"name": "制作・録音", "items": ["Pro Tools", "Universal Audio Apollo Twin X", "sE Electronics sE2300", "Eclipse TD-M1"]}, {"name": "ギター", "items": ["Suhr Modern", "Gibson Custom Shop Les Paul Standard", "Fender Custom Shop Stratocaster"]}, {"name": "アンプ・キャビネット", "items": ["Bogner Ecstasy Classic", "Marshall JCM900 Hi Gain Master Volume", "Bogner 212CB", "Laney LFR-112"]}, {"name": "モデラー", "items": ["Fractal Audio Axe-Fx II XL+", "Line 6 Helix Floor"]}]}, "work": {"price": "応相談", "delivery": "デモ・編曲・ギターREC いずれも3日程度", "style": "リモートREC／スタジオ立ち会い どちらも対応", "services": [{"name": "作詞・作曲", "note": "デモ制作まで"}, {"name": "編曲・トラック制作", "note": ""}, {"name": "ギター レコーディング", "note": "リモート／立ち会い"}, {"name": "ライブサポート", "note": "ツアー・フェス・TV"}]}, "lesson": {"target": "初心者〜プロフェッショナル", "plans": [{"name": "体験レッスン", "price": "60分 3,500円", "note": "初回のみ"}, {"name": "月2回", "price": "16,000円 / 月", "note": "1回60分", "recommended": true}, {"name": "月4回", "price": "32,000円 / 月", "note": "1回60分"}, {"name": "単発", "price": "8,000円", "note": "1回60分"}], "place": "レンタルスタジオ／ご自宅／オンライン", "payment": "現金・クレジットカード（Square）"}, "links": {"spotify": "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q", "youtube": "https://www.youtube.com/@KokiKitagawa", "instagram": "https://www.instagram.com/kitagawa_kouki/", "x": "https://x.com/Gt_koki_"}, "spotifyTracks": [{"title": "FLAME", "artist": "Jams Collection", "url": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE"}, {"title": "Memory", "artist": "B-PROJECT", "url": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5"}, {"title": "視聴覚Fighter", "artist": "Pastel closet", "url": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H"}]}, "credits": [{"title": "FLAME", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": "ab67616d0000b27391252ddd166cf1d26d00ba1c", "spotify": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE", "spotifyRank": 1}, {"title": "Memory", "artist": "B-PROJECT", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": "ab67616d0000b2730a05115477078b67edc9bd9b", "spotify": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5", "spotifyRank": 2}, {"title": "視聴覚Fighter", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2026, "jacket": "ab67616d0000b2737df65844b18024309f50687c", "spotify": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H", "spotifyRank": 3}, {"title": "Now Feel Saddest!?", "artist": "星名美怜", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のエビデンス", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "鬼KawaWe!!!", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のスピード違反", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "トキメキ NEW WORLD", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "ドキドキシャッターチャンス", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "夏ときめいちゃいマッスル", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2023, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Goin Goin", "artist": "Chico", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Sense of Wonder", "artist": "寿美菜子", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Startin'", "artist": "Dream Shizuka", "category": "guitar", "roles": ["ギター"], "year": 2022, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "エピローグ", "artist": "シユイ", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "UUUM ONE PIECE MUUUSIC COVER ALBUM", "artist": "UUUM", "category": "guitar", "roles": ["ギター"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}], "live": [{"title": "REIRIE Live Tour 2025 -Bad=DoLL-", "year": 2025, "venue": "名古屋", "artist": "REIRIE", "role": "サポートギター"}, {"title": "SAKAE SP-RING 2024", "year": 2024, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "SUMMER SONIC 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "イナズマロックフェス 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 1st Live「シユイさんといっしょ #01」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 2nd Live「シユイさんといっしょ #02」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "REIRIE FreeLive「JAM」", "year": null, "venue": "新宿歌舞伎町", "artist": "REIRIE", "role": "サポートギター"}, {"title": "HUG ROCK FESTIVAL", "year": null, "venue": "", "artist": "somei", "role": "サポートギター"}], "media": [{"title": "CDTV", "year": null, "artist": "SixTONES（ジェシー・京本大我）", "role": "バックで演者参加", "type": "tv"}, {"title": "CDTV", "year": null, "artist": "川崎鷹也", "role": "バックで演者参加", "type": "tv"}, {"title": "あんさんぶるスターズ！オン・ステージ", "year": 2019, "artist": "", "role": "劇中のギター演奏／演技指導", "type": "stage"}, {"title": "シュレック・ザ・ミュージカル", "year": 2023, "artist": "", "role": "", "type": "stage"}]};
+const ICON = {"ig": "M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077", "yt": "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z", "x": "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z", "sp": "M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"};
+const IMG = {"hero": "img/hero-720.webp", "heroSet": "img/hero-720.webp 720w, img/hero-1080.webp 1080w", "works": "img/works-600.webp", "lesson": "img/lesson-600.webp", "profile": "img/profile-600.webp", "hands": "img/hands-720.webp", "gear": "img/gear-900.webp", "live": "img/live-720.webp"};
+
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const svg = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[k]}"/></svg>`;
+const P = D.profile;
+const IC = {
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h3M13.5 14h3M7.5 17.5h3"/>',
+  bag:'<rect x="3" y="7.5" width="18" height="12.5" rx="2.5"/><path d="M9 7.5V5.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5.5v2M3 13h18M11 13v2h2v-2"/>',
+  note:'<path d="M9 18V5.5l11-2.2V16"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
+  pick:'<path d="M12 21.5C8.6 18.3 4 12.6 4 8.3 4 5 7.6 3 12 3s8 2 8 5.3c0 4.3-4.6 10-8 13.2z"/>',
+  chat:'<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 10.5h8"/>',
+  arr:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+};
+const ic = (k, cls="ico") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+function decorate(root=document){
+  root.querySelectorAll(".btn.or,.btn.gr").forEach(b => {
+    if(b.dataset.deco) return; b.dataset.deco = 1;
+    const lead = b.dataset.open ? (b.dataset.open === "lesson" ? "cal" : "bag") : null;
+    b.innerHTML = (lead ? ic(lead) : "") + `<span>${b.innerHTML}</span>` + (b.hasAttribute("data-short") ? "" : ic("arr","arr"));
+  });
+}
+
+/* どこから来たか（SNSのリンクに ?from=ig などを付ける） */
+const FROM_NAMES = {ig:"Instagram", x:"X", yt:"YouTube", sp:"Spotify"};
+const from = (new URLSearchParams(location.search).get("from") || "").toLowerCase();
+
+const SNS = [
+  {k:"ig", cls:"ig", name:"Instagram", url:P.links.instagram},
+  {k:"x",  cls:"x",  name:"X",         url:P.links.x},
+  {k:"yt", cls:"yt", name:"YouTube",   url:P.links.youtube},
+  {k:"sp", cls:"sp", name:"Spotify",   url:P.links.spotify},
+];
+const snsHTML = () => SNS.map(s => `<a class="${s.cls}" href="${s.url}" target="_blank" rel="noopener" aria-label="${s.name}">${svg(s.k)}</a>`).join("");
+
+/* 数（データから数える。手で書かない） */
+const C = D.credits;
+const cnt = {
+  compose: C.filter(c => c.category === "compose").length,
+  guitar:  C.filter(c => c.category === "guitar").length,
+  karaoke: C.filter(c => c.category === "karaoke").length,
+  live:    D.live.length + D.media.filter(m => m.type === "stage").length,
+  tv:      D.media.filter(m => m.type === "tv").length,
+};
+
+const ROOMS = [
+  {id:"works",   no:"01", en:"WORKS",     jp:"作品",      line:`提供曲${cnt.compose}曲・ギター参加${cnt.guitar}作品`},
+  {id:"live",    no:"02", en:"LIVE / TV", jp:"ライブ・TV", line:"SUMMER SONIC・CDTV ほか"},
+  {id:"lesson",  no:"03", en:"LESSON",    jp:"レッスン",   line:"体験 60分 3,500円から"},
+  {id:"profile", no:"04", en:"PROFILE",   jp:"プロフィール", line:"経歴・機材・SNS"},
+];
+
+/* ============================================================
+   フォーム：ご用件 → 内容 → 確認
+   ============================================================ */
+const TYPES = {
+  lesson:  {cls:"l", mark:"LESSON", name:"レッスン",      sub:"体験 60分 3,500円"},
+  compose: {cls:"w", mark:"WORK",   name:"作曲・編曲",    sub:"作詞・トラック制作も"},
+  guitar:  {cls:"w", mark:"WORK",   name:"ギター演奏",    sub:"REC・ライブサポート"},
+  other:   {cls:"o", mark:"OTHER",  name:"その他",        sub:"取材・ご相談など"},
+};
+const BUDGET = ["〜5万円","5〜10万円","10〜30万円","30万円〜","相談したい"];
+const FIELDS = {
+  lesson: [
+    {n:"plan", t:"chips", l:"コース", req:1, o:["体験レッスン","月2回","月4回","単発"]},
+    {n:"place", t:"chips", l:"場所", req:1, o:["レンタルスタジオ","ご自宅","オンライン"]},
+    {n:"note_hours", t:"note", l:"受付：水・木・金は16時から、土・日は12時から（前の月の20日までのご予約）。20日を過ぎると水木金は22時から、土日は21時からになります。"},
+    {n:"d1", t:"datetime-local", l:"第1希望の日時", req:1},
+    {n:"d2", t:"datetime-local", l:"第2希望の日時"},
+    {n:"exp", t:"select", l:"ギター歴", o:["はじめて","1年未満","1〜3年","3年以上","プロ・プロ志望"]},
+    {n:"song", t:"text", l:"弾きたい曲・好きなアーティスト", ph:"例）B'z、ONE OK ROCK など"},
+    {n:"msg", t:"textarea", l:"目的・ご質問", ph:"例）コードを覚えたい／バンドで弾きたい"},
+  ],
+  compose: [
+    {n:"what", t:"chips", l:"お願いしたいこと", req:1, multi:1, o:["作詞","作曲","編曲・トラック","ギター"]},
+    {n:"due", t:"date", l:"納期の目安"},
+    {n:"songs", t:"select", l:"曲数", o:["1曲","2〜3曲","4曲以上","未定"]},
+    {n:"budget", t:"chips", l:"ご予算", o:BUDGET},
+    {n:"ref", t:"url", l:"参考音源のURL", ph:"https://"},
+    {n:"msg", t:"textarea", l:"内容", req:1, ph:"例）アイドル楽曲、テンポ速め、2026年12月リリース予定"},
+  ],
+  guitar: [
+    {n:"what", t:"chips", l:"内容", req:1, o:["ギターREC（リモート）","ギターREC（立ち会い）","ライブサポート","その他の演奏"]},
+    {n:"date", t:"date", l:"日程（決まっていれば）"},
+    {n:"place", t:"text", l:"会場・スタジオ", ph:"例）渋谷 ○○スタジオ"},
+    {n:"budget", t:"chips", l:"ご予算", o:BUDGET},
+    {n:"ref", t:"url", l:"参考音源のURL", ph:"https://"},
+    {n:"msg", t:"textarea", l:"内容", req:1, ph:"例）2曲・ディストーション中心・音源は別途お送りします"},
+  ],
+  other: [
+    {n:"subject", t:"text", l:"件名", req:1},
+    {n:"msg", t:"textarea", l:"内容", req:1},
+  ],
+};
+const COMMON = [
+  {n:"name", t:"text", l:"お名前", req:1, ph:"山田 太郎", ac:"name"},
+  {n:"email", t:"email", l:"メールアドレス", req:1, ph:"example@mail.com", ac:"email"},
+];
+
+let state = {type:null, step:1, values:{}};
+
+function formHTML(){
+  return `<section class="formcard" id="form" aria-labelledby="formTitle">
+    <span class="sample">見本：まだ送信はされません</span>
+    <h2 id="formTitle">ご依頼・お問い合わせ</h2>
+    <ol class="steps" aria-label="手順"><li class="on" data-s="1">1 ご用件</li><li data-s="2">2 内容</li><li data-s="3">3 確認</li></ol>
+    <div id="formBody"></div>
+  </section>`;
+}
+function renderForm(){
+  const box = $("#formBody"); if(!box) return;
+  document.querySelectorAll(".steps li").forEach(li => li.classList.toggle("on", +li.dataset.s === state.step));
+  if(state.step === 3){ box.innerHTML = confirmHTML(); decorate(box); bindConfirm(); return; }
+  if(state.step === 4){ box.innerHTML = doneHTML(); return; }
+  const TI = {lesson:"cal", compose:"note", guitar:"pick", other:"chat"};
+  const types = Object.entries(TYPES).map(([k,t]) =>
+    `<button type="button" class="type ${t.cls}" data-type="${k}" aria-pressed="${state.type===k}">${ic(TI[k])}<b>${t.name}</b><small>${t.sub}</small></button>`).join("");
+  let html = `<p class="guide" style="margin:0 0 10px">${state.type ? "内容を書いて「確認へ」を押してください。" : "まず、ご用件を選んでください。押すと、その下に入力欄が開きます。"}</p>
+    <div class="types" role="group" aria-label="ご用件">${types}</div>`;
+  if(state.type){
+    const fs = [...FIELDS[state.type], ...COMMON];
+    html += `<form class="fields" id="theForm" novalidate>${fs.map(fieldHTML).join("")}
+      <div class="btns"><button class="btn ${state.type==="lesson"?"or":"gr"}" type="submit">確認へ進む</button></div></form>`;
+  }
+  box.innerHTML = html; decorate(box);
+  box.querySelectorAll(".type").forEach(b => b.addEventListener("click", () => { state.type = b.dataset.type; state.step = 2; renderForm(); $("#theForm input, #theForm select, #theForm textarea")?.focus({preventScroll:true}); }));
+  const f = $("#theForm");
+  if(f) f.addEventListener("submit", e => { e.preventDefault(); if(collect(f)){ state.step = 3; renderForm(); $("#form").scrollIntoView({block:"start"}); } });
+}
+function fieldHTML(x){
+  const v = state.values[x.n] ?? "";
+  const lab = `${esc(x.l)}${x.req ? '<span class="req">必須</span>' : '<span class="opt">任意</span>'}`;
+  if(x.t === "note") return `<p class="note">${esc(x.l)}</p>`;
+  if(x.t === "chips"){
+    const type = x.multi ? "checkbox" : "radio";
+    const cur = [].concat(v || []);
+    return `<div class="field"><fieldset><legend>${lab}</legend><div class="chips">${x.o.map(o =>
+      `<label><input type="${type}" name="${x.n}" value="${esc(o)}" ${cur.includes(o)?"checked":""}><span>${esc(o)}</span></label>`).join("")}</div></fieldset><p class="err" hidden></p></div>`;
+  }
+  if(x.t === "select") return `<div class="field"><label for="f_${x.n}">${lab}</label><select id="f_${x.n}" name="${x.n}"><option value="">選んでください</option>${x.o.map(o=>`<option ${o===v?"selected":""}>${esc(o)}</option>`).join("")}</select><p class="err" hidden></p></div>`;
+  if(x.t === "textarea") return `<div class="field"><label for="f_${x.n}">${lab}</label><textarea id="f_${x.n}" name="${x.n}" placeholder="${esc(x.ph||"")}">${esc(v)}</textarea><p class="err" hidden></p></div>`;
+  return `<div class="field"><label for="f_${x.n}">${lab}</label><input id="f_${x.n}" name="${x.n}" type="${x.t}" value="${esc(v)}" placeholder="${esc(x.ph||"")}" ${x.ac?`autocomplete="${x.ac}"`:""} ${x.t==="email"?'inputmode="email"':""}><p class="err" hidden></p></div>`;
+}
+function collect(f){
+  const fs = [...FIELDS[state.type], ...COMMON].filter(x => x.t !== "note");
+  let ok = true, first = null;
+  for(const x of fs){
+    let val;
+    if(x.t === "chips") val = [...f.querySelectorAll(`input[name="${x.n}"]:checked`)].map(i => i.value);
+    else val = (f.elements[x.n]?.value || "").trim();
+    state.values[x.n] = val;
+    const empty = Array.isArray(val) ? !val.length : !val;
+    let msg = "";
+    if(x.req && empty) msg = "ここを入れてください。";
+    else if(x.t === "email" && val && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val)) msg = "メールアドレスの形を確かめてください。";
+    const box = (f.elements[x.n]?.closest?.(".field")) || f.querySelector(`input[name="${x.n}"]`)?.closest(".field");
+    const er = box?.querySelector(".err");
+    if(er){ er.textContent = msg; er.hidden = !msg; }
+    if(msg){ ok = false; first ||= box; }
+  }
+  if(first) first.scrollIntoView({block:"center"});
+  return ok;
+}
+function confirmHTML(){
+  const fs = [...FIELDS[state.type], ...COMMON].filter(x => x.t !== "note");
+  const nice = (x,v) => {
+    if(x.t === "datetime-local" && v){ const d = new Date(v); return `${d.getMonth()+1}月${d.getDate()}日（${"日月火水木金土"[d.getDay()]}）${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
+    if(x.t === "date" && v){ const d = new Date(v+"T00:00"); return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`; }
+    return Array.isArray(v) ? v.join("、") : v; };
+  const rows = fs.map(x => { const s = nice(x, state.values[x.n]); return s ? `<dt>${esc(x.l)}</dt><dd>${esc(s)}</dd>` : ""; }).join("");
+  const src = FROM_NAMES[from] ? `<dt>どこで知ったか</dt><dd>${FROM_NAMES[from]}（自動）</dd>` : "";
+  return `<div class="confirm"><p class="guide" style="margin:0 0 10px">この内容で送ります。直すときは「戻る」を押してください。</p>
+    <dl><dt>ご用件</dt><dd>${TYPES[state.type].name}</dd>${rows}${src}</dl>
+    <div class="btns"><button class="btn ${state.type==="lesson"?"or":"gr"}" type="button" id="send">この内容で送る</button><button class="btn ghost" type="button" id="back">戻る</button></div></div>`;
+}
+function bindConfirm(){
+  $("#back").onclick = () => { state.step = 2; renderForm(); };
+  $("#send").onclick = () => { state.step = 4; renderForm(); $("#form").scrollIntoView({block:"start"}); };
+}
+function doneHTML(){
+  return `<div class="done"><b>ありがとうございます</b><p class="lede">2日以内に、メールでご返信します。<br><small>（いまは見本なので、実際には送信されていません）</small></p>
+    <button class="btn ghost" type="button" onclick="state={type:null,step:1,values:{}};renderForm()">はじめに戻る</button></div>`;
+}
+function openForm(type){
+  if(location.hash && location.hash !== "#top"){ history.pushState(null,"",location.pathname+location.search); render(); }
+  closeMenu();
+  state.type = type; state.step = 2; renderForm();
+  requestAnimationFrame(() => $("#form").scrollIntoView({block:"start"}));
+}
+
+/* ============================================================
+   画面（入口と4つの部屋）
+   ============================================================ */
+const jacket = c => c.jacket ? `https://i.scdn.co/image/${c.jacket}` : "";
+function songCard(c){
+  const id = (c.spotify||"").split("/track/")[1];
+  return `<article class="song"><button class="art" type="button" data-track="${id||""}" aria-label="${esc(c.title)} を再生" style="background-image:url('${jacket(c)}')">
+      ${c.jacket ? "" : `<span class="fallback">${esc(c.title)}</span>`}<span class="play" aria-hidden="true"></span></button>
+    <div class="meta"><b>${esc(c.title)}</b><span>${esc(c.artist)}${c.year?` / ${c.year}`:""}・作詞 作曲 編曲 ギター</span></div></article>`;
+}
+function home(){
+  const feat = C.filter(c => c.spotify).sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
+  return `
+  <section class="hero fx" aria-label="北川弘喜">
+    <img src="${IMG.hero}" srcset="${IMG.heroSet}" sizes="(max-width:480px) 100vw, 480px" alt="紫の照明の中でギターを弾く北川弘喜" fetchpriority="high">
+    <div class="script or" aria-hidden="true" style="right:14px;top:47%;font-size:34px;text-align:right;transform:rotate(-9deg)">Music<br>&nbsp;connects<br>People</div>
+    <div class="copy"><p class="kicker">GUITARIST / COMPOSER</p><h1>書けるギタリスト、<br>弾ける作曲家。</h1><p class="name">KOKI KITAGAWA</p></div>
+  </section>
+  ${formHTML()}
+  <section class="sec">
+    <dl class="stats">
+      <div><dt>提供曲</dt><dd>${cnt.compose}<small>曲</small></dd></div>
+      <div><dt>ギター参加</dt><dd>${cnt.guitar}<small>作品</small></dd></div>
+      <div><dt>ステージ</dt><dd>${cnt.live}<small>本</small></dd></div>
+      <div><dt>TV</dt><dd>${cnt.tv}<small>回</small></dd></div>
+    </dl>
+    <p class="proof">SUMMER SONIC 2023・CDTV・B-PROJECT への楽曲提供 ほか</p>
+  </section>
+  <section class="sec" style="padding-top:4px">
+    <p class="label"><span class="en">FEATURED WORKS</span></p>
+    <h2 class="h2">代表作</h2>
+    <p class="guide">ジャケットを押すと、このページのまま再生されます。</p>
+    <div class="rail" id="rail">${feat.map(songCard).join("")}</div>
+  </section>
+  <section class="sec" style="padding-top:4px">
+    <p class="label"><span class="en">MORE</span></p>
+    <h2 class="h2">もっと知る</h2>
+    <p class="guide">気になるところを押してください。そのページへ飛びます。</p>
+    <div class="rooms">${ROOMS.map(r => `<a class="room" href="#${r.id}" style="background-image:url('${IMG[r.id]}')"><span><span class="no">${r.no}</span> <span class="en">${r.en}</span></span><b>${r.jp}</b><small>${r.line}</small></a>`).join("")}</div>
+  </section>`;
+}
+function roomHead(r, lede){
+  return `<div class="roomtop"><a class="back" href="#top">← トップへ</a></div>
+  <div class="roomhead"><span class="no">${r.no}</span><span class="en">${r.en}</span><h1>${r.jp}</h1><p>${lede}</p></div>`;
+}
+function works(){
+  const r = ROOMS[0];
+  const comp = C.filter(c => c.category==="compose"), gtr = C.filter(c => c.category==="guitar");
+  const li = c => `<li><b>${esc(c.title)}${c.title==="Memory"?'<i>仮歌も担当</i>':""}</b><span>${esc(c.artist)}${c.year?`・${c.year}`:""}</span></li>`;
+  return `${roomHead(r,"作詞・作曲・編曲から、ギターの演奏まで。一人で通せるのが強みです。")}
+  <div class="photo fx"><span class="script" aria-hidden="true">Songwriting</span><img src="${IMG.works}" alt="スタジオでギターを弾く横顔" loading="lazy"></div>
+  <section class="sec">
+    <p class="guide">棚を押すと、曲の一覧が下に開きます。</p>
+    <details class="shelf"><summary><span class="no">01</span><b>作詞・作曲・編曲</b><span class="cnt">${comp.length}曲</span></summary><ul class="list">${comp.map(li).join("")}</ul></details>
+    <details class="shelf"><summary><span class="no">02</span><b>ギター参加</b><span class="cnt">${gtr.length}作品</span></summary><ul class="list">${gtr.map(li).join("")}</ul></details>
+    <details class="shelf"><summary><span class="no">03</span><b>有名歌い手のカラオケ音源制作</b><span class="cnt">${cnt.karaoke}曲</span></summary>
+      <p class="lede" style="padding:0 14px 12px;margin:0;font-size:15px">配信で活躍する有名歌い手のカラオケ音源を、原曲どおりに再現して制作。作品名は非公開です。</p></details>
+  </section>
+  <section class="sec" style="padding-top:0">
+    <p class="label"><span class="en">LISTEN</span></p><h2 class="h2">聴く・見る</h2>
+    <div class="listen">
+      <a href="${P.links.spotify}" target="_blank" rel="noopener"><i style="background:#1DB954">${svg("sp").replace('<svg','<svg style="fill:#000"')}</i><span><b>Spotify</b><small>提供曲・参加曲をまとめて聴く</small></span></a>
+      <a href="${P.links.youtube}" target="_blank" rel="noopener"><i style="background:#FF0000">${svg("yt")}</i><span><b>YouTube</b><small>ギター弾いてみた</small></span></a>
+    </div>
+    <div class="btns"><button class="btn gr" type="button" data-open="compose">作曲・編曲を依頼する</button></div>
+  </section>`;
+}
+function live(){
+  const r = ROOMS[1];
+  const items = [...D.live.map(x => ({y:x.year, t:x.title, s:`${x.artist} ${x.role}`})),
+                 ...D.media.filter(m => m.type==="stage").map(x => ({y:x.year, t:x.title, s:x.role || "舞台"}))];
+  const years = [...new Set(items.filter(i=>i.y).map(i=>i.y))].sort((a,b)=>a-b);
+  const row = (y, arr) => `<li><span class="y">${y}</span><ul>${arr.map(i=>`<li>${esc(i.t)}<br><small>${esc(i.s)}</small></li>`).join("")}</ul></li>`;
+  const tv = D.media.filter(m => m.type==="tv");
+  return `${roomHead(r,"フェス・ツアー・舞台・地上波。サポートギターとして立ってきた現場です。")}
+  <div class="photo fx"><span class="script" aria-hidden="true">Live / Stage</span><img src="${IMG.live}" alt="ライブで金色のギターを弾く北川弘喜" loading="lazy"></div>
+  <section class="sec">
+    <p class="label"><span class="en">STAGE</span></p><h2 class="h2">ステージ</h2>
+    <ol class="timeline">${years.map(y => row(y, items.filter(i=>i.y===y))).join("")}${row("ほか", items.filter(i=>!i.y))}</ol>
+  </section>
+  <section class="sec" style="padding-top:0">
+    <p class="label"><span class="en">TV</span></p><h2 class="h2">テレビ</h2>
+    <ul class="list" style="padding:0">${tv.map(t=>`<li><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></li>`).join("")}</ul>
+    <div class="listen" style="margin-top:14px"><a href="${P.links.youtube}" target="_blank" rel="noopener"><i style="background:#FF0000">${svg("yt")}</i><span><b>YouTubeで演奏を見る</b><small>ギター弾いてみた</small></span></a></div>
+    <div class="btns"><button class="btn gr" type="button" data-open="guitar">ギター演奏を依頼する</button></div>
+  </section>`;
+}
+function lesson(){
+  const r = ROOMS[2], L = P.lesson;
+  const plans = L.plans.map(p => `<li class="plan ${p.recommended?"rec":""} ${p.name==="体験レッスン"?"first":""}"><span><b>${esc(p.name)}${p.recommended?'<span class="badge">人気No.1</span>':""}</b><small>${esc(p.note)}</small></span><span class="price">${esc(p.price.replace("60分 ",""))}</span></li>`).join("");
+  return `<div class="lesson-room">${roomHead(r,"現場で培った経験を、あなたのギターへ。初めての方も、プロを目指す方も。")}
+  <div class="photo fx"><span class="script or" aria-hidden="true">Let&#39;s Play!</span><img src="${IMG.lesson}" alt="ギターを手に、こちらを見てほほえむ北川弘喜" loading="lazy"></div>
+  <section class="sec">
+    <ul class="tags"><li>初心者歓迎</li><li>オンライン対応</li><li>プロ志向の方も</li></ul>
+  </section>
+  <section class="sec" style="padding-top:0">
+    <p class="label"><span class="en">PRICE</span></p><h2 class="h2">料金</h2>
+    <p class="guide">どれも1回60分です。まずは体験からどうぞ。</p>
+    <ul class="plans">${plans}</ul>
+    <div class="btns"><button class="btn or" type="button" data-open="lesson">体験レッスンを申し込む</button></div>
+  </section>
+  <section class="sec" style="padding-top:0">
+    <p class="label"><span class="en">SCHEDULE</span></p><h2 class="h2">受付の時間</h2>
+    <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前の月の20日を過ぎたら 22時から</small></td></tr>
+      <tr><th>土・日</th><td>12時から<small>前の月の20日を過ぎたら 21時から</small></td></tr></table>
+    <p class="guide" style="margin-top:10px">月謝の方は、毎月20日までに翌月ぶんをご予約ください。</p>
+  </section>
+  <section class="sec" style="padding-top:0">
+    <dl class="facts"><dt>場所</dt><dd>${esc(L.place)}</dd><dt>お支払い</dt><dd>${esc(L.payment)}</dd><dt>指導歴</dt><dd>2021年から専門学校・音楽教室で指導</dd></dl>
+    <div class="photo wide" style="margin:16px 0 0"><img src="${IMG.hands}" alt="ピックを持つ手元" loading="lazy"></div>
+  </section></div>`;
+}
+function profile(){
+  const r = ROOMS[3];
+  const gear = P.gear.groups.map(g => `<li><b>${esc(g.name)}</b><span style="white-space:normal;text-align:right">${g.items.map(esc).join("<br>")}</span></li>`).join("");
+  return `${roomHead(r,"Guitarist / Composer")}
+  <div class="photo fx"><span class="script" aria-hidden="true">Koki Kitagawa</span><img src="${IMG.profile}" alt="ギターを持って立つ北川弘喜" loading="lazy"></div>
+  <section class="sec">
+    <h2 class="h2" style="font-size:28px">北川 弘喜</h2>
+    <div class="bio">${P.bio.map(p=>`<p>${esc(p)}</p>`).join("")}</div>
+    <dl class="facts" style="margin-top:6px">${P.career.map(c=>`<dt>${esc(c.label)}</dt><dd>${esc(c.detail)}</dd>`).join("")}</dl>
+  </section>
+  <section class="sec" style="padding-top:0">
+    <details class="shelf"><summary><span class="no">GEAR</span><b>機材</b><span class="cnt">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)}点</span></summary><ul class="list">${gear}</ul></details>
+    <div class="photo wide" style="margin:6px 0 0"><img src="${IMG.gear}" alt="3本のギター" loading="lazy"></div>
+  </section>
+  <section class="sec" style="padding-top:0">
+    <p class="label"><span class="en">SNS</span></p><div class="sns">${snsHTML()}</div>
+  </section>`;
+}
+const VIEWS = {works, live, lesson, profile};
+
+function render(){
+  const id = location.hash.slice(1);
+  const v = VIEWS[id];
+  $("#view").innerHTML = v ? v() : home();
+  if(!v){ renderForm(); }
+  document.title = v ? `${ROOMS.find(r=>r.id===id).jp} | 北川弘喜` : "北川弘喜 | ギタリスト・作曲家";
+  if(v) window.scrollTo(0,0);
+  bindView(); watchForm(); decorate();
+}
+function bindView(){
+  /* 再生は常に1つだけ（前のプレイヤーは外す） */
+  document.querySelectorAll(".art[data-track]").forEach(b => b.addEventListener("click", () => {
+    const id = b.dataset.track; if(!id) return;
+    document.querySelectorAll(".song iframe").forEach(f => { f.replaceWith(f._orig); });
+    const f = document.createElement("iframe");
+    f.src = `https://open.spotify.com/embed/track/${id}?utm_source=generator&theme=0`;
+    f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.loading = "lazy"; f.title = b.getAttribute("aria-label");
+    f._orig = b; b.replaceWith(f);
+  }));
+}
+let io;
+function watchForm(){
+  const dock = $("#dock"), form = $("#form");
+  io?.disconnect();
+  if(!form){ dock.classList.remove("hide"); return; }
+  io = new IntersectionObserver(es => es.forEach(e => dock.classList.toggle("hide", e.isIntersecting)), {threshold:.15});
+  io.observe(form);
+}
+
+/* メニュー */
+const menu = $("#menu");
+function openMenu(){ menu.hidden = false; $("#menuBtn").setAttribute("aria-expanded","true"); $("#menuClose").focus(); }
+function closeMenu(){ menu.hidden = true; $("#menuBtn").setAttribute("aria-expanded","false"); }
+$("#menuBtn").onclick = openMenu; $("#menuClose").onclick = closeMenu;
+menu.addEventListener("click", e => { if(e.target === menu) closeMenu(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && !menu.hidden) closeMenu(); });
+$("#menuNav").innerHTML = `<a href="#top"><span></span>トップ（ご依頼フォーム）<span>›</span></a>` +
+  ROOMS.map(r => `<a href="#${r.id}"><span>${r.no}</span>${r.jp}<span>›</span></a>`).join("");
+$("#menuNav").addEventListener("click", e => { if(e.target.closest("a")) closeMenu(); });
+$("#menuSns").innerHTML = snsHTML(); $("#footSns").innerHTML = snsHTML();
+
+/* 「レッスン」「仕事」ボタンはどこからでもフォームへ */
+document.addEventListener("click", e => { const b = e.target.closest("[data-open]"); if(b){ e.preventDefault(); openForm(b.dataset.open); } });
+window.addEventListener("hashchange", () => { if(location.hash === "#top"){ history.replaceState(null,"",location.pathname+location.search); render(); window.scrollTo(0,0); } else render(); });
+render();
+</script>
+</body>
+</html>
