@@ -357,6 +357,60 @@ footer p,.guide{letter-spacing:.04em}
 .formcard{border-radius:6px}
 
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+
+/* ====================================================================
+   v3.1（2026/10/14）透明感と色：北川くんの指摘「透明感がない」「オレンジと緑が灰色っぽい」
+   v3の形はそのまま。パネルをすりガラスに、オレンジ・緑を澄んだ色に、地に紫と青の照明をうっすら
+   ==================================================================== */
+:root{
+  --bg2:rgba(255,255,255,.045); --panel:rgba(255,255,255,.06); --panel2:rgba(255,255,255,.10); --line:rgba(200,220,255,.17);
+  --sub:#d5ddef; --faint:#a6b4ce;
+  --or:#ff6a00; --or-top:#ff8b2b; --or-hi:#ffa24f; --or-soft:rgba(255,150,70,.16);
+  --gr:#0db662; --gr-top:#2bdc86; --gr-hi:#62f0aa; --gr-soft:rgba(98,240,170,.14);
+}
+.top{background:rgba(10,18,40,.5);backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);border-bottom-color:rgba(200,220,255,.12)}
+.hero::after{background:linear-gradient(180deg,rgba(10,18,40,0) 48%,rgba(10,18,40,.55) 78%,var(--bg) 100%)}
+.formcard,.song,.plan,details.shelf,.listen a,.railnav button{
+  background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.035));border:1px solid rgba(200,220,255,.18);
+  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.type{background:rgba(255,255,255,.05);border-left-color:rgba(200,220,255,.3)}
+.type.l{background:radial-gradient(130% 160% at 0% 0%,rgba(255,140,50,.34),rgba(255,140,50,0) 62%),rgba(255,255,255,.05)}
+.type.w{background:radial-gradient(130% 160% at 0% 0%,rgba(50,230,140,.28),rgba(50,230,140,0) 62%),rgba(255,255,255,.05)}
+.type.l[aria-pressed="true"]{background:radial-gradient(140% 170% at 0% 0%,rgba(255,140,50,.55),rgba(255,140,50,.08) 75%),rgba(255,255,255,.06)}
+.type.w[aria-pressed="true"]{background:radial-gradient(140% 170% at 0% 0%,rgba(50,230,140,.45),rgba(50,230,140,.07) 75%),rgba(255,255,255,.06)}
+.type.l .num,.type.w .num{-webkit-text-stroke-width:1.5px}
+.btn.or{background:linear-gradient(180deg,#ffa349 0%,#ff7a12 50%,#f56000 100%);text-shadow:0 1px 1px rgba(150,50,0,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -10px 18px rgba(255,200,140,.18)}
+.btn.gr{background:linear-gradient(180deg,#58f2a3 0%,#1bcf72 50%,#0aa957 100%);text-shadow:0 1px 1px rgba(0,80,35,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -10px 18px rgba(180,255,210,.18)}
+.btn.or .pk svg.p{fill:#c24600} .btn.gr .pk svg.p{fill:#067a3c}
+.btn.or::after,.btn.gr::after{background:linear-gradient(90deg,rgba(255,255,255,.8),rgba(255,255,255,.2))}
+.dock{background:linear-gradient(180deg,rgba(10,18,40,0),rgba(10,18,40,.55) 40%);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.room{border-color:rgba(200,220,255,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.room::before{background:linear-gradient(180deg,rgba(10,18,40,0) 30%,rgba(10,18,40,.5) 62%,rgba(10,18,40,.86) 100%)}
+.field input,.field select,.field textarea,.chips span{background:rgba(255,255,255,.06);border-color:rgba(200,220,255,.24)}
+.note{background:rgba(255,255,255,.06)}
+.menu .panel{background:rgba(10,18,40,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.lesson-room .plan,.lesson-room details.shelf{background:rgba(255,255,255,.09)}
+footer{border-top-color:rgba(200,220,255,.14)}
+:root{--bg:#0a1328}
+.wrap{background:
+  radial-gradient(90% 30% at 100% 0%,rgba(130,90,255,.20),transparent 70%),
+  radial-gradient(80% 25% at 0% 38%,rgba(60,140,255,.14),transparent 70%),
+  radial-gradient(90% 30% at 100% 78%,rgba(150,80,255,.14),transparent 70%),var(--bg)}
+
+/* 代表作：小さめのジャケットを横にスワイプ＋押した曲は下の1か所で再生（2026/10/14） */
+.rail{grid-auto-columns:46%;gap:10px}
+.song .meta{padding:8px 10px 10px}
+.song .meta b{font-size:14.5px;line-height:1.35}
+.song .meta span{display:block;font-size:11.5px;line-height:1.45}
+.song .art .play{width:38px;height:38px;right:8px;bottom:8px}
+.song.on{border-color:var(--gr-hi);box-shadow:inset 0 0 0 1px var(--gr-hi),0 0 18px rgba(98,240,170,.25)}
+.swipe{display:flex;align-items:center;justify-content:space-between;margin:4px 0 0;font-size:12.5px;color:var(--faint);letter-spacing:.06em}
+.swipe .dots{display:flex;gap:6px;align-items:center}
+.swipe .dots i{width:6px;height:6px;border-radius:3px;background:rgba(200,220,255,.3);transition:width .2s,background .2s}
+.swipe .dots i.on{background:var(--or-hi);width:16px}
+.player{margin-top:10px;border-radius:14px;overflow:hidden}
+.player:empty{display:none}
+.player iframe{display:block;width:100%;height:152px;border:0}
 </style>
 </head>
 <body>
@@ -599,7 +653,7 @@ function songCard(c){
   const id = (c.spotify||"").split("/track/")[1];
   return `<article class="song"><button class="art" type="button" data-track="${id||""}" aria-label="${esc(c.title)} を再生" style="background-image:url('${jacket(c)}')">
       ${c.jacket ? "" : `<span class="fallback">${esc(c.title)}</span>`}<span class="play" aria-hidden="true"></span></button>
-    <div class="meta"><b>${esc(c.title)}</b><span>${esc(c.artist)}${c.year?` / ${c.year}`:""}・作詞 作曲 編曲 ギター</span></div></article>`;
+    <div class="meta"><b>${esc(c.title)}</b><span>${esc(c.artist)}${c.year?` / ${c.year}`:""}</span><span>${esc((c.roles||[]).join(" "))}</span></div></article>`;
 }
 function home(){
   const feat = C.filter(c => c.spotify).sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
@@ -622,8 +676,10 @@ function home(){
   <section class="sec" style="padding-top:4px">
     <p class="label"><span class="en">FEATURED WORKS</span></p>
     <h2 class="h2">代表作</h2>
-    <p class="guide">ジャケットを押すと、このページのまま再生されます。</p>
+    <p class="guide">ジャケットを押すと、下で再生されます。</p>
     <div class="rail" id="rail">${feat.map(songCard).join("")}</div>
+    <div class="swipe" aria-hidden="true"><span>← 横にスワイプ →</span><span class="dots">${feat.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</span></div>
+    <div class="player" id="player"></div>
   </section>
   <section class="sec" style="padding-top:4px">
     <p class="label"><span class="en">MORE</span></p>
@@ -735,13 +791,25 @@ function render(){
 function bindView(){
   /* 再生は常に1つだけ（前のプレイヤーは外す） */
   document.querySelectorAll(".art[data-track]").forEach(b => b.addEventListener("click", () => {
-    const id = b.dataset.track; if(!id) return;
-    document.querySelectorAll(".song iframe").forEach(f => { f.replaceWith(f._orig); });
+    const id = b.dataset.track, pl = document.getElementById("player"); if(!id || !pl) return;
+    document.querySelectorAll(".song.on").forEach(x => x.classList.remove("on"));
+    b.closest(".song").classList.add("on");
+    pl.innerHTML = "";
     const f = document.createElement("iframe");
     f.src = `https://open.spotify.com/embed/track/${id}?utm_source=generator&theme=0`;
-    f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.loading = "lazy"; f.title = b.getAttribute("aria-label");
-    f._orig = b; b.replaceWith(f);
+    f.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture"; f.title = b.getAttribute("aria-label");
+    pl.appendChild(f);
   }));
+  /* 横スワイプの位置を点で見せる */
+  const rail = document.getElementById("rail");
+  if(rail){
+    const dots = [...document.querySelectorAll(".swipe .dots i")];
+    rail.addEventListener("scroll", () => {
+      const w = rail.scrollWidth - rail.clientWidth;
+      const i = w > 0 ? Math.round(rail.scrollLeft / w * (dots.length - 1)) : 0;
+      dots.forEach((d,k) => d.classList.toggle("on", k === i));
+    }, {passive:true});
+  }
 }
 let io;
 function watchForm(){
