@@ -25,7 +25,7 @@ export function buildOutputs(files){
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[k]}"/></svg>`;
   const SNS = [["instagram","ig","Instagram"],["tiktok","tt","TikTok"],["x","x","X"],["youtube","yt","YouTube"],["spotify","sp","Spotify"]];
-  const snsHTML = () => SNS.map(([k,i,n]) => `<a href="${P.links[k]}" target="_blank" rel="noopener" aria-label="${n}">${svg(i)}</a>`).join("");
+  const snsHTML = (label=false) => SNS.map(([k,i,n]) => `<a class="c-${i}" href="${P.links[k]}" target="_blank" rel="noopener" aria-label="${n}">${svg(i)}${label?`<span>${n}</span>`:""}</a>`).join("");
   const pic = (k, alt, cls="") => `<img src="${IMG[k]}" alt="${esc(alt)}" loading="lazy" decoding="async" class="${cls}">`;
   const swipe = k => `<div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${Array.from({length:k},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>`;
   const sh = (no, en, jp) => `<div class="sh"><span class="no">${no}</span><h2>${en}</h2><p>${jp}</p></div>`;
@@ -67,7 +67,7 @@ export function buildOutputs(files){
 
   function profile(){
     const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
-    const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","live"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","studio"],["LESSON","ギターレッスン","初心者からプロ志向まで","hands"]];
+    const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","stage","リハーサル中のステージに並ぶギター"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","studio","紫の光に照らされた作曲デスクとギター"],["LESSON","ギターレッスン","初心者からプロ志向まで","hands","ギターの弦を押さえる手元"]];
     return `<section class="s" id="profile"><div class="wrap">
       ${sh("01","Profile","プロフィール・経歴")}
       <div class="prof">
@@ -75,8 +75,8 @@ export function buildOutputs(files){
         <div>
           <p class="lede hl">${esc(P.bio[0])}</p>
           <div class="body bio">${P.bio.slice(1).map(x=>`<p>${esc(x)}</p>`).join("")}</div>
-          <ul class="cards3">${SK.map(s=>`<li class="card ${ph(s[3])}"><span class="chip">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>
-          <div class="sns">${snsHTML()}</div>
+          <ul class="skills hs" id="skills">${SK.map(s=>`<li class="card skill">${pic(s[3],s[4])}<span class="k">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>${swipe(SK.length)}
+          <div class="sns color pills">${snsHTML(true)}</div>
           <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
             <div class="in"><ul class="gcards">${g}</ul></div></details>
         </div>
