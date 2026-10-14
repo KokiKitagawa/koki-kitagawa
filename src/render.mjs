@@ -72,7 +72,6 @@ export function buildOutputs(files){
           <p class="lede">${esc(P.bio[0])}</p>
           <div class="body" style="margin:0 0 28px"><p>${esc(P.bio[1])}</p></div>
           <ul class="cards3">${SK.map(s=>`<li class="card ${ph(s[3])}"><span class="chip">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>
-          <ul class="cards3 mini">${P.career.map(c=>`<li class="card"><small>${esc(c.label)}</small><b>${esc(c.detail)}</b></li>`).join("")}</ul>
           <div class="sns">${snsHTML()}</div>
           <details class="acc open-card"><summary><b>プロフィールを詳しく読む</b></summary>
             <div class="in body"><p>アーティストのサポートギターから、作詞・作曲・編曲、カラオケ音源制作まで、「弾く」と「作る」の両面から音楽に携わる。</p>${P.bio.slice(2).map(p=>`<p>${esc(p)}</p>`).join("")}</div></details>
@@ -108,7 +107,10 @@ export function buildOutputs(files){
         <div class="photo reveal">${pic("pedal","ライブ会場のステージに組まれたエフェクターボード")}<span class="cap">GEAR</span></div>
       </div>
       <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
-      <ul class="grid3" id="gigs">${items.map(x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`).join("")}</ul>
+      ${(() => { const gig = x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`;
+        return `<ul class="grid3" id="gigs">${items.slice(0,6).map(gig).join("")}</ul>
+      <details class="acc gigs-more" id="gigsMore"><summary><b>すべて見る（${items.length}）</b><span class="meta">+${items.length-6}</span></summary>
+        <div class="in"><ul class="grid3" id="gigs2">${items.slice(6).map(gig).join("")}</ul></div></details>`; })()}
       <a class="btn line sm" style="margin-top:30px" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}演奏を見る</a>
     </div></section>`;
   }
@@ -221,7 +223,6 @@ export function buildOutputs(files){
       <div class="ct">
         <div class="side">
           <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
-          <dl><dt>お仕事</dt><dd>作詞・作曲／編曲・トラック制作／ギターREC／ライブサポート</dd><dt>納期</dt><dd>${esc(W.delivery)}</dd><dt>料金</dt><dd>${esc(W.price)}</dd><dt>レッスン</dt><dd>体験 初回60分 ¥${yen(D.lessonPlans.trial.price)}</dd></dl>
           <div class="quick">
             <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>Instagram の DM でも受け付けています</b><small>曲の尺と納期だけ書いていただければ返信します</small></span></a>
           </div>

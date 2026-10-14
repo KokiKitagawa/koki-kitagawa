@@ -611,3 +611,12 @@ footer{background:var(--black)}
   .flow.hs .card{display:block}
   .flow.hs .n{margin-bottom:12px}
 }
+/* ===== LIVE / TV の「すべて見る」 ===== */
+details.acc.gigs-more{margin-top:14px;border:0!important}
+details.acc.gigs-more>summary{justify-content:center;gap:10px;min-height:52px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line2);padding:0 26px;width:fit-content;margin:0 auto}
+details.acc.gigs-more>summary .meta{display:none}
+.gigs-more>summary b{font-size:14px}
+.gigs-more[open]>summary{margin-bottom:12px}
+.gigs-more .in{padding:0}
+.gigs-more.filtered>summary{display:none}
+details.acc>.in,details.open-card>.in,.faq details>p{overflow:hidden}

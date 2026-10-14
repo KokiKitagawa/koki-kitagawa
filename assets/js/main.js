@@ -23,7 +23,10 @@ document.querySelectorAll('input[name="kind"]').forEach(r => r.addEventListener(
 document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e => {
   const b = e.target.closest(".fchip"); if(!b) return;
   g.querySelectorAll(".fchip").forEach(x => x.setAttribute("aria-pressed", x===b));
-  document.querySelectorAll(`#${g.dataset.grid} > li`).forEach(li => li.hidden = !(b.dataset.f==="ALL" || li.dataset.k===b.dataset.f));
+  const all = b.dataset.f==="ALL";
+  document.querySelectorAll(`#${g.dataset.grid} > li, #${g.dataset.grid}2 > li`).forEach(li => li.hidden = !(all || li.dataset.k===b.dataset.f));
+  const more = document.getElementById(g.dataset.grid + "More");
+  if(more){ if(!all){ more.dataset.was = more.open ? "1" : ""; more.open = true; more.classList.add("filtered"); } else if(more.classList.contains("filtered")){ more.classList.remove("filtered"); more.open = more.dataset.was === "1"; } }
 }));
 /* 横スクロールの矢印 */
 document.querySelectorAll(".arw").forEach(b => b.addEventListener("click", () => { const el = document.getElementById(b.dataset.for); el.scrollBy({left: el.clientWidth*.8*Number(b.dataset.dir), behavior:"smooth"}); }));
@@ -48,6 +51,23 @@ document.querySelectorAll(".hs").forEach(el => {
 const plansEl = document.getElementById("plans"), rec = plansEl && plansEl.querySelector(".rec");
 if(rec && matchMedia("(max-width:820px)").matches) plansEl.scrollLeft = rec.offsetLeft - parseFloat(getComputedStyle(plansEl).paddingLeft);
 
+/* アコーディオンの開閉を、高さがスッと伸び縮みするように */
+const reduce = matchMedia("(prefers-reduced-motion:reduce)");
+document.querySelectorAll("details").forEach(d => {
+  const s = d.querySelector(":scope > summary"); if(!s) return;
+  s.addEventListener("click", e => {
+    if(reduce.matches || d.classList.contains("filtered")) return;
+    e.preventDefault();
+    if(d._a){ d._a.cancel(); }
+    const start = d.offsetHeight, opening = !d.open;
+    if(opening) d.open = true;
+    const end = opening ? d.scrollHeight + (d.offsetHeight - d.clientHeight) : s.offsetHeight + (d.offsetHeight - d.clientHeight);
+    d.style.overflow = "hidden";
+    d._a = d.animate({height:[start+"px", end+"px"]}, {duration:280, easing:"cubic-bezier(.2,.7,.2,1)"});
+    d._a.onfinish = () => { d._a = null; d.style.overflow = ""; if(!opening) d.open = false; };
+    d._a.oncancel = () => { d._a = null; d.style.overflow = ""; };
+  });
+});
 /* PCでは アコーディオンを開いた状態にする（スマホだけ たためる） */
 const mq = matchMedia("(min-width:821px)");
 function syncAcc(){ document.querySelectorAll("details.pc-open").forEach(d => { if(mq.matches) d.open = true; }); }
