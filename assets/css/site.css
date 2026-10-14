@@ -670,3 +670,35 @@ h1,h2,h3,h4,p,b,small,dd,summary,.lede{word-break:auto-phrase;text-wrap:pretty}
 }
 footer .sns,.menu .sns{gap:10px}
 footer .sns a,.menu .sns a{width:40px;height:40px}
+/* ===== CAREER：年表＋大きい仕事は写真入りの枠で ===== */
+.tl{position:relative;margin:0;padding:0;max-width:1000px}
+.tl::before{content:"";position:absolute;left:143px;top:10px;bottom:10px;width:1px;background:linear-gradient(180deg,transparent,var(--line2) 6%,var(--line2) 94%,transparent)}
+.tly{list-style:none;position:relative;display:grid;grid-template-columns:120px minmax(0,1fr);gap:0 48px;padding:18px 0}
+.tly::before{content:"";position:absolute;left:139px;top:31px;width:9px;height:9px;border-radius:50%;background:var(--t2,#1a2539);box-shadow:inset 0 0 0 1.5px var(--sub)}
+.tly.has-key::before{background:var(--stage);box-shadow:0 0 0 5px rgba(77,125,255,.2)}
+.tly .y{font:800 34px/1 var(--en);font-stretch:72%;letter-spacing:.02em;color:var(--sub);padding-top:4px;text-align:right}
+.tly.has-key .y{color:var(--ink);font-size:40px;padding-top:0}
+.evs{display:grid;gap:12px}
+.ev{padding:6px 0}
+.ev b{display:block;font-size:16px;font-weight:700;line-height:1.6}
+.ev small{display:block;font-size:13px;color:var(--sub);margin-top:2px}
+.card.hlc{display:grid;grid-template-columns:minmax(0,1fr) 38%;align-items:stretch;padding:0;min-height:168px;border-radius:22px;overflow:hidden;isolation:isolate;
+  background:linear-gradient(120deg,rgba(77,125,255,.16),rgba(255,255,255,.04) 60%)!important;box-shadow:inset 0 0 0 1px rgba(150,180,255,.32),0 20px 44px -26px rgba(0,0,0,.9)!important}
+.card.hlc img{grid-column:2;grid-row:1;width:100%;height:0;min-height:100%;object-fit:cover;-webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);mask-image:linear-gradient(90deg,transparent,#000 45%);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.card.hlc .tx{grid-column:1;grid-row:1;padding:24px 4px 22px 26px;display:flex;flex-direction:column;justify-content:center}
+.card.hlc .k{font:700 10.5px/1 var(--en);letter-spacing:.22em;color:#a9c1ff;margin-bottom:10px}
+.card.hlc b{font-size:clamp(17px,1.6vw,21px);line-height:1.45}
+.card.hlc small{font-size:13px;margin-top:6px}
+@media (hover:hover){.card.hlc:hover img{transform:scale(1.05)}}
+@media (prefers-reduced-motion:reduce){.card.hlc img{transition:none}.card.hlc:hover img{transform:none}}
+@media (max-width:820px){
+  .tl::before{left:5px}
+  .tly{grid-template-columns:minmax(0,1fr);gap:8px;padding:14px 0 14px 28px}
+  .tly::before{left:1px;top:22px}
+  .tly .y,.tly.has-key .y{text-align:left;font-size:28px;padding:0}
+  .tly.has-key .y{font-size:32px}
+  .card.hlc{grid-template-columns:minmax(0,1fr);min-height:0}
+  .card.hlc img{grid-column:1;grid-row:1;height:130px;min-height:0;-webkit-mask-image:linear-gradient(180deg,#000 40%,transparent);mask-image:linear-gradient(180deg,#000 40%,transparent)}
+  .card.hlc .tx{grid-row:2;padding:0 18px 18px;margin-top:-26px;position:relative}
+  .ev b{font-size:14.5px}
+}

@@ -88,7 +88,9 @@ export function buildOutputs(files){
     const T = D.timeline;
     return `<section class="s" id="career"><div class="wrap">
       ${sh("02","Career","経歴・実績")}
-      <ol class="career">${T.map(y => `<li class="yr"><div class="y">${y.year}</div><ul>${y.items.map(it=>`<li class="${it.key?"k":""}"><b>${esc(it.t)}</b>${it.s?`<span>${esc(it.s)}</span>`:""}</li>`).join("")}</ul></li>`).join("")}</ol>
+      <ol class="tl">${T.map(y => `<li class="tly${y.items.some(i=>i.key)?" has-key":""}"><div class="y">${y.year}</div><div class="evs">${y.items.map(it => it.key
+        ? `<article class="card hlc">${pic(({2019:"pedal",2023:"stage",2024:"studio"})[y.year]||"guitar","")}<div class="tx"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div></article>`
+        : `<div class="ev"><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`).join("")}</div></li>`).join("")}</ol>
       <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#live" style="text-decoration:underline;text-underline-offset:4px">LIVE / TV</a> にまとめています。</p>
     </div></section>`;
   }
