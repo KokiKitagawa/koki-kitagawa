@@ -1,27 +1,20 @@
 {
-  "hero": {
-    "alt": "アンプの前に立てかけられた2本のギター",
-    "sizes": "100vw",
-    "eager": true
-  },
-  "portrait": {
-    "alt": "スタジオの椅子に腰かけ、紫のギターを弾いている北川弘喜",
-    "sizes": "(max-width: 900px) 100vw, 440px"
-  },
-  "about-1": {
-    "alt": "ライブ会場のステージに組まれたエフェクターボード",
-    "sizes": "(max-width: 900px) 100vw, 45vw"
-  },
-  "about-2": {
-    "alt": "リハーサル中のステージに並ぶエレキギターとアコースティックギター",
-    "sizes": "(max-width: 900px) 100vw, 45vw"
-  },
-  "about-3": {
-    "alt": "配線を終えたエフェクターボードを真上から見たところ",
-    "sizes": "(max-width: 900px) 100vw, 45vw"
-  },
-  "live-1": {
-    "alt": "本番前の暗いステージに置かれた機材",
-    "sizes": "100vw"
+  "_note": "ページで使う写真の置き場所（img/ は tools/make-images.py で書き出す）",
+  "paths": {
+    "heroPc": "img/hero-pc-2000.webp",
+    "heroSp": "img/hero-sp-900.webp",
+    "profile": "img/profile-900.webp",
+    "lesson": "img/lesson-900.webp",
+    "stage": "img/stage-1600.webp",
+    "live": "img/live-720.webp",
+    "studio": "img/studio-1600.webp",
+    "guitar": "img/guitar-900.webp",
+    "desk": "img/desk-900.webp",
+    "pedal": "img/pedal-1200.webp",
+    "play": "img/play-1400.webp",
+    "strings": "img/strings-1600.webp",
+    "hands": "img/hands-1400.webp",
+    "guitars": "img/guitars-900.webp",
+    "ogp": "img/ogp.jpg"
   }
 }

@@ -1,513 +1,269 @@
 /* ============================================================
-   render.mjs — データ → HTML 断片
-   ここには入出力（ファイル読み書き）を書かない。純粋な関数だけ。
-   build.mjs（Node）と tools/build.jsc.mjs（Node 無しの Mac 用）の
-   両方から呼ばれるので、Node 固有の API を使わないこと。
+   render.mjs — data/*.json ＋ src/template.html → index.html の中身
+   入出力を持たない（読み書きは build.mjs / tools/build.jsc.mjs がやる）。
+   ページの文章・カードはすべてここで組み立てて、静的な HTML として書き出す。
+   ボタンの動き（絞り込み・メニュー・フォーム送信など）は assets/js/main.js。
    ============================================================ */
+export const ROOT_FILES = ["src/template.html","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json"];
 
-/* ---------- 小道具 ---------- */
+export function buildOutputs(files){
+  const J = k => JSON.parse(files[k]);
+  const p = J("data/profile.json"), site = J("data/site.json"), images = J("data/images.json");
+  const pick = (o, ks) => Object.fromEntries(ks.map(k => [k, o[k] ?? null]));
+  const D = {
+    profile: pick(p, ["name","nameEn","bio","career","gear","work","lesson","links"]),
+    credits: J("data/credits.json").map(c => { const d = pick(c, ["title","artist","category","roles","year","jacket","spotify","spotifyRank"]);
+      return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
+    live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
+    media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
+    lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, timeline: site.timeline, liveYears: site.liveYears
+  };
+  const IMG = images.paths, ICON = site.icons;
+  const warnings = [];
 
-export function esc(v) {
-  return String(v ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
+  const P = D.profile, C = D.credits;
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[k]}"/></svg>`;
+  const SNS = [["instagram","ig","Instagram"],["tiktok","tt","TikTok"],["x","x","X"],["youtube","yt","YouTube"],["spotify","sp","Spotify"]];
+  const snsHTML = () => SNS.map(([k,i,n]) => `<a href="${P.links[k]}" target="_blank" rel="noopener" aria-label="${n}">${svg(i)}</a>`).join("");
+  const pic = (k, alt, cls="") => `<img src="${IMG[k]}" alt="${esc(alt)}" loading="lazy" decoding="async" class="${cls}">`;
+  const sh = (no, en, jp) => `<div class="sh"><span class="no">${no}</span><h2>${en}</h2><p>${jp}</p></div>`;
+  const yen = n => n.toLocaleString("ja-JP");
 
-/** 「要確認」を含む値・空の値は画面に出さない（SPEC 受入基準） */
-export function known(v) {
-  if (v === null || v === undefined) return false;
-  if (Array.isArray(v)) return v.length > 0 && v.every(known);
-  const s = String(v).trim();
-  return s !== "" && !s.includes("要確認");
-}
+  const comp = C.filter(c => c.category==="compose"), gtr = C.filter(c => c.category==="guitar"), kara = C.filter(c => c.category==="karaoke");
+  const feat = C.filter(c => c.spotify).sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
+  const TAG = {"作曲":"COMPOSE","編曲":"ARRANGE","ギター":"GUITAR","レコーディング":"RECORDING","制作":"PRODUCTION"};
+  const tagsOf = c => [...new Set((c.roles||[]).map(r => TAG[r]).filter(Boolean))];
+  const tv = D.media.filter(m => m.type==="tv"), stage = D.media.filter(m => m.type==="stage");
 
-const nest = (n, s) => s.split("\n").map((l, i) => (i === 0 || !l ? l : " ".repeat(n) + l)).join("\n");
-const ind = (n, s) => s.split("\n").map(l => (l ? " ".repeat(n) + l : l)).join("\n");
-
-/* ---------- 画像 ---------- */
-
-export function img(role, manifest, meta, extra = {}) {
-  const m = manifest[role], c = meta[role];
-  if (!m || !c) throw new Error(`画像 '${role}' が manifest.json か data/images.json に無い`);
-  const srcset = m.widths.map(w => `assets/img/${role}-${w}.webp ${w}w`).join(", ");
-  const fallback = m.widths.includes(1200) ? 1200 : m.widths[m.widths.length - 1];
-  const eager = c.eager === true;
-  const attrs = [
-    `src="assets/img/${role}-${fallback}.webp"`,
-    `srcset="${srcset}"`,
-    `sizes="${esc(c.sizes)}"`,
-    `width="${m.w}"`, `height="${m.h}"`,
-    `alt="${esc(c.alt)}"`,
-    eager ? `fetchpriority="high"` : `loading="lazy"`,
-    `decoding="async"`,
-  ];
-  if (extra.class) attrs.unshift(`class="${extra.class}"`);
-  return `<img ${attrs.join(" ")}>`;
-}
-
-/* ---------- 部品 ---------- */
-
-const head = (en, ja, extra = "") =>
-`<div class="section__head">
-  <p class="t-label">${esc(en)}</p>
-  <h2 class="t-vert">${esc(ja)}</h2>${extra ? "\n  " + extra : ""}
-</div>`;
-
-/** 曲名から決まる「波形」の棒の高さ（%）を返す。
-    ジャケット画像が無いので、カードの絵はここで作る。乱数は使わない ——
-    同じ曲名なら毎回同じ波形が出て、ビルドし直しても絵が変わらないようにする。
-    ジャケットが手に入ったら、この波形ごと <img> に差し替えればよい。 */
-export function waveBars(seed, n = 20) {
-  let h = 2166136261;
-  for (const ch of String(seed)) {           // FNV-1a で曲名を1つの数にする
-    h ^= ch.codePointAt(0);
-    h = Math.imul(h, 16777619) >>> 0;
-  }
-  const bars = [];
-  for (let i = 0; i < n; i++) {
-    h ^= (h << 13) >>> 0; h >>>= 0;          // xorshift。桁あふれを毎回落とす
-    h ^= h >>> 17;
-    h ^= (h << 5) >>> 0;  h >>>= 0;
-    const env = Math.sin(((i + 0.5) / n) * Math.PI);   // 中央が高い包絡線
-    bars.push(Math.max(8, Math.round((0.2 + (h % 1000) / 1000 * 0.8) * env * 100)));
-  }
-  return bars;
-}
-
-/** 「（シユイ サポート）」— サポート出演は自分名義の公演と混ぜない */
-export function supportSuffix(item) {
-  const isSupport = known(item.role) && String(item.role).includes("サポート");
-  return isSupport && known(item.artist) ? `（${item.artist} サポート）` : "";
-}
-
-/* ---------- 各セクション ---------- */
-
-export function renderHero(p, manifest, imeta) {
-  const highlights = known(p.highlights)
-    ? `\n      <p class="hero__highlights">${p.highlights.map(esc).join(" ／ ")}</p>` : "";
-  const main = known(p.headline)
-    ? `\n    <p class="hero__vert hero__vert--main">${esc(p.headline)}</p>` : "";
-  return `<section class="hero" id="top">
-  <div class="hero__media">${img("hero", manifest, imeta)}</div>
-  <div class="hero__copy">${main}
-    <p class="hero__vert hero__vert--sub is-accent">ギタリスト／作曲・編曲</p>
-    <div class="hero__bottom">${highlights}
-      <p class="hero__cta">
-        <a class="btn" href="#contact">制作のご依頼</a>
-        <a class="link hero__cta-sub" href="#works">聴いてみる &rarr;</a>
-      </p>
-      <p class="t-caption hero__ctanote">料金・納期・お受けできる内容へ。ご依頼は Instagram の DM から。</p>
-      <a class="hero__scroll" href="#about"><span>Scroll</span></a>
-    </div>
-  </div>
-</section>`;
-}
-
-export function renderAbout(p, manifest, imeta) {
-  const bio = p.bio.filter(known).map(t => `<p>${esc(t)}</p>`).join("\n        ");
-  const career = p.career.filter(c => known(c.label)).map(c => {
-    const d = known(c.detail) ? `<span class="career__detail">${esc(c.detail)}</span>` : "";
-    return `<li>${esc(c.label)}${d}</li>`;
-  }).join("\n        ");
-  const ag = p.agency;
-  const agency = (ag && ag.publish === true && known(ag.names) && ag.names.length)
-    ? `\n      <p class="about__agency t-caption">${esc(ag.label)}：${ag.names.map(esc).join(" ／ ")}</p>` : "";
-  const g = p.gear;
-  const gear = (g && g.publish === true && known(g.groups) && g.groups.length)
-    ? `\n      <details class="gear fold">
-        <summary class="fold__sum"><span class="t-label">Gear</span><span class="fold__hint">機材を見る</span></summary>
-        <dl class="gear__list">
-          ${g.groups.map(gr => `<div class="gear__group">
-            <dt>${esc(gr.name)}</dt>
-            <dd>${gr.items.map(esc).join("<br>")}</dd>
-          </div>`).join("\n          ")}
-        </dl>
-      </details>` : "";
-  return `<section class="section" id="about">
-  <div class="container">
-    ${nest(4, head("About", "経歴"))}
-  </div>
-  <div class="container split">
-    <div class="split__text reveal">
-      <p class="t-h2">作る側にも、<br>弾く側にも立てる。</p>
-      <div class="t-body about__bio">
-        ${bio}
+  function hero(){
+    return `<section class="hero" id="top" aria-label="北川弘喜">
+      <picture><source media="(max-width:820px)" srcset="${IMG.heroSp}"><img src="${IMG.heroPc}" alt="紫の照明の中、ギターのネックを斜めに構えて弾く北川弘喜" fetchpriority="high"></picture>
+      <div class="wrap">
+        <p class="role">GUITARIST / COMPOSER</p>
+        <h1><span>書けるギタリスト、</span><span>弾ける作曲家。</span></h1>
+        <p class="name">KOKI KITAGAWA</p>
+        <p class="lead">ライブ・舞台・テレビのサポートギターから、作詞・作曲・編曲まで。「弾く」と「作る」の両方で、プロの現場に立っています。</p>
+        <div class="cta">
+          <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
+          <button class="btn line" type="button" data-open="レッスン">レッスンを申し込む</button>
+        </div>
+        <ul class="proof"><li>SUMMER SONIC 2023</li><li>CDTV</li><li>B-PROJECT 楽曲提供</li></ul>
+        <div class="nums"><div><b>${comp.length}<small>曲</small></b><span>楽曲提供</span></div><div><b>${gtr.length}<small>作品</small></b><span>ギター参加</span></div><div><b>${D.live.length+stage.length}<small>本</small></b><span>ステージ</span></div><div><b>${tv.length}<small>回</small></b><span>TV出演</span></div></div>
       </div>
-      <ul class="about__career">
-        ${career}
-      </ul>${agency}
-    </div>
-    <div class="split__media">
-      <figure class="portrait reveal">
-        ${img("portrait", manifest, imeta)}
-        <figcaption class="t-caption portrait__cap">${esc(p.name)}<span>${esc(p.nameEn)}</span></figcaption>
-      </figure>
-      <div class="reveal">${img("about-1", manifest, imeta)}</div>
-      <div class="reveal">${img("about-2", manifest, imeta)}</div>
-      <div class="reveal">${img("about-3", manifest, imeta)}</div>
-    </div>
-  </div>
-  <div class="container">${gear}</div>
-</section>`;
-}
-
-export function renderWorks(credits, profile) {
-  const list = credits.filter(c => c.category === "compose" && c.featured === true).slice(0, 6);
-  if (list.length === 0) throw new Error("works: featured な楽曲が1件も無い");
-  const cards = list.map((c, i) => {
-    // 画面に出せるのは曲名とアーティスト名だけ。担当と年は分かってから足す
-    const meta = [known(c.roles) ? c.roles.join("・") : null, known(c.year) ? c.year : null].filter(known);
-    const metaLine = meta.length
-      ? `\n        <p class="card__meta">${meta.map(esc).join(" ／ ")}</p>` : "";
-    const wave = waveBars(c.title).map(v => `<span style="height:${v}%"></span>`).join("");
-    // 聴ける曲はカードごとリンクにする。聴けない曲は静かなカードのまま（嘘の導線を作らない）
-    const playable = known(c.spotify);
-    const id = playable ? String(c.spotify).split("/track/")[1] : null;
-    // ジャケットは Spotify の画像CDNをそのまま参照する（自前で持たない＝規約どおり）。
-    // 読み込めなかったときは下の波形カードがそのまま出るので崩れない
-    const art = known(c.jacket)
-      ? ` style="--art:url('https://i.scdn.co/image/${esc(c.jacket)}')"` : "";
-    const artClass = known(c.jacket) ? " card__frame--art" : "";
-    const openTag = playable
-      ? `<a class="card__frame card__frame--play${artClass}"${art} data-embed="https://open.spotify.com/embed/track/${esc(id)}" href="${esc(c.spotify)}" target="_blank" rel="noopener" aria-label="${esc(c.title)} を再生する">`
-      : `<div class="card__frame">`;
-    const closeTag = playable ? `</a>` : `</div>`;
-    const label = playable
-      ? `<span class="card__label card__label--play">再生</span>`
-      : `<span class="card__label">Song</span>`;
-    // ジャケットがある曲は「写真の上に文字を重ねない」。
-    // ジャケット自体に曲名が入っていることが多く、重ねると二重になって読めなくなる
-    const inner = known(c.jacket)
-      ? `
-          <div class="card__art" aria-hidden="true"></div>
-          <div class="card__name">
-            <div class="card__top">
-              <span class="card__index">${String(i + 1).padStart(2, "0")}</span>
-              ${label}
-            </div>
-            <h3 class="card__title">${esc(c.title)}</h3>
-            <p class="card__artist">${esc(c.artist)}</p>
-          </div>
-        `
-      : `
-          <div class="card__top">
-            <span class="card__index">${String(i + 1).padStart(2, "0")}</span>
-            ${label}
-          </div>
-          <div class="card__name">
-            <h3 class="card__title">${esc(c.title)}</h3>
-            <p class="card__artist">${esc(c.artist)}</p>
-          </div>
-          <div class="card__wave" aria-hidden="true">${wave}</div>
-        `;
-    return `<article class="card card--song reveal">
-        ${openTag}${inner}${closeTag}${metaLine}
-      </article>`;
-  }).join("\n      ");
-  const ctrl = `<div class="rail-ctrl" data-rail-ctrl hidden>
-  <button type="button" aria-label="前のカードへ">&larr;</button>
-  <button type="button" aria-label="次のカードへ">&rarr;</button>
-</div>`;
-  return `<section class="section" id="works">
-  <div class="container">
-    ${nest(4, head("Works", "楽曲提供", ctrl))}
-  </div>
-  <div class="container">
-    <div class="rail" tabindex="0" role="group" aria-label="代表曲">
-      ${cards}
-    </div>
-    <p class="t-caption rail__note">ジャケットのあるカードは、押すとこの画面で再生できます。全${credits.filter(c => c.category === "compose").length}曲の一覧は <a href="#credits">全実績</a> に掲載しています。</p>
-${ind(4, renderListenBlock(profile))}
-    <p class="cta-quiet"><a class="link" href="#contact">この人に頼む</a></p>
-  </div>
-</section>`;
-}
-
-const CATS = [
-  { key: "compose", label: "楽曲提供" },
-  { key: "guitar",  label: "ギター参加" },
-  { key: "karaoke", label: "カラオケ音源" },
-];
-
-export function renderCredits(credits) {
-  const buttons = CATS.map((c, i) =>
-    `<button type="button" class="filter__btn" data-filter="${c.key}" aria-pressed="${i === 0 ? "true" : "false"}">${esc(c.label)}<span class="filter__count">${credits.filter(x => x.category === c.key).length}</span></button>`
-  ).join("\n      ");
-
-  // カラオケ音源は作品名・発注元を伏せる約束（2026/10/5）。曲ごとに並べず1行にまとめる
-  const kara = credits.filter(c => c.category === "karaoke");
-  const listed = credits.filter(c => c.category !== "karaoke");
-  if (kara.length) listed.push({
-    category: "karaoke", year: null,
-    title: "有名歌い手のカラオケ音源（作品名は非公開）",
-    artist: `配信で活躍する歌い手の楽曲 ${kara.length}曲`, roles: ["カラオケ音源制作"],
-  });
-  const rows = listed.map(c => {
-    const bits = [c.artist];
-    if (known(c.roles)) bits.push(c.roles.join("・"));
-    if (known(c.note)) bits.push(c.note);
-    return `<div class="row reveal" data-category="${esc(c.category)}">
-        <span class="row__date">${known(c.year) ? esc(c.year) : ""}</span>
-        <div>
-          <h3 class="t-h3">${esc(c.title)}</h3>
-          <p class="row__meta">${bits.filter(known).map(esc).join(" ／ ")}</p>
-        </div>
-      </div>`;
-  }).join("\n      ");
-
-  return `<section class="section" id="credits">
-  <div class="container">
-    ${nest(4, head("Credits", "全実績"))}
-    <div class="filter" data-filter-group>
-      ${buttons}
-    </div>
-    <div class="rows" data-filter-target>
-      ${rows}
-    </div>
-  </div>
-</section>`;
-}
-
-const TYPE_LABEL = { live: "LIVE", tv: "TV", stage: "STAGE" };
-
-export function renderLive(live, media, manifest, imeta) {
-  const all = live.concat(media).slice().sort((a, b) => {
-    if (a.year === b.year) return 0;
-    if (!known(a.year)) return 1;          // 年が分からないものは下に置く（推測で埋めない）
-    if (!known(b.year)) return -1;
-    return b.year - a.year;
-  });
-  const rowOf = (it) => {
-    const label = TYPE_LABEL[it.type] || "";
-    const suffix = supportSuffix(it);
-    const bits = [];
-    // サポート名義は見出しの「（◯◯ サポート）」で出しているので、ここでは重ねない
-    if (!suffix && known(it.artist)) bits.push(it.artist);
-    if (known(it.venue)) bits.push(it.venue);
-    if (known(it.role)) bits.push(it.role);
-    const lines = [`<h3 class="t-h3">${esc(it.title)}${esc(suffix)}</h3>`];
-    if (bits.length) lines.push(`<p class="row__meta">${bits.map(esc).join(" ／ ")}</p>`);
-    return `<div class="row reveal">
-        <span class="row__date">${known(it.year) ? esc(it.year) : ""}<span class="row__type">${esc(label)}</span></span>
-        <div>
-          ${lines.join("\n          ")}
-        </div>
-      </div>`;
-  };
-  const HEAD_N = 5;
-  const rows = all.slice(0, HEAD_N).map(rowOf).join("\n      ");
-  const rest = all.slice(HEAD_N);
-  const more = rest.length
-    ? `\n    <details class="fold">
-      <summary class="fold__sum"><span class="fold__hint">出演をすべて見る（全${all.length}件）</span></summary>
-      <div class="rows">
-        ${rest.map(rowOf).join("\n        ")}
-      </div>
-    </details>` : "";
-
-  return `<section class="section" id="live">
-  <div class="container">
-    ${nest(4, head("Live", "出演"))}
-    <div class="rows">
-      ${rows}
-    </div>${more}
-  </div>
-  <div class="live__media reveal">${img("live-1", manifest, imeta)}</div>
-</section>`;
-}
-
-export function spotifyEmbed(url) {
-  const m = /open\.spotify\.com\/(playlist|album|track)\/([A-Za-z0-9]+)/.exec(String(url || ""));
-  return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}` : null;
-}
-
-export function renderListenBlock(p) {
-  // 代表3曲は Works で鳴らせるようになったので、ここは全曲まとめて聴ける
-  // プレイリスト1本にする（同じ曲を2度出さない）
-  const embed = spotifyEmbed(p.links.spotify);
-  const list = known(p.spotifyTracks) && p.spotifyTracks.length
-    ? `<p class="listen__lead t-caption">まずはこの3曲から：${p.spotifyTracks.map(t => esc(t.title)).join(" ／ ")}</p>` : "";
-  const spotify = known(p.links.spotify)
-    ? `<div class="listen__item reveal">
-        <p class="t-label">Spotify</p>
-        <div class="embed"${embed ? ` data-embed="${esc(embed)}"` : ""}>
-          <a class="embed__link" href="${esc(p.links.spotify)}" target="_blank" rel="noopener">
-            <span class="embed__label">プレイリストを再生</span>
-            <span class="t-caption">提供曲・参加曲をまとめて</span>
-          </a>
-        </div>
-      </div>` : "";
-  const youtube = known(p.links.youtube)
-    ? `<div class="listen__item reveal">
-        <p class="t-label">YouTube</p>
-        <div class="embed">
-          <a class="embed__link" href="${esc(p.links.youtube)}" target="_blank" rel="noopener">
-            <span class="embed__label">チャンネルを見る</span>
-            <span class="t-caption">YouTube で開く</span>
-          </a>
-        </div>
-      </div>` : "";
-  const inner = [spotify, youtube].filter(Boolean);
-  if (!inner.length) return "";
-  return `<div class="listen-block">
-  <p class="t-label listen-block__head">Listen &mdash; まとめて聴く</p>
-  ${list}
-  <div class="listen listen--two">
-    ${inner.join("\n    ")}
-  </div>
-</div>`;
-}
-
-export function renderLesson(p) {
-  const l = p.lesson;
-  const plans = known(l.plans) ? l.plans.filter(x => known(x.name) && known(x.price)) : [];
-  const planRows = plans.map(x => {
-    const rec = x.recommended === true ? `<span class="plan__rec">おすすめ</span>` : "";
-    const note = known(x.note) ? `<span class="plan__note">${esc(x.note)}</span>` : "";
-    return `<div class="row${x.recommended === true ? " row--rec" : ""}">
-        <span class="row__date">${esc(x.name)}</span>
-        <div><b class="plan__price">${esc(x.price)}</b>${rec}${note}</div>
-      </div>`;
-  }).join("\n      ");
-  const extra = [["対象", l.target], ["場所", l.place], ["お支払い", l.payment]]
-    .filter(r => known(r[1])).map(r =>
-    `<div class="row">
-        <span class="row__date">${esc(r[0])}</span>
-        <div>${esc(r[1])}</div>
-      </div>`).join("\n      ");
-  return `<section class="section invert" id="lesson">
-  <div class="container">
-    ${nest(4, head("Lesson", "レッスン"))}
-    <div class="rows">
-      ${[planRows, extra].filter(Boolean).join("\n      ")}
-    </div>
-    <p class="lesson__note">体験レッスンのお申し込み・ご相談は <a href="#contact">連絡先</a> から。</p>
-  </div>
-</section>`;
-}
-
-export function renderContact(p) {
-  const w = p.work || {};
-  const workRows = [["料金", w.price], ["納期", w.delivery], ["収録", w.style]]
-    .filter(r => known(r[1])).map(r =>
-    `<div class="row reveal">
-        <span class="row__date">${esc(r[0])}</span>
-        <div>${esc(r[1])}</div>
-      </div>`).join("\n      ");
-  // 何を頼めるか（品目）— 料金や納期より先に出す
-  const services = known(w.services) && w.services.length
-    ? `<ul class="services">
-      ${w.services.filter(s => known(s.name)).map(s => {
-        const n = known(s.note) ? `<span class="services__note">${esc(s.note)}</span>` : "";
-        return `<li>${esc(s.name)}${n}</li>`;
-      }).join("\n      ")}
-    </ul>` : "";
-
-  const work = (services || workRows)
-    ? `<p class="t-label contact__sub">ご依頼いただけること</p>
-    ${services}
-    ${workRows ? `<div class="rows">\n      ${workRows}\n    </div>` : ""}` : "";
-
-  // フォームが未完成のあいだも、受け口を必ず1つ出しておく
-  const cta = known(p.contactForm)
-    ? { url: p.contactForm, action: "お問い合わせフォームへ", note: "" }
-    : (known(p.contactCta) && known(p.contactCta.url) ? p.contactCta : null);
-  const form = cta
-    ? `<p class="contact__cta">
-      <a class="btn" href="${esc(cta.url)}" target="_blank" rel="noopener">${esc(cta.action)}</a>
-    </p>${known(cta.note) ? `\n    <p class="t-caption contact__ctanote">${esc(cta.note)}</p>` : ""}` : "";
-
-  const items = [];
-  if (known(p.email)) items.push(["Email", p.email, `mailto:${p.email}`]);
-  const L = p.links;
-  if (known(L.instagram)) items.push(["Instagram", "@kitagawa_kouki", L.instagram]);
-  if (known(L.x))         items.push(["X", "@Gt_koki_", L.x]);
-  if (known(L.youtube))   items.push(["YouTube", "@KokiKitagawa", L.youtube]);
-  const rows = items.map(([k, v, href]) => {
-    const ext = href.startsWith("mailto:") ? "" : ` target="_blank" rel="noopener"`;
-    return `<div class="row reveal">
-        <span class="row__date">${esc(k)}</span>
-        <div><a class="link" href="${esc(href)}"${ext}>${esc(v)}</a></div>
-      </div>`;
-  }).join("\n      ");
-  return `<section class="section" id="contact">
-  <div class="container">
-    ${nest(4, head("Contact", "連絡先"))}
-    ${work}${form}
-    <p class="t-label contact__sub">SNS</p>
-    <div class="rows">
-      ${rows}
-    </div>
-  </div>
-</section>`;
-}
-
-/* ---------- head 内（メタ・OGP・構造化データ） ---------- */
-
-export function renderHead(p, site) {
-  const title = "北川弘喜 | ギタリスト・作編曲";
-  const desc = "ギタリスト／作編曲家・北川弘喜のポートフォリオ。B-PROJECT・星名美怜らへの楽曲提供、SUMMER SONIC などのサポート出演、舞台での演奏・演技指導まで。";
-  const abs = (path) => (site.url ? site.url.replace(/\/$/, "") + "/" + path : path);
-  const ld = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: p.name,
-    alternateName: p.nameEn,
-    jobTitle: p.roles,
-    sameAs: Object.values(p.links).filter(known),
-  };
-  if (site.url) ld.url = site.url;
-  const canonical = site.url ? `\n<link rel="canonical" href="${esc(site.url)}">` : "";
-  return `<title>${esc(title)}</title>
-<meta name="description" content="${esc(desc)}">${canonical}
-<meta property="og:type" content="website">
-<meta property="og:title" content="${esc(title)}">
-<meta property="og:description" content="${esc(desc)}">
-<meta property="og:image" content="${esc(abs("assets/img/ogp.jpg"))}">
-<meta property="og:locale" content="ja_JP">
-<meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">
-${JSON.stringify(ld, null, 2)}
-</script>`;
-}
-
-/* ---------- ページ全体 ---------- */
-
-export function renderPage(template, data) {
-  const { profile, credits, live, media, manifest, images, site } = data;
-  const parts = {
-    head:    renderHead(profile, site),
-    hero:    renderHero(profile, manifest, images),
-    about:   renderAbout(profile, manifest, images),
-    works:   renderWorks(credits, profile),
-    credits: renderCredits(credits),
-    live:    renderLive(live, media, manifest, images),
-    lesson:  renderLesson(profile),
-    contact: renderContact(profile),
-  };
-  let html = template;
-  for (const key of Object.keys(parts)) {
-    const marker = `<!-- @${key} -->`;
-    const re = new RegExp("^([ \\t]*)" + marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "m");
-    const m = re.exec(html);
-    if (!m) throw new Error(`template.html に ${marker} が無い`);
-    // マーカーの字下げに合わせて断片を入れる（差分が読める形で出すため）
-    html = html.replace(re, () => ind(m[1].length, parts[key]));
+    </section>`;
   }
-  // 行の途中に置くマーカー（年号）だけは字下げを見ずにそのまま差し替える
-  html = html.split("<!-- @year -->").join(String(site.year));
-  return html;
-}
 
-/** 生成物の自己点検。SPEC 11章「受入基準」の機械で見られる部分。 */
-export function auditHtml(html) {
-  const problems = [];
-  if (html.includes("要確認")) problems.push("『要確認』が画面に出ている");
-  if (/<img(?![^>]*\salt=)/.test(html)) problems.push("alt の無い <img> がある");
-  if (/<img(?![^>]*\swidth=)/.test(html)) problems.push("width の無い <img> がある");
-  if (/<img(?![^>]*\sheight=)/.test(html)) problems.push("height の無い <img> がある");
-  if ((html.match(/class="[^"]*\binvert\b/g) || []).length !== 1) problems.push(".invert が1箇所ではない");
-  if ((html.match(/<h1\b/g) || []).length !== 1) problems.push("h1 が1つではない");
-  if (html.includes("undefined") || html.includes("[object Object]")) problems.push("undefined / [object Object] が混ざっている");
-  return problems;
+  const yearOf = t => { const m = D.liveYears.find(([p]) => t.startsWith(p)); return m ? m[1] : null; };
+  const PH = ["guitar","studio","lesson","stage","live","pedal","play","desk","hands","guitars"];
+  const phStyle = `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}</style>`;
+  const ph = k => `ph ph-${k}`;
+  const chip = (t, cls="") => `<span class="chip ${cls}">${t}</span>`;
+
+  function profile(){
+    const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
+    const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","live"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","studio"],["LESSON","ギターレッスン","初心者からプロ志向まで","hands"]];
+    return `<section class="s" id="profile"><div class="wrap">
+      ${sh("01","Profile","プロフィール・経歴")}
+      <div class="prof">
+        <div class="pw"><div class="photo reveal">${pic("profile","椅子に座ってギターを弾く北川弘喜")}</div><span class="bigword" aria-hidden="true">Guitarist</span></div>
+        <div>
+          <p class="lede">${esc(P.bio[0])}</p>
+          <div class="body" style="margin:0 0 28px"><p>${esc(P.bio[1])}</p></div>
+          <ul class="cards3">${SK.map(s=>`<li class="card ${ph(s[3])}"><span class="chip">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>
+          <ul class="cards3 mini">${P.career.map(c=>`<li class="card"><small>${esc(c.label)}</small><b>${esc(c.detail)}</b></li>`).join("")}</ul>
+          <div class="sns">${snsHTML()}</div>
+          <details class="acc open-card"><summary><b>プロフィールを詳しく読む</b></summary>
+            <div class="in body"><p>アーティストのサポートギターから、作詞・作曲・編曲、カラオケ音源制作まで、「弾く」と「作る」の両面から音楽に携わる。</p>${P.bio.slice(2).map(p=>`<p>${esc(p)}</p>`).join("")}</div></details>
+          <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
+            <div class="in"><ul class="gcards">${g}</ul></div></details>
+        </div>
+      </div>
+    </div></section>`;
+  }
+
+  function career(){
+    const T = D.timeline;
+    return `<section class="s" id="career"><div class="wrap">
+      ${sh("02","Career","経歴・実績")}
+      <ol class="career">${T.map(y => `<li class="yr"><div class="y">${y.year}</div><ul>${y.items.map(it=>`<li class="${it.key?"k":""}"><b>${esc(it.t)}</b>${it.s?`<span>${esc(it.s)}</span>`:""}</li>`).join("")}</ul></li>`).join("")}</ol>
+      <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#live" style="text-decoration:underline;text-underline-offset:4px">LIVE / TV</a> にまとめています。</p>
+    </div></section>`;
+  }
+
+  function live(){
+    const kind = t => /SUMMER SONIC|フェス|FESTIVAL|SP-RING/i.test(t) ? "FES" : "LIVE";
+    const items = [
+      ...D.live.map(x => ({k:kind(x.title), t:x.title, s:`${x.artist} サポートギター${x.venue?"・"+x.venue:""}`, y:x.year || yearOf(x.title)})),
+      ...stage.map(x => ({k:"STAGE", t:x.title, s:x.role ? "舞台・"+x.role : "舞台", y:x.year})),
+      {k:"TV", t:"CDTV", s:`バック演奏（${tv.length}回出演）`, y:null}];
+    items.sort((a,b) => (b.y||0)-(a.y||0));
+    const F = [["ALL","すべて"],["FES","フェス"],["LIVE","ライブ"],["STAGE","舞台"],["TV","テレビ"]];
+    return `<section class="s" id="live"><div class="wrap">
+      ${sh("03","Live / TV","ライブ・舞台・テレビ")}
+      <div class="strip">
+        <div class="photo reveal">${pic("stage","リハーサル中のステージに並ぶエレキギターとアコースティックギター")}<span class="cap">STAGE</span></div>
+        <div class="photo reveal">${pic("live","ライブのステージでギターを弾く北川弘喜")}<span class="cap">LIVE</span></div>
+        <div class="photo reveal">${pic("pedal","ライブ会場のステージに組まれたエフェクターボード")}<span class="cap">GEAR</span></div>
+      </div>
+      <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
+      <ul class="grid3" id="gigs">${items.map(x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`).join("")}</ul>
+      <a class="btn line sm" style="margin-top:30px" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}演奏を見る</a>
+    </div></section>`;
+  }
+
+  function works(){
+    const CATS = [
+      {n:"01",t:"Songwriting / Arrangement",j:"作詞・作曲・編曲",d:"アイドル・声優ユニットへの提供曲を、作詞からギターまで一人で仕上げます。",c:`${comp.length} SONGS`,img:"studio",alt:"紫の光に照らされた作曲デスクとギター"},
+      {n:"02",t:"Guitar / Session",j:"ギター参加楽曲",d:"レコーディングでギターを担当。リモートRECにも、スタジオ立ち会いにも対応。",c:`${gtr.length} WORKS`,img:"guitar",alt:"ギターの指板を押さえる北川弘喜の手元"},
+      {n:"03",t:"Sound Production",j:"カラオケ音源制作",d:"配信で活躍する有名歌い手のカラオケ音源を、原曲どおりに再現して制作（作品名は非公開）。",c:`${kara.length} TRACKS`,img:"desk",alt:"夜の机に置いたエレキギターの指板"},
+      {n:"04",t:"Stage / Live",j:"ライブ・舞台出演",d:"フェス・ツアー・舞台・地上波で、サポートギタリストとして演奏。",c:`${D.live.length+stage.length} STAGES / TV ${tv.length}`,img:"pedal",alt:"ライブ会場のステージに組まれたエフェクターボード"}];
+    const li = c => `<li>${esc(c.title)}<span>${esc(c.artist)}${c.year?` ${c.year}`:""}</span></li>`;
+    return `<section class="s" id="works"><div class="wrap">
+      ${sh("04","Works","作品・制作実績")}
+      <p class="lede" style="margin-bottom:44px;max-width:32em">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
+      <div class="cats">${CATS.map(x => `<button class="cat" type="button" data-cat="${x.n}">${pic(x.img,x.alt)}<span class="n">${x.n}</span><span class="t">${x.t}</span><span class="j">${x.j}</span><span class="d">${x.d}</span><span class="c">${x.c}</span></button>`).join("")}</div>
+      <div class="feat-head"><h3>Featured Works</h3><p>ジャケットを押すと、ここで再生できます。</p></div>
+      <div class="feat" id="feat">${feat.map((c,i) => {
+        const id = (c.spotify||"").split("/track/")[1];
+        return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)} を再生" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="play"><i></i>LISTEN</span></button>
+        <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div>
+        <ul class="tags">${tagsOf(c).map(t=>`<li>${t}</li>`).join("")}</ul><div class="jr">${esc((c.roles||[]).join("・"))}</div>
+        <a class="sp" href="${c.spotify}" target="_blank" rel="noopener">${svg("sp")}Spotifyで聴く</a></article>`;}).join("")}</div>
+      <div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>
+      <div class="player" id="player"></div>
+      <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${comp.length+gtr.length+kara.length} CREDITS</span></summary>
+        <div class="in">
+          <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
+            <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${comp.length+gtr.length+1}</em></button>
+            <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
+            <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
+            <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
+          <ul class="grid4" id="cgrid">${[...comp,...gtr].map(c=>`<li class="card credit ${ph(c.category==="compose"?"studio":"guitar")}" data-k="${c.category}"><div class="row">${chip(c.category==="compose"?"COMPOSE":"GUITAR", c.category==="compose"?"gr":"")}${c.year?`<span class="yr2">${c.year}</span>`:""}</div><b>${esc(c.title)}</b><small>${esc(c.artist)}</small></li>`).join("")}
+            <li class="card credit ${ph("desk")}" data-k="karaoke"><div class="row">${chip("PRODUCTION","gr")}<span class="yr2">×${kara.length}</span></div><b>有名歌い手のカラオケ音源</b><small>原曲を再現して制作・作品名は非公開</small></li></ul>
+        </div></details>
+    </div></section>`;
+  }
+
+  function listen(){
+    const W = P.work;
+    return `<section class="s" id="listen"><div class="wrap">
+      ${sh("05","Listen","聴く・見る")}
+      <div class="listen">
+        <a class="media" href="${P.links.spotify}" target="_blank" rel="noopener">
+          <div class="bg mosaic" aria-hidden="true">${feat.map(c=>`<span style="background-image:url('https://i.scdn.co/image/${c.jacket}')"></span>`).join("")}</div>
+          <span class="ico" style="background:#1DB954">${svg("sp")}</span><b>Spotify</b><p>提供曲・参加曲をまとめて聴く</p><span class="go">OPEN PLAYLIST</span></a>
+        <a class="media" href="${P.links.youtube}" target="_blank" rel="noopener">
+          <div class="bg" aria-hidden="true">${pic("play","")}</div>
+          <span class="ico" style="background:#FF0000">${svg("yt")}</span><b>YouTube</b><p>演奏・制作実績を見る</p><span class="go">OPEN CHANNEL</span></a>
+      </div>
+      <div class="workcta">
+        <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら</p>
+          <ul class="serv">${W.services.map(s=>`<li class="card"><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</li>`).join("")}</ul>
+          <p class="small" style="margin-top:14px">納期：${esc(W.delivery)}　｜　${esc(W.style)}　｜　料金：${esc(W.price)}</p></div>
+        <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
+      </div>
+    </div></section>`;
+  }
+
+  function lesson(){
+    const L = D.lessonPlans, base = L.single.price;
+    const plan = p => { const per = Math.round(p.price/p.count), save = base*p.count - p.price;
+      return `<li class="card plan ${p.rec?"rec":""} ${ph(({2:"hands",4:"guitar",8:"play"})[p.count])}">${p.rec?'<span class="badge">人気No.1</span>':""}<div class="nm">${esc(p.name)}</div><div class="ct">60分×${p.count}回</div>
+        <div class="p">¥${yen(p.price)}<small>/ 月</small></div><div class="per">1回あたり ¥${yen(per)}${save>0?`<em>単発より月¥${yen(save)}おトク</em>`:""}</div>
+        <button class="pick" type="button" data-open="レッスン" data-plan="${esc(p.name)}">このプランを選ぶ</button></li>`; };
+    return `<section class="s" id="lesson"><div class="wrap">
+      ${sh("06","Lesson","ギターレッスン")}
+      <div class="les">
+        <div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>
+        <div>
+          <p class="lede">現場で培った経験を、あなたのギターへ。</p>
+          <ul class="lstats">${D.lessonStats.map(x=>`<li class="card"><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
+          <ul class="tg"><li>初心者〜経験者まで</li><li>オンライン対応</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
+          <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分</small></div><div class="p">¥${yen(L.trial.price)}</div>
+            <button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button></div>
+          <ul class="plans">${L.monthly.map(plan).join("")}
+            <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
+            <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>
+          <p class="small" style="margin:14px 0 0">料金はすべて税込です。レンタルスタジオで行う場合、スタジオ代は別にかかります。</p>
+          <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
+            <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前の月の20日を過ぎたら 22時から</small></td></tr>
+            <tr><th>土・日</th><td>12時から<small>前の月の20日を過ぎたら 21時から</small></td></tr>
+            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${esc(P.lesson.payment)}</td></tr></table>
+            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月ぶんをご予約ください。</p></div></details>
+        </div>
+      </div>
+      <div class="les-extra">
+        <div><h3><span>STEP</span>はじめるまで</h3>
+          <ol class="flow">
+            <li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
+            <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>
+            <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
+          </ol></div>
+        <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
+          <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
+          <details><summary>オンラインでも受けられる？</summary><p>受けられます。レンタルスタジオ・ご自宅・オンラインから選べます。</p></details>
+          <details><summary>スタジオ代はかかる？</summary><p>レンタルスタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
+          <details><summary>支払い方法は？</summary><p>${esc(P.lesson.payment)}に対応しています。</p></details>
+          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月ぶんをご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
+        </div>
+      </div>
+    </div></section>`;
+  }
+
+  const KINDS = ["レッスン","お仕事","その他"];
+  const KDESC = {"レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
+  function contact(){
+    const W = P.work;
+    return `<section class="s" id="contact" style="--bgimg:url('${IMG.strings}')"><div class="wrap">
+      ${sh("07","Contact","お問い合わせ")}
+      <div class="ct">
+        <div class="side">
+          <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
+          <dl><dt>お仕事</dt><dd>作詞・作曲／編曲・トラック制作／ギターREC／ライブサポート</dd><dt>納期</dt><dd>${esc(W.delivery)}</dd><dt>料金</dt><dd>${esc(W.price)}</dd><dt>レッスン</dt><dd>体験 初回60分 ¥${yen(D.lessonPlans.trial.price)}</dd></dl>
+          <div class="quick">
+            <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>Instagram の DM でも受け付けています</b><small>曲の尺と納期だけ書いていただければ返信します</small></span></a>
+          </div>
+        </div>
+        <form class="f" id="form" novalidate>
+          <fieldset class="kinds"><legend>ご用件を選んでください<i>必須</i></legend>
+            ${KINDS.map((k,i)=>`<label class="kc ${k==="レッスン"?"or":""}"><input type="radio" name="kind" value="${k}"><span><b>${k}</b><small>${KDESC[k]}</small></span></label>`).join("")}
+            <input type="hidden" id="f_kind"><p class="err" hidden></p></fieldset>
+          <div class="two">
+            <div><label for="f_name">お名前<i>必須</i></label><input id="f_name" name="name" autocomplete="name" required><p class="err" hidden></p></div>
+            <div><label for="f_mail">メールアドレス<i>必須</i></label><input id="f_mail" name="email" type="email" inputmode="email" autocomplete="email" required><p class="err" hidden></p></div>
+          </div>
+          <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：体験レッスンの希望日について"></div>
+          <div><label for="f_msg">メッセージ<i>必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
+          <input type="hidden" name="from" id="f_from">
+          <button class="btn gr send" type="submit" id="send">この内容で送る</button>
+          <div class="done" id="done" hidden role="status">ありがとうございます。送信しました。2日以内にメールでご返信します。</div>
+          <p class="err" id="sendErr" hidden>送信できませんでした。通信の状態を確かめて、もう一度お試しください。うまくいかない場合は Instagram の DM からご連絡ください。</p>
+        </form>
+      </div>
+    </div></section>`;
+  }
+
+  const band = (words, rev) => { const one = words.map(w=>`<span>${w}</span><i></i>`).join(""); return `<div class="band ${rev?"rev":""}" aria-hidden="true"><div class="tr">${one}${one}${one}${one}</div></div>`; };
+
+  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+live()+works()+listen()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact();
+
+  const url = p.siteUrl;
+  const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">`;
+  const ld = {"@context":"https://schema.org","@type":"Person","name":p.name,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
+    "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressLocality":"東京"},
+    "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean)};
+  const cfg = JSON.stringify({form: site.form}).replace(/</g,"\\u003c");
+
+  let html = files["src/template.html"];
+  const put = (mark, val) => { if(!html.includes(mark)) warnings.push("差込口が見つかりません: " + mark); html = html.split(mark).join(val); };
+  put("<!--@meta-->", meta);
+  put("<!--@jsonld-->", `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g,"\\u003c")}</script>`);
+  put("<!--@phstyle-->", phStyle);
+  put("<!--@main-->", main);
+  put("<!--@sns-->", snsHTML());
+  put("<!--@config-->", cfg);
+  for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
+  if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
+  return { files: {"index.html": html}, warnings };
 }

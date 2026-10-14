@@ -4,611 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<link rel="canonical" href="https://kokikitagawa.github.io/koki-kitagawa/">
-<meta property="og:url" content="https://kokikitagawa.github.io/koki-kitagawa/">
 <meta name="theme-color" content="#06080d">
 <title>北川弘喜 | ギタリスト・作曲家 Koki Kitagawa</title>
 <meta name="description" content="書けるギタリスト、弾ける作曲家。北川弘喜（Koki Kitagawa）の公式サイト。ライブ・舞台・TVでのサポートギター、作詞・作曲・編曲、ギターレッスン。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="北川弘喜 Koki Kitagawa | 書けるギタリスト、弾ける作曲家。">
 <meta property="og:description" content="ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。">
+<link rel="canonical" href="https://kokikitagawa.github.io/koki-kitagawa/">
+<meta property="og:url" content="https://kokikitagawa.github.io/koki-kitagawa/">
 <meta property="og:image" content="https://kokikitagawa.github.io/koki-kitagawa/img/ogp.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "北川弘喜", "alternateName": "Koki Kitagawa", "jobTitle": ["ギタリスト", "作曲家", "編曲家", "ギター講師"], "description": "書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。", "address": {"@type": "PostalAddress", "addressLocality": "東京"}, "url": "https://kokikitagawa.github.io/koki-kitagawa/", "sameAs": ["https://www.instagram.com/kitagawa_kouki/", "https://www.tiktok.com/@koki.kitagawa", "https://x.com/Gt_koki_", "https://www.youtube.com/@KokiKitagawa", "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"北川弘喜","alternateName":"Koki Kitagawa","jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],"description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressLocality":"東京"},"url":"https://kokikitagawa.github.io/koki-kitagawa/","sameAs":["https://www.instagram.com/kitagawa_kouki/","https://www.tiktok.com/@koki.kitagawa","https://x.com/Gt_koki_","https://www.youtube.com/@KokiKitagawa","https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q"]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
-<style>
-:root{
-  --black:#06080d; --navy:#0a1222; --char:#141a25; --deep:#13234a;
-  --stage:#4d7dff; --line:rgba(190,205,235,.14); --line2:rgba(190,205,235,.26);
-  --ink:#f3f5f9; --sub:#b4bdcd; --faint:#7f8aa0;
-  --or:#ff7417; --or-hi:#ff9a4d; --or-soft:rgba(255,116,23,.12);
-  --gr:#18b968; --gr-hi:#4fe39a; --gr-soft:rgba(24,185,104,.12);
-  --en:"Archivo","Helvetica Neue",Arial,sans-serif;
-  --jp:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
-  --sig:"Mrs Saint Delafield",cursive;
-  --max:1180px; --gut:clamp(20px,5vw,64px); --sec:clamp(88px,11vw,150px);
-  --head:72px;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--head) + 8px);-webkit-text-size-adjust:100%}
-body{margin:0;overflow-x:clip;background:var(--black);color:var(--ink);font:400 16px/1.9 var(--jp);letter-spacing:.04em;
-  font-feature-settings:"palt" 1;-webkit-font-smoothing:antialiased}
-img{display:block;max-width:100%;height:auto}
-a{color:inherit;text-decoration:none}
-button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--or-hi);outline-offset:3px;border-radius:4px}
-[hidden]{display:none!important}
-.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gut)}
-.en{font-family:var(--en)}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-
-/* ---------- header ---------- */
-.hd{position:fixed;inset:0 0 auto;z-index:50;height:var(--head);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
-.hd.solid{background:rgba(6,8,13,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
-.hd .wrap{height:100%;display:flex;align-items:center;gap:28px;max-width:1360px}
-.logo{font:800 17px/1 var(--en);font-stretch:112%;letter-spacing:.16em;white-space:nowrap}
-.logo small{display:block;margin-top:5px;font-size:9.5px;font-weight:500;letter-spacing:.3em;color:var(--sub)}
-.nav{display:flex;gap:24px;margin-left:auto}
-.nav a{font:600 12.5px/1 var(--en);letter-spacing:.16em;color:var(--sub);padding:8px 0;position:relative;white-space:nowrap}
-.nav a:hover,.nav a.on{color:var(--ink)}
-.nav a.on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--ink)}
-.sns{display:flex;gap:6px}
-.sns a{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;color:var(--sub)}
-.sns a:hover{color:var(--ink);background:rgba(255,255,255,.07)}
-.sns svg{width:17px;height:17px;fill:currentColor}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;border:0;
-  font:700 15px/1.2 var(--jp);letter-spacing:.08em;cursor:pointer;transition:transform .15s,filter .15s,background .2s;white-space:nowrap}
-.btn:hover{filter:brightness(1.08)} .btn:active{transform:translateY(1px)}
-.btn.or{background:var(--or);color:#fff}
-.btn.gr{background:var(--gr);color:#fff}
-.btn.line{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line2)}
-.btn.line:hover{background:rgba(255,255,255,.06)}
-.btn.sm{min-height:40px;padding:0 18px;font-size:13px}
-.btn svg{width:16px;height:16px;fill:currentColor;flex:none}
-.menu-btn{display:none;margin-left:auto;width:48px;height:48px;border:0;background:none;cursor:pointer;place-items:center}
-.menu-btn i{display:block;width:24px;height:1.5px;background:#fff;box-shadow:0 -7px 0 #fff,0 7px 0 #fff}
-
-/* ---------- hero ---------- */
-.hero{position:relative;min-height:min(100svh,940px);display:flex;align-items:flex-end;overflow:hidden;isolation:isolate}
-.hero picture,.hero picture img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 30%;z-index:-2}
-.hero::before{content:"";position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(90deg,rgba(6,8,13,.86) 0%,rgba(6,8,13,.55) 34%,rgba(6,8,13,0) 60%,rgba(6,8,13,0) 100%),
-             linear-gradient(0deg,var(--black) 0%,rgba(6,8,13,0) 34%)}
-.hero .wrap{width:100%;max-width:1360px;padding-bottom:clamp(56px,9vh,110px);padding-top:calc(var(--head) + 40px)}
-.hero .role{font:500 13px/1 var(--en);letter-spacing:.34em;color:var(--sub);margin:0 0 26px}
-.hero h1{margin:0;font-weight:900;font-size:clamp(40px,6.1vw,92px);line-height:1.18;letter-spacing:.02em}
-.hero h1 span{display:block}
-.hero .name{margin:28px 0 0;font:800 clamp(18px,1.8vw,24px)/1 var(--en);font-stretch:118%;letter-spacing:.32em}
-.hero .lead{margin:26px 0 0;max-width:30em;color:var(--sub);font-size:15.5px;line-height:2}
-.hero .cta{display:flex;flex-wrap:wrap;gap:16px;margin-top:40px}
-.hero .proof{margin:44px 0 0;display:flex;flex-wrap:wrap;gap:10px 30px;font:600 12.5px/1.4 var(--en);letter-spacing:.14em;color:var(--sub)}
-.hero .proof li{list-style:none;position:relative;padding-left:16px}
-.hero .proof li::before{content:"";position:absolute;left:0;top:.45em;width:6px;height:6px;border-radius:50%;background:var(--stage)}
-.hero .proof{padding:0}
-.hero .sign{position:absolute;right:var(--gut);bottom:clamp(40px,8vh,90px);font:400 clamp(44px,5vw,76px)/1 var(--sig);color:rgba(255,255,255,.82);transform:rotate(-6deg)}
-@media (prefers-reduced-motion:no-preference){
-  .hero h1 span,.hero .name,.hero .lead,.hero .cta,.hero .proof{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
-  .hero h1 span:nth-child(2){animation-delay:.12s} .hero .name{animation-delay:.28s} .hero .lead{animation-delay:.38s}
-  .hero .cta{animation-delay:.5s} .hero .proof{animation-delay:.62s}
-  .hero picture img{animation:slowin 2.4s ease-out both}
-}
-@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@keyframes slowin{from{opacity:0;transform:scale(1.05)}to{opacity:1;transform:none}}
-
-/* ---------- section scaffold ---------- */
-section.s{padding:var(--sec) 0;position:relative}
-section.s + section.s{border-top:1px solid var(--line)}
-.sh{display:grid;grid-template-columns:auto 1fr;column-gap:22px;align-items:baseline;margin:0 0 clamp(44px,6vw,72px)}
-.sh .no{font:500 14px/1 var(--en);letter-spacing:.2em;color:var(--faint);grid-row:span 2;align-self:start;padding-top:.7em}
-.sh h2{margin:0;font:800 clamp(40px,5.4vw,72px)/.95 var(--en);font-stretch:72%;letter-spacing:.03em;text-transform:uppercase}
-.sh p{margin:14px 0 0;font-size:14px;color:var(--sub);letter-spacing:.12em}
-.lede{font-size:clamp(17px,1.6vw,20px);line-height:1.95;font-weight:500;margin:0 0 22px;max-width:30em}
-.body{color:var(--sub);max-width:36em}
-.body p{margin:0 0 1.2em}
-.small{font-size:13px;color:var(--faint)}
-.photo{position:relative;overflow:hidden;background:var(--char)}
-.photo img{width:100%;height:100%;object-fit:cover}
-.reveal{opacity:0;transform:translateY(14px);transition:opacity 1s ease,transform 1s ease}
-.reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
-.cap{position:absolute;left:16px;bottom:12px;font-size:12px;color:rgba(255,255,255,.75);letter-spacing:.08em}
-
-/* accordion (mobile) — on desktop these behave as plain blocks */
-details.acc{border-top:1px solid var(--line)}
-details.acc:last-of-type{border-bottom:1px solid var(--line)}
-details.acc>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;min-height:62px;padding:12px 2px}
-details.acc>summary::-webkit-details-marker{display:none}
-details.acc>summary b{font-weight:700;font-size:16px}
-details.acc>summary .meta{margin-left:auto;font:500 13px/1 var(--en);color:var(--faint);letter-spacing:.1em}
-details.acc>summary::after{content:"";width:12px;height:12px;flex:none;margin-left:6px;
-  background:linear-gradient(currentColor,currentColor) center/12px 1.5px no-repeat,linear-gradient(currentColor,currentColor) center/1.5px 12px no-repeat;
-  color:var(--sub);transition:transform .25s}
-details.acc[open]>summary::after{transform:rotate(45deg)}
-details.acc .in{padding:4px 2px 26px}
-
-/* ---------- PROFILE ---------- */
-.prof{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(40px,7vw,110px);align-items:start}
-.prof .photo{aspect-ratio:4/5;border-radius:4px}
-.prof .sign{position:absolute;right:18px;bottom:10px;font:400 46px/1 var(--sig);color:rgba(255,255,255,.85);transform:rotate(-7deg)}
-.can{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 36px;padding:0}
-.can li{list-style:none;font:600 12px/1 var(--en);letter-spacing:.14em;padding:9px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line2);color:var(--sub)}
-.facts{display:grid;grid-template-columns:auto 1fr;gap:12px 28px;margin:36px 0 0;font-size:14.5px}
-.facts dt{color:var(--faint);font-family:var(--en);letter-spacing:.08em}
-.facts dd{margin:0}
-.prof .sns{margin-top:30px;gap:10px}
-.prof .sns a{width:44px;height:44px;box-shadow:inset 0 0 0 1px var(--line2)}
-.gear{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 32px;margin:0;padding:0}
-.gear li{list-style:none}
-.gear b{display:block;font-size:13px;color:var(--faint);font-weight:500;margin-bottom:6px;letter-spacing:.1em}
-.gear span{display:block;font:500 14.5px/1.75 var(--en);letter-spacing:.02em}
-.prof-more{margin-top:40px}
-
-/* ---------- CAREER ---------- */
-.career{display:grid;grid-template-columns:minmax(0,1fr);max-width:980px;margin:0;padding:0}
-.career>li{list-style:none}
-.yr{display:grid;grid-template-columns:150px 1fr;gap:32px;padding:34px 0;border-top:1px solid var(--line)}
-.career{border-bottom:1px solid var(--line)}
-.yr .y{font:800 46px/1 var(--en);font-stretch:72%;letter-spacing:.02em;color:var(--ink)}
-.yr ul{margin:0;padding:0;display:grid;gap:18px}
-.yr li{list-style:none;display:grid;gap:2px}
-.yr li b{font-weight:700;font-size:16.5px;line-height:1.6}
-.yr li span{font-size:13.5px;color:var(--sub)}
-.yr li.k b::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--stage);margin-right:10px;vertical-align:.12em}
-
-/* ---------- LIVE / TV ---------- */
-.live-photos{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4fr);gap:18px;margin-bottom:clamp(56px,7vw,90px)}
-.live-photos .photo{border-radius:4px}
-.live-photos .a{aspect-ratio:16/10}
-.live-photos .b{aspect-ratio:auto}
-.live-cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:clamp(40px,6vw,96px)}
-.lbl{font:700 13px/1 var(--en);letter-spacing:.26em;color:var(--faint);margin:0 0 22px;display:flex;align-items:center;gap:14px}
-.lbl::after{content:"";flex:1;height:1px;background:var(--line)}
-.gigs{margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px}
-.gigs li{list-style:none;padding:16px 0;border-bottom:1px solid var(--line);display:grid;gap:3px}
-.gigs b{font-weight:700;font-size:15.5px;line-height:1.55}
-.gigs span{font-size:12.5px;color:var(--faint);letter-spacing:.06em}
-.tv{margin:0;padding:0}
-.tv li{list-style:none;padding:18px 0;border-bottom:1px solid var(--line)}
-.tv b{display:block;font:800 30px/1 var(--en);font-stretch:80%;letter-spacing:.04em}
-.tv span{font-size:13.5px;color:var(--sub)}
-
-/* ---------- WORKS ---------- */
-.cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:clamp(80px,10vw,130px)}
-.cat{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:400px;padding:22px;border-radius:4px;overflow:hidden;isolation:isolate;
-  background:var(--char);box-shadow:inset 0 0 0 1px var(--line);cursor:pointer;text-align:left;border:0}
-.cat img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .8s ease}
-.cat:hover img{transform:scale(1.04)}
-.cat::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,8,13,.05) 25%,rgba(6,8,13,.7) 58%,rgba(6,8,13,.96))}
-.cat .n{font:500 13px/1 var(--en);color:var(--sub);letter-spacing:.2em}
-.cat .t{margin:14px 0 4px;font:800 21px/1.05 var(--en);font-stretch:78%;letter-spacing:.04em;text-transform:uppercase}
-.cat .j{font-weight:700;font-size:15px}
-.cat .d{margin:12px 0 0;font-size:13px;line-height:1.75;color:var(--sub)}
-.cat .c{margin-top:16px;padding-top:14px;border-top:1px solid var(--line2);font:600 13px/1 var(--en);letter-spacing:.1em;color:var(--gr-hi)}
-.feat-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:0 0 30px}
-.feat-head h3{margin:0;font:800 30px/1 var(--en);font-stretch:80%;letter-spacing:.04em}
-.feat-head p{margin:0;color:var(--sub);font-size:13.5px}
-.feat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,2.4vw,32px)}
-.song{display:flex;flex-direction:column}
-.song .art{position:relative;aspect-ratio:1;border-radius:4px;overflow:hidden;background:var(--char) center/cover no-repeat;border:0;padding:0;cursor:pointer;width:100%}
-.song .art .no{position:absolute;left:14px;top:12px;font:700 13px/1 var(--en);letter-spacing:.16em;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.6)}
-.song .play{position:absolute;right:14px;bottom:14px;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px 0 14px;border-radius:999px;
-  background:rgba(6,8,13,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font:700 12.5px/1 var(--en);letter-spacing:.14em;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
-.song .play i{width:0;height:0;border-left:9px solid var(--gr-hi);border-top:6px solid transparent;border-bottom:6px solid transparent}
-.song.on .art{box-shadow:0 0 0 2px var(--gr-hi)}
-.song h4{margin:22px 0 2px;font:800 26px/1.15 var(--en);letter-spacing:.01em}
-.song .who{font-size:14px;color:var(--sub)}
-.song .who em{font-style:normal;font-family:var(--en);color:var(--faint);margin-left:10px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0;padding:0}
-.tags li{list-style:none;font:700 11px/1 var(--en);letter-spacing:.16em;padding:7px 10px;border-radius:3px;background:var(--gr-soft);color:var(--gr-hi)}
-.song .jr{margin-top:8px;font-size:12.5px;color:var(--faint)}
-.song .sp{margin-top:auto;padding-top:14px;font:600 12.5px/1 var(--en);letter-spacing:.12em;color:var(--sub);display:inline-flex;gap:8px;align-items:center}
-.song .sp svg{width:15px;height:15px;fill:#1DB954}
-.player{margin-top:26px;border-radius:12px;overflow:hidden}
-.player:empty{display:none}
-.swipe{display:none}
-.allworks{margin-top:56px}
-.allworks>summary{justify-content:flex-start}
-.allworks>summary b{font-size:15px}
-.credit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px}
-.credit-grid h5{margin:0 0 12px;font-size:13px;color:var(--faint);font-weight:500;letter-spacing:.1em}
-.credit-grid ul{margin:0;padding:0}
-.credit-grid li{list-style:none;padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;font-size:14px}
-.credit-grid li span{color:var(--faint);text-align:right;flex:none;max-width:55%}
-
-/* ---------- LISTEN ---------- */
-.listen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
-.media{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:340px;padding:30px;border-radius:4px;overflow:hidden;isolation:isolate;box-shadow:inset 0 0 0 1px var(--line)}
-.media .bg{position:absolute;inset:0;z-index:-2}
-.media::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(6,8,13,.15),rgba(6,8,13,.9) 78%)}
-.media .bg.mosaic{display:grid;grid-template-columns:repeat(3,1fr);opacity:.85}
-.media .bg.mosaic span{background:center/cover no-repeat}
-.media .bg img{width:100%;height:100%;object-fit:cover}
-.media .ico{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;margin-bottom:18px}
-.media .ico svg{width:22px;height:22px;fill:#fff}
-.media b{font:800 34px/1 var(--en);font-stretch:85%;letter-spacing:.03em}
-.media p{margin:10px 0 0;color:var(--sub);font-size:14.5px}
-.media .go{margin-top:18px;font:600 13px/1 var(--en);letter-spacing:.14em}
-.media:hover .go{text-decoration:underline;text-underline-offset:5px}
-.workcta{margin-top:clamp(72px,9vw,110px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:30px;align-items:center;padding:clamp(30px,4vw,48px);
-  border-radius:4px;background:linear-gradient(110deg,var(--gr-soft),rgba(24,185,104,0) 70%),var(--navy);box-shadow:inset 0 0 0 1px rgba(79,227,154,.25)}
-.workcta h3{margin:0;font-size:clamp(20px,2vw,24px);font-weight:700}
-.workcta p{margin:8px 0 0;color:var(--sub);font-size:14px}
-.workcta .serv{display:flex;flex-wrap:wrap;gap:8px 22px;margin:18px 0 0;padding:0;font-size:13px;color:var(--sub)}
-.workcta .serv li{list-style:none}
-.workcta .serv li::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gr-hi);margin-right:8px;vertical-align:.2em}
-
-/* ---------- LESSON ---------- */
-#lesson{background:radial-gradient(70% 60% at 100% 0%,rgba(255,116,23,.08),transparent 70%),var(--navy)}
-.les{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(40px,6vw,90px);align-items:start}
-.les .photo{aspect-ratio:4/5;border-radius:4px}
-.les .sign{position:absolute;right:16px;bottom:10px;font:400 44px/1 var(--sig);color:rgba(255,190,140,.9);transform:rotate(-7deg)}
-.les .tg{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 34px;padding:0}
-.les .tg li{list-style:none;font-size:13px;padding:7px 14px;border-radius:999px;background:var(--or-soft);color:#ffd3b0}
-.trial{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 22px;border-radius:4px;margin-bottom:16px;
-  box-shadow:inset 0 0 0 1px rgba(255,154,77,.4);background:rgba(255,116,23,.06)}
-.trial b{font-size:16px} .trial small{display:block;color:var(--sub);font-size:12.5px;margin-top:2px}
-.trial .p{font:800 26px/1 var(--en);white-space:nowrap}
-.trial .p small{display:inline;font-size:13px;color:var(--sub);margin-left:4px;font-family:var(--jp)}
-.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0;padding:0}
-.plan{list-style:none;position:relative;padding:24px 22px 22px;border-radius:4px;background:var(--char);box-shadow:inset 0 0 0 1px var(--line)}
-.plan .nm{font-weight:700;font-size:17px}
-.plan .ct{font-size:12.5px;color:var(--faint);margin-top:2px}
-.plan .p{margin-top:18px;font:800 34px/1 var(--en);letter-spacing:.01em}
-.plan .p small{font:500 13px/1 var(--jp);color:var(--sub);margin-left:4px}
-.plan .per{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--sub);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.plan .per em{font-style:normal;color:var(--or-hi);font-weight:700}
-.plan.rec{background:linear-gradient(160deg,rgba(255,116,23,.2),rgba(255,116,23,.04) 60%),var(--char);box-shadow:inset 0 0 0 1.5px var(--or)}
-.plan .badge{position:absolute;right:16px;top:-11px;background:var(--or);color:#fff;font-size:11.5px;font-weight:700;padding:4px 12px;border-radius:999px;letter-spacing:.08em}
-.les .cta{margin-top:34px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.les .cta p{margin:0;font-size:13px;color:var(--sub)}
-.les-info{margin-top:44px}
-table.hours{width:100%;border-collapse:collapse;font-size:14px}
-.hours th,.hours td{border-bottom:1px solid var(--line);padding:12px 4px;text-align:left;vertical-align:top}
-.hours th{width:32%;font-weight:700}
-.hours td small{display:block;color:var(--faint);font-size:12.5px}
-
-/* ---------- CONTACT ---------- */
-#contact{background:linear-gradient(180deg,rgba(6,8,13,.86),rgba(6,8,13,.94)),var(--bgimg,none) center/cover no-repeat}
-.ct{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:clamp(40px,6vw,96px);align-items:start}
-.ct .side p{color:var(--sub);margin:0 0 26px;max-width:24em}
-.ct .side dl{display:grid;grid-template-columns:auto 1fr;gap:10px 22px;font-size:14px;margin:0}
-.ct .side dt{color:var(--faint)}
-.ct .side dd{margin:0}
-.ct .side .quick{display:grid;gap:12px;margin:34px 0 0}
-.ct .side .quick button{justify-content:flex-start;width:100%;max-width:380px;white-space:normal;text-align:left;line-height:1.5;padding:12px 22px}
-form.f{display:grid;gap:22px;padding:clamp(24px,3.4vw,44px);border-radius:4px;background:rgba(20,26,37,.78);box-shadow:inset 0 0 0 1px var(--line);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-.f .two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.f label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;letter-spacing:.08em}
-.f label i{font-style:normal;color:var(--or-hi);font-weight:500;margin-left:6px;font-size:11.5px}
-.f input,.f select,.f textarea{width:100%;min-height:52px;padding:12px 14px;border-radius:4px;border:1px solid var(--line2);background:rgba(6,8,13,.6);font-size:16px}
-.f select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--sub) 50%),linear-gradient(-45deg,transparent 50%,var(--sub) 50%);
-  background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat}
-.f textarea{min-height:170px;resize:vertical;line-height:1.8}
-.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--sub);outline:none}
-.f .err{color:#ff9b8a;font-size:12.5px;margin:6px 0 0}
-.f .note{font-size:12.5px;color:var(--faint);margin:0}
-.f .send{justify-self:start}
-.f .done{padding:20px;border-radius:4px;background:var(--gr-soft);color:#c9f7df;font-size:14px}
-
-/* ---------- footer ---------- */
-footer{padding:80px 0 120px;border-top:1px solid var(--line)}
-footer .wrap{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:end}
-footer .big{font:800 clamp(34px,6vw,84px)/.9 var(--en);font-stretch:110%;letter-spacing:.06em}
-footer nav{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px}
-footer nav a{font:600 12px/1 var(--en);letter-spacing:.16em;color:var(--sub)}
-footer small{display:block;margin-top:26px;color:var(--faint);font-size:12px}
-
-/* ---------- mobile parts ---------- */
-.dock{display:none}
-.menu{position:fixed;inset:0;z-index:60;background:rgba(6,8,13,.97);backdrop-filter:blur(10px);display:flex;flex-direction:column;padding:16px var(--gut) 30px;overflow:auto}
-.menu .top{display:flex;align-items:center;justify-content:space-between;height:56px}
-.menu .x{width:48px;height:48px;border:0;background:none;font-size:30px;line-height:1;cursor:pointer}
-.menu nav{display:grid;margin:24px 0 30px}
-.menu nav a{display:flex;align-items:baseline;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);font:800 30px/1 var(--en);font-stretch:75%;letter-spacing:.06em}
-.menu nav a small{font:500 12px/1 var(--jp);color:var(--faint);letter-spacing:.1em}
-.menu .btns{display:grid;gap:12px;margin-bottom:26px}
-.menu .btns .btn{min-height:58px;font-size:16px}
-
-@media (max-width:1279px){
-  .nav,.hd .sns,.hd .btn{display:none}
-  .menu-btn{display:grid}
-  .cats{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:820px){
-  :root{--head:60px;--sec:84px}
-  body{font-size:15px}
-  .hero{min-height:auto;align-items:stretch;flex-direction:column}
-  .hero picture{position:relative;display:block;height:min(118vw,620px)}
-  .hero picture img{position:absolute}
-  .hero::before{background:linear-gradient(0deg,var(--black) 0%,var(--black) calc(100% - min(118vw,620px)),rgba(6,8,13,.55) calc(100% - min(118vw,620px) + 120px),rgba(6,8,13,0) 62%,rgba(6,8,13,.4) 100%)}
-  .hero .wrap{position:relative;margin-top:-120px;padding-top:0;padding-bottom:48px}
-  .hero h1{font-size:clamp(28px,8.9vw,48px)}
-  .hero .role{margin-bottom:18px;font-size:11.5px}
-  .hero .name{margin-top:20px}
-  .hero .lead{font-size:14.5px;margin-top:20px}
-  .hero .cta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:30px}
-  .hero .cta .btn{padding:0 12px;font-size:14px;min-height:54px}
-  .hero .proof{margin-top:30px;gap:8px 20px;font-size:11px}
-  .hero .sign{top:calc(min(118vw,620px) - 210px);bottom:auto;right:18px;font-size:46px}
-  .sh{margin-bottom:38px;column-gap:14px}
-  .sh h2{font-size:44px}
-  .sh p{font-size:13px;margin-top:10px}
-  .prof,.les,.ct,.live-cols{grid-template-columns:minmax(0,1fr)}
-  .prof .photo{aspect-ratio:4/4.4}
-  .gear{grid-template-columns:minmax(0,1fr)}
-  .yr{grid-template-columns:64px 1fr;gap:16px;padding:22px 0}
-  .yr .y{font-size:30px}
-  .live-photos{grid-template-columns:minmax(0,1fr);gap:12px}
-  .live-photos .b{aspect-ratio:4/3}
-  .gigs{grid-template-columns:minmax(0,1fr)}
-  .cats{grid-template-columns:minmax(0,1fr);gap:12px}
-  .cat{min-height:0;aspect-ratio:16/11;padding:18px}
-  .cat .d{display:none}
-  .feat{display:grid;grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:80%;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
-    margin:0 calc(var(--gut) * -1);padding:0 var(--gut) 4px;scroll-padding:0 var(--gut);scrollbar-width:none}
-  .feat::-webkit-scrollbar{display:none}
-  .song{scroll-snap-align:start}
-  .song h4{font-size:22px;margin-top:16px}
-  .swipe{display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:12px;color:var(--faint)}
-  .swipe .dots{display:flex;gap:6px}
-  .swipe .dots i{width:6px;height:6px;border-radius:3px;background:var(--line2);transition:width .2s,background .2s}
-  .swipe .dots i.on{width:18px;background:var(--gr-hi)}
-  .feat-head{display:block}
-  .feat-head p{margin-top:10px}
-  .credit-grid{grid-template-columns:minmax(0,1fr);gap:26px}
-  .listen{grid-template-columns:minmax(0,1fr);gap:12px}
-  .media{min-height:230px;padding:22px}
-  .media b{font-size:28px}
-  .workcta{grid-template-columns:minmax(0,1fr);gap:22px}
-  .workcta .btn{width:100%}
-  .plans{grid-template-columns:minmax(0,1fr);gap:14px}
-  .plan{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px;padding:20px 18px}
-  .plan .p{margin:0;font-size:27px;grid-row:span 2;text-align:right}
-  .plan .p small{display:block;margin:4px 0 0}
-  .plan .per{grid-column:1/-1}
-  .les .cta .btn{width:100%}
-  .les-info{margin-top:34px}
-  .f .two{grid-template-columns:minmax(0,1fr)}
-  .f .send{width:100%}
-  footer{padding:60px 0 130px}
-  footer .wrap{grid-template-columns:minmax(0,1fr)}
-  .sns a{width:44px;height:44px}
-  .dock{display:grid;grid-template-columns:1fr auto;gap:10px;position:fixed;left:0;right:0;bottom:0;z-index:40;
-    padding:12px var(--gut) calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(6,8,13,0),rgba(6,8,13,.92) 38%);transition:transform .3s,opacity .3s}
-  .dock .btn{min-height:54px}
-  .dock .btn.gr{padding:0 18px}
-  .dock.hide{transform:translateY(110%);opacity:0;pointer-events:none}
-}
-@media (min-width:821px){
-  details.acc.pc-open{border:0}
-  details.acc.pc-open>summary{display:none}
-  details.acc.pc-open .in{padding:0}
-}
-
-/* ===== v4.1：カードで整理（ショップの商品を選ぶような見せ方） ===== */
-.card{position:relative;list-style:none;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
-  box-shadow:inset 0 0 0 1px var(--line);padding:20px 20px 18px;transition:box-shadow .2s,transform .2s}
-.card b{display:block;font-weight:700;font-size:15.5px;line-height:1.5}
-.card small{display:block;margin-top:4px;font-size:12.5px;line-height:1.6;color:var(--sub)}
-.chip{display:inline-block;font:700 10.5px/1 var(--en);letter-spacing:.16em;padding:6px 9px;border-radius:999px;background:rgba(77,125,255,.16);color:#a9c1ff}
-.chip.gr{background:var(--gr-soft);color:var(--gr-hi)} .chip.or{background:var(--or-soft);color:var(--or-hi)} .chip.tv{background:rgba(255,255,255,.1);color:#fff}
-.card .row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.yr2{font:700 13px/1 var(--en);color:var(--faint);letter-spacing:.06em}
-.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 12px;padding:0}
-.cards3 .card .chip{margin-bottom:14px}
-.cards3.mini .card{padding:16px 18px}
-.cards3.mini small{margin:0 0 4px;font-family:var(--en);color:var(--faint);letter-spacing:.06em}
-.cards3.mini b{font-size:14px}
-.prof .sns{margin:26px 0 30px}
-details.open-card{border:0!important;margin-top:12px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--line);padding:0 20px;background:rgba(255,255,255,.02)}
-details.open-card>summary{min-height:60px}
-details.open-card .in{padding:0 0 22px}
-details.open-card .in.body p{font-size:14.5px}
-.gcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0;padding:0}
-.gcard{list-style:none;padding:14px 16px;border-radius:10px;background:rgba(255,255,255,.04)}
-.gcard b{display:block;font-size:12px;color:var(--faint);font-weight:500;margin-bottom:6px;letter-spacing:.1em}
-.gcard span{display:block;font:500 13.5px/1.7 var(--en)}
-/* career shelf */
-.shelf{display:grid;align-items:start;grid-auto-flow:column;grid-auto-columns:calc((100% - 32px)/3);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
-.shelf::-webkit-scrollbar{display:none}
-.ycard{scroll-snap-align:start;padding:26px 24px}
-.ycard .y{font:800 54px/1 var(--en);font-stretch:72%;margin-bottom:20px;background:linear-gradient(180deg,#fff,#8aa6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.ycard ul{margin:0;padding:0;display:grid;gap:14px}
-.ycard li{list-style:none;padding-top:14px;border-top:1px solid var(--line)}
-.ycard li b{font-size:14.5px}
-.shelf-nav{display:flex;align-items:center;justify-content:space-between;margin-top:18px;font-size:12px;color:var(--faint)}
-.arw{width:44px;height:44px;border-radius:50%;border:0;margin-left:8px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px var(--line2);font-size:22px;line-height:1;cursor:pointer}
-.arw:hover{background:rgba(255,255,255,.12)}
-/* filter chips + grids */
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
-.fchip{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;border:0;cursor:pointer;font-size:13.5px;font-weight:700;
-  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px var(--line2);color:var(--sub)}
-.fchip em{font-style:normal;font:600 11.5px/1 var(--en);color:var(--faint)}
-.fchip[aria-pressed="true"]{background:var(--ink);color:var(--black);box-shadow:none}
-.fchip[aria-pressed="true"] em{color:#5a6377}
-.grid3,.grid4{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0;padding:0}
-.grid4{grid-template-columns:repeat(4,minmax(0,1fr))}
-.gig,.credit{min-height:132px}
-.card:hover{box-shadow:inset 0 0 0 1px var(--line2)}
-.live-photos{margin-bottom:clamp(44px,5vw,64px)}
-.allworks .in{padding-top:10px}
-/* listen: services as cards */
-.workcta .serv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0 0;padding:0}
-.workcta .serv li::before{display:none}
-.workcta .serv .card{padding:14px 14px 12px;border-radius:10px}
-.workcta .serv .card b{font-size:13.5px}
-.workcta{border-radius:18px;grid-template-columns:minmax(0,1fr)}
-.workcta>.btn{justify-self:start}
-/* lesson as products */
-.les .tg li{font-size:12.5px}
-.trial{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 18px;padding:22px;border-radius:14px;margin-bottom:14px;
-  background:linear-gradient(120deg,rgba(255,116,23,.14),rgba(255,116,23,.03) 70%);box-shadow:inset 0 0 0 1px rgba(255,154,77,.45)}
-.trial .chip{margin-bottom:10px}
-.trial .pick{grid-column:1/-1}
-.plans{gap:14px}
-.plan{border-radius:14px;padding:22px 20px 20px;display:flex;flex-direction:column}
-.plan .per{display:block;border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
-.plan .per em{display:block;margin-top:2px}
-.pick{margin-top:16px;min-height:46px;border-radius:999px;border:0;cursor:pointer;font-weight:700;font-size:14px;letter-spacing:.06em;
-  background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px var(--line2);color:var(--ink);transition:background .2s}
-.pick:hover{background:rgba(255,255,255,.13)}
-.pick.or,.plan.rec .pick{background:var(--or);box-shadow:none;color:#fff}
-.plan .pick{margin-top:auto}
-.plan .per{margin-bottom:16px}
-/* contact: choose like products */
-.kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.kinds legend{font-size:13px;font-weight:700;margin-bottom:12px;letter-spacing:.08em;padding:0}
-.kinds legend i{font-style:normal;color:var(--or-hi);font-weight:500;margin-left:6px;font-size:11.5px}
-.kc{position:relative;cursor:pointer;margin:0!important}
-.kc input{position:absolute;opacity:0;inset:0;cursor:pointer}
-.kc span{display:block;height:100%;padding:14px 14px 12px;border-radius:12px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line2);transition:box-shadow .15s,background .15s}
-.kc b{display:block;font-size:14px}
-.kc small{display:block;font-size:11.5px;color:var(--faint);font-weight:400;margin-top:2px;letter-spacing:.02em}
-.kc input:checked+span{background:var(--gr-soft);box-shadow:inset 0 0 0 1.5px var(--gr-hi)}
-.kc.or input:checked+span{background:var(--or-soft);box-shadow:inset 0 0 0 1.5px var(--or-hi)}
-.kc input:focus-visible+span{outline:2px solid var(--or-hi);outline-offset:2px}
-.kinds .err{grid-column:1/-1}
-form.f{border-radius:18px}
-@media (max-width:1080px){ .grid4{grid-template-columns:repeat(3,minmax(0,1fr))} .workcta .serv{grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media (max-width:820px){
-  .cards3{grid-template-columns:minmax(0,1fr)}
-  .cards3:not(.mini) .card{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;padding:16px}
-  .cards3:not(.mini) .card .chip{margin:0;grid-row:span 2;min-width:78px;text-align:center}
-  .cards3:not(.mini) .card small{margin-top:0}
-  .cards3.mini{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-  .cards3.mini .card{padding:12px}
-  .cards3.mini b{font-size:12px;line-height:1.45}
-  .cards3.mini small{font-size:11px}
-  .gcards{grid-template-columns:minmax(0,1fr)}
-  .shelf{grid-auto-columns:82%;margin:0 calc(var(--gut) * -1);padding:0 var(--gut) 4px;scroll-padding:0 var(--gut);gap:12px}
-  .ycard .y{font-size:44px}
-  .filters{flex-wrap:nowrap;overflow-x:auto;margin-right:calc(var(--gut) * -1);padding-right:var(--gut);scrollbar-width:none}
-  .filters::-webkit-scrollbar{display:none}
-  .fchip{flex:none}
-  .grid3,.grid4{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .gig,.credit{min-height:0;padding:14px 14px 12px}
-  .card b{font-size:13.5px}
-  .card small{font-size:11.5px}
-  .card .row{margin-bottom:10px}
-  .workcta .serv{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .kinds{grid-template-columns:minmax(0,1fr)}
-  .plan{display:flex;align-items:stretch;text-align:left}
-  .plan .p{text-align:left;margin-top:14px}
-  .plan .p small{display:inline}
-}
-
-/* ===== v4.2：セクションごとに明るさを変える（B案） 暗い＝迫力／明るめ＝読ませる ===== */
-:root{--black:#080b13;--t1:#111a2c;--t2:#1a2539;--t0b:#0b111d}
-section.s + section.s{border-top:0}
-#profile{background:var(--t1)}
-#career{background:var(--t2)}
-#live{background:var(--black)}
-#works{background:var(--t1)}
-#listen{background:var(--t0b)}
-#lesson{background:radial-gradient(70% 55% at 100% 0%,rgba(255,130,40,.13),transparent 70%),radial-gradient(60% 50% at 0% 100%,rgba(255,130,40,.06),transparent 70%),#1d2638}
-#profile .card,#career .card,#works .card,#lesson .card,#profile details.open-card,#lesson details.open-card{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));box-shadow:inset 0 0 0 1px rgba(200,215,245,.17)}
-#lesson .plan.rec{background:linear-gradient(160deg,rgba(255,116,23,.24),rgba(255,116,23,.06) 60%),rgba(255,255,255,.04);box-shadow:inset 0 0 0 1.5px var(--or)}
-#lesson .trial{background:linear-gradient(120deg,rgba(255,116,23,.18),rgba(255,116,23,.04) 70%);box-shadow:inset 0 0 0 1px rgba(255,154,77,.5)}
-#career .ycard .y{background:linear-gradient(180deg,#fff,#a9bdff);-webkit-background-clip:text;background-clip:text}
-#works .cat{box-shadow:inset 0 0 0 1px rgba(200,215,245,.17)}
-.workcta{background:linear-gradient(110deg,rgba(24,185,104,.16),rgba(24,185,104,0) 70%),#121b2c}
-footer{background:var(--black)}
-
-/* ===== v4.3：カードの背景に写真をぼかして敷く ===== */
-.ph{isolation:isolate;overflow:hidden}
-.ph::before{content:"";position:absolute;inset:-24px;z-index:-1;background:center/cover no-repeat;filter:blur(10px) saturate(1.15);opacity:.55;transform:scale(1.05);transition:opacity .3s}
-.ph::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:linear-gradient(180deg,rgba(9,13,24,.42) 0%,rgba(9,13,24,.82) 75%)}
-.ph:hover::before{opacity:.75}
-.plan.ph::after{background:linear-gradient(180deg,rgba(14,19,32,.55),rgba(14,19,32,.9) 70%)}
-.plan.rec.ph::after{background:linear-gradient(165deg,rgba(255,116,23,.3),rgba(20,16,20,.85) 60%)}
-.trial.ph::after{background:linear-gradient(120deg,rgba(255,116,23,.32),rgba(14,16,26,.8) 65%)}
-.plan .badge{top:14px;right:14px}
-.ph b,.ph small,.ph .p,.ph .nm{text-shadow:0 1px 8px rgba(0,0,0,.45)}
-
-/* ===== v4.5：流れる文字の帯／大きな英字／細長い写真／カードを順番に ===== */
-.band{overflow:hidden;white-space:nowrap;padding:22px 0;background:var(--black);border-block:1px solid var(--line);user-select:none}
-.band .tr{display:inline-flex;animation:band 38s linear infinite}
-.band.rev .tr{animation-direction:reverse}
-.band span{font:800 clamp(34px,5vw,64px)/1 var(--en);font-stretch:75%;letter-spacing:.06em;padding-right:.5em;color:transparent;-webkit-text-stroke:1px rgba(220,228,245,.45)}
-.band span:nth-child(4n+1){color:var(--ink);-webkit-text-stroke:0}
-.band i{display:inline-block;width:.45em;height:.45em;margin:0 .6em 0 .1em;border-radius:50%;background:var(--or);align-self:center;font-size:clamp(34px,5vw,64px)}
-.band.rev i{background:var(--gr)}
-@keyframes band{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){.band .tr{animation:none}}
-.pw{position:relative}
-.bigword{position:absolute;left:-.06em;bottom:-.42em;z-index:2;pointer-events:none;font:800 clamp(56px,6.4vw,96px)/1 var(--en);font-stretch:72%;letter-spacing:.02em;
-  color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.85);text-transform:uppercase;white-space:nowrap}
-.bigword.or{-webkit-text-stroke-color:rgba(255,170,110,.95);font-size:clamp(48px,5.2vw,78px)}
-.pw .sign{z-index:3}
-.strip{display:grid;grid-template-columns:1.1fr 1fr 1.1fr;gap:12px;align-items:start;margin-bottom:clamp(44px,5vw,64px)}
-.strip .photo{aspect-ratio:3/4.4;border-radius:10px}
-.strip .photo:nth-child(2){margin-top:48px}
-.strip .photo:nth-child(3){margin-top:16px}
-.strip .cap{left:12px;bottom:10px;font:600 11px/1 var(--en);letter-spacing:.2em}
-.card.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease,box-shadow .2s}
-.card.rv.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){.card.rv{opacity:1;transform:none;transition:none}}
-@media (max-width:820px){
-  .band{padding:16px 0}
-  .bigword{font-size:clamp(48px,15vw,64px);bottom:-.38em}
-  .pw{margin-bottom:22px}
-  .strip{gap:8px}
-  .strip .photo{border-radius:8px}
-  .strip .photo:nth-child(2){margin-top:28px}
-  .strip .photo:nth-child(3){margin-top:10px}
-}
-
-/* ===== v4.6：数字のバー／レッスンの流れとよくある質問／DMの入口 ===== */
-.nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:46px;max-width:760px;border-top:1px solid rgba(255,255,255,.18)}
-.nums div{padding:16px 18px 0 0}
-.nums div+div{padding-left:18px;border-left:1px solid rgba(255,255,255,.12)}
-.nums b{display:block;font:800 clamp(34px,3.6vw,52px)/1 var(--en);font-stretch:75%;letter-spacing:.01em}
-.nums b small{font:700 13px/1 var(--jp);margin-left:3px;color:var(--sub)}
-.nums span{display:block;margin-top:6px;font-size:12px;color:var(--sub);letter-spacing:.08em}
-.les-extra{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(30px,5vw,70px);margin-top:clamp(64px,8vw,100px)}
-.les-extra h3{margin:0 0 18px;font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:12px}
-.les-extra h3 span{font:700 12px/1 var(--en);letter-spacing:.24em;color:var(--or-hi)}
-.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0;padding:0;counter-reset:st}
-.flow .card{padding:20px 18px}
-.flow .card::marker{content:none}
-.flow .n{display:block;font:800 30px/1 var(--en);font-stretch:75%;color:var(--or-hi);margin-bottom:14px}
-.faq details{border-top:1px solid var(--line)}
-.faq details:last-child{border-bottom:1px solid var(--line)}
-.faq summary{list-style:none;cursor:pointer;display:flex;gap:12px;align-items:flex-start;padding:16px 2px;font-weight:700;font-size:14.5px}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::before{content:"Q";font:800 15px/1.5 var(--en);color:var(--or-hi)}
-.faq summary::after{content:"+";margin-left:auto;color:var(--sub);font-weight:400}
-.faq details[open] summary::after{content:"−"}
-.faq p{margin:0 0 16px 26px;font-size:14px;color:var(--sub)}
-.dm{display:flex;align-items:center;gap:14px;margin-top:14px;max-width:380px;padding:14px 18px;border-radius:14px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line2)}
-.dm i{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%)}
-.dm i svg{width:18px;height:18px;fill:#fff}
-.dm b{display:block;font-size:14px} .dm small{display:block;font-size:12px;color:var(--faint)}
-.dm:hover{background:rgba(255,255,255,.08)}
-@media (max-width:820px){
-  .nums{margin-top:30px;grid-template-columns:repeat(4,minmax(0,1fr))}
-  .nums div{padding:12px 6px 0 0}
-  .nums div+div{padding-left:8px}
-  .nums b{font-size:30px}
-  .nums b small{font-size:11px}
-  .nums span{font-size:10.5px;letter-spacing:.02em}
-  .les-extra{grid-template-columns:minmax(0,1fr)}
-  .flow{grid-template-columns:minmax(0,1fr)}
-  .flow .card{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
-  .flow .n{margin:0;grid-row:span 2;font-size:26px}
-}
-
-/* v4.7：レッスンの実績カード */
-.lstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 26px;padding:0}
-.lstats .card{padding:16px 16px 14px}
-.lstats b{font:800 clamp(26px,2.6vw,34px)/1 var(--en);font-stretch:78%;color:var(--or-hi);letter-spacing:.01em}
-.lstats b small{display:inline;font:700 12px/1 var(--jp);color:var(--ink);margin:0 0 0 2px}
-.lstats span{display:block;margin-top:8px;font-size:12px;color:var(--sub)}
-@media (max-width:820px){.lstats{gap:8px}.lstats .card{padding:12px 10px}.lstats b{font-size:24px}.lstats span{font-size:11px}}
-</style>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/kk-design-system.css">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>.ph-guitar::before{background-image:url("img/guitar-900.webp")}.ph-studio::before{background-image:url("img/studio-1600.webp")}.ph-lesson::before{background-image:url("img/lesson-900.webp")}.ph-stage::before{background-image:url("img/stage-1600.webp")}.ph-live::before{background-image:url("img/live-720.webp")}.ph-pedal::before{background-image:url("img/pedal-1200.webp")}.ph-play::before{background-image:url("img/play-1400.webp")}.ph-desk::before{background-image:url("img/desk-900.webp")}.ph-hands::before{background-image:url("img/hands-1400.webp")}.ph-guitars::before{background-image:url("img/guitars-900.webp")}</style>
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
 <a class="sr" href="#main">本文へ</a>
@@ -618,13 +32,170 @@ footer{background:var(--black)}
     <nav class="nav" id="nav" aria-label="ページ内">
       <a href="#profile">PROFILE</a><a href="#career">CAREER</a><a href="#live">LIVE / TV</a><a href="#works">WORKS</a><a href="#listen">LISTEN</a><a href="#lesson">LESSON</a><a href="#contact">CONTACT</a>
     </nav>
-    <div class="sns" data-sns></div>
+    <div class="sns"><a href="https://www.instagram.com/kitagawa_kouki/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://www.tiktok.com/@koki.kitagawa" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.53.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></a><a href="https://x.com/Gt_koki_" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a><a href="https://www.youtube.com/@KokiKitagawa" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><a href="https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q" target="_blank" rel="noopener" aria-label="Spotify"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></a></div>
     <button class="btn gr sm" type="button" data-open="お仕事">仕事を依頼する</button>
     <button class="menu-btn" type="button" id="menuBtn" aria-label="メニューを開く" aria-expanded="false" aria-controls="menu"><i></i></button>
   </div>
 </header>
 
-<main id="main"></main>
+<main id="main">
+<section class="hero" id="top" aria-label="北川弘喜">
+      <picture><source media="(max-width:820px)" srcset="img/hero-sp-900.webp"><img src="img/hero-pc-2000.webp" alt="紫の照明の中、ギターのネックを斜めに構えて弾く北川弘喜" fetchpriority="high"></picture>
+      <div class="wrap">
+        <p class="role">GUITARIST / COMPOSER</p>
+        <h1><span>書けるギタリスト、</span><span>弾ける作曲家。</span></h1>
+        <p class="name">KOKI KITAGAWA</p>
+        <p class="lead">ライブ・舞台・テレビのサポートギターから、作詞・作曲・編曲まで。「弾く」と「作る」の両方で、プロの現場に立っています。</p>
+        <div class="cta">
+          <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
+          <button class="btn line" type="button" data-open="レッスン">レッスンを申し込む</button>
+        </div>
+        <ul class="proof"><li>SUMMER SONIC 2023</li><li>CDTV</li><li>B-PROJECT 楽曲提供</li></ul>
+        <div class="nums"><div><b>10<small>曲</small></b><span>楽曲提供</span></div><div><b>5<small>作品</small></b><span>ギター参加</span></div><div><b>10<small>本</small></b><span>ステージ</span></div><div><b>2<small>回</small></b><span>TV出演</span></div></div>
+      </div>
+    </section><div class="band " aria-hidden="true"><div class="tr"><span>Guitar</span><i></i><span>Compose</span><i></i><span>Arrange</span><i></i><span>Live Support</span><i></i><span>Guitar</span><i></i><span>Compose</span><i></i><span>Arrange</span><i></i><span>Live Support</span><i></i><span>Guitar</span><i></i><span>Compose</span><i></i><span>Arrange</span><i></i><span>Live Support</span><i></i><span>Guitar</span><i></i><span>Compose</span><i></i><span>Arrange</span><i></i><span>Live Support</span><i></i></div></div><section class="s" id="profile"><div class="wrap">
+      <div class="sh"><span class="no">01</span><h2>Profile</h2><p>プロフィール・経歴</p></div>
+      <div class="prof">
+        <div class="pw"><div class="photo reveal"><img src="img/profile-900.webp" alt="椅子に座ってギターを弾く北川弘喜" loading="lazy" decoding="async" class=""></div><span class="bigword" aria-hidden="true">Guitarist</span></div>
+        <div>
+          <p class="lede">曲を書く人と、曲を鳴らす人は、たいてい別々にいる。</p>
+          <div class="body" style="margin:0 0 28px"><p>北川弘喜はその両方に立つ。B-PROJECT、星名美怜、Bunny La Crew への提供曲では、作詞・作曲・編曲からギターまでを一人で通す。SUMMER SONIC やイナズマロックフェスのステージではサポートギタリストとして音を鳴らし、CDTV では地上波のバックに立った。</p></div>
+          <ul class="cards3"><li class="card ph ph-live"><span class="chip">GUITAR</span><b>サポートギター</b><small>フェス・ツアー・舞台・TVで演奏</small></li><li class="card ph ph-studio"><span class="chip">COMPOSE</span><b>作詞・作曲・編曲</b><small>提供曲は作詞からギターまで一人で</small></li><li class="card ph ph-hands"><span class="chip">LESSON</span><b>ギターレッスン</b><small>初心者からプロ志向まで</small></li></ul>
+          <ul class="cards3 mini"><li class="card"><small>2022年〜</small><b>プロとして活動（東京拠点）</b></li><li class="card"><small>2021年〜</small><b>専門学校・音楽教室で指導</b></li><li class="card"><small>個人レッスン</small><b>初心者〜プロフェッショナル</b></li></ul>
+          <div class="sns"><a href="https://www.instagram.com/kitagawa_kouki/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://www.tiktok.com/@koki.kitagawa" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.53.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></a><a href="https://x.com/Gt_koki_" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a><a href="https://www.youtube.com/@KokiKitagawa" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><a href="https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q" target="_blank" rel="noopener" aria-label="Spotify"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></a></div>
+          <details class="acc open-card"><summary><b>プロフィールを詳しく読む</b></summary>
+            <div class="in body"><p>アーティストのサポートギターから、作詞・作曲・編曲、カラオケ音源制作まで、「弾く」と「作る」の両面から音楽に携わる。</p><p>舞台の仕事も持つ。『あんさんぶるスターズ！オン・ステージ』では劇中のギターを入れ、演技指導まで担当した。楽器を弾くだけでは終わらない現場を、いくつも通っている。</p><p>2021年から専門学校と音楽教室で指導にあたり、個人レッスンでは初心者からプロまでを見る。教えることと作ることが、同じ場所でつながっている。</p></div></details>
+          <details class="acc open-card"><summary><b>使用機材</b><span class="meta">13 ITEMS</span></summary>
+            <div class="in"><ul class="gcards"><li class="gcard"><b>制作・録音</b><span>Pro Tools</span><span>Universal Audio Apollo Twin X</span><span>sE Electronics sE2300</span><span>Eclipse TD-M1</span></li><li class="gcard"><b>ギター</b><span>Suhr Modern</span><span>Gibson Custom Shop Les Paul Standard</span><span>Fender Custom Shop Stratocaster</span></li><li class="gcard"><b>アンプ・キャビネット</b><span>Bogner Ecstasy Classic</span><span>Marshall JCM900 Hi Gain Master Volume</span><span>Bogner 212CB</span><span>Laney LFR-112</span></li><li class="gcard"><b>モデラー</b><span>Fractal Audio Axe-Fx II XL+</span><span>Line 6 Helix Floor</span></li></ul></div></details>
+        </div>
+      </div>
+    </div></section><section class="s" id="career"><div class="wrap">
+      <div class="sh"><span class="no">02</span><h2>Career</h2><p>経歴・実績</p></div>
+      <ol class="career"><li class="yr"><div class="y">2019</div><ul><li class="k"><b>あんさんぶるスターズ！オン・ステージ</b><span>劇中のギター演奏、演技指導</span></li></ul></li><li class="yr"><div class="y">2021</div><ul><li class=""><b>専門学校・音楽教室で指導をはじめる</b></li></ul></li><li class="yr"><div class="y">2022</div><ul><li class=""><b>プロとして活動開始</b><span>東京拠点</span></li></ul></li><li class="yr"><div class="y">2023</div><ul><li class="k"><b>SUMMER SONIC 2023・イナズマロックフェス 2023</b><span>シユイ サポートギター</span></li></ul></li><li class="yr"><div class="y">2024</div><ul><li class="k"><b>B-PROJECT「Memory」</b><span>作詞・作曲・編曲・ギター</span></li></ul></li><li class="yr"><div class="y">2025</div><ul><li class=""><b>Jams Collection「FLAME」ほか</b><span>星名美怜・Bunny La Crew・Pastel closet にも楽曲提供</span></li></ul></li><li class="yr"><div class="y">2026</div><ul><li class=""><b>Pastel closet「視聴覚Fighter」</b><span>作詞・作曲・編曲・ギター</span></li></ul></li></ol>
+      <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#live" style="text-decoration:underline;text-underline-offset:4px">LIVE / TV</a> にまとめています。</p>
+    </div></section><section class="s" id="live"><div class="wrap">
+      <div class="sh"><span class="no">03</span><h2>Live / TV</h2><p>ライブ・舞台・テレビ</p></div>
+      <div class="strip">
+        <div class="photo reveal"><img src="img/stage-1600.webp" alt="リハーサル中のステージに並ぶエレキギターとアコースティックギター" loading="lazy" decoding="async" class=""><span class="cap">STAGE</span></div>
+        <div class="photo reveal"><img src="img/live-720.webp" alt="ライブのステージでギターを弾く北川弘喜" loading="lazy" decoding="async" class=""><span class="cap">LIVE</span></div>
+        <div class="photo reveal"><img src="img/pedal-1200.webp" alt="ライブ会場のステージに組まれたエフェクターボード" loading="lazy" decoding="async" class=""><span class="cap">GEAR</span></div>
+      </div>
+      <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs"><button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>11</em></button><button type="button" class="fchip" data-f="FES" aria-pressed="false">フェス<em>4</em></button><button type="button" class="fchip" data-f="LIVE" aria-pressed="false">ライブ<em>4</em></button><button type="button" class="fchip" data-f="STAGE" aria-pressed="false">舞台<em>2</em></button><button type="button" class="fchip" data-f="TV" aria-pressed="false">テレビ<em>1</em></button></div>
+      <ul class="grid3" id="gigs"><li class="card gig ph ph-live" data-k="LIVE"><div class="row"><span class="chip ">LIVE</span><span class="yr2">2025</span></div><b>REIRIE Live Tour 2025 -Bad=DoLL-</b><small>REIRIE サポートギター・名古屋</small></li><li class="card gig ph ph-live" data-k="LIVE"><div class="row"><span class="chip ">LIVE</span><span class="yr2">2025</span></div><b>LAWSON presents シユイ 1st Live「シユイさんといっしょ #01」</b><small>シユイ サポートギター</small></li><li class="card gig ph ph-live" data-k="LIVE"><div class="row"><span class="chip ">LIVE</span><span class="yr2">2025</span></div><b>LAWSON presents シユイ 2nd Live「シユイさんといっしょ #02」</b><small>シユイ サポートギター</small></li><li class="card gig ph ph-live" data-k="LIVE"><div class="row"><span class="chip ">LIVE</span><span class="yr2">2025</span></div><b>REIRIE FreeLive「JAM」</b><small>REIRIE サポートギター・新宿歌舞伎町</small></li><li class="card gig ph ph-stage" data-k="FES"><div class="row"><span class="chip ">FES</span><span class="yr2">2024</span></div><b>SAKAE SP-RING 2024</b><small>シユイ サポートギター</small></li><li class="card gig ph ph-stage" data-k="FES"><div class="row"><span class="chip ">FES</span><span class="yr2">2024</span></div><b>HUG ROCK FESTIVAL</b><small>somei サポートギター</small></li><li class="card gig ph ph-stage" data-k="FES"><div class="row"><span class="chip ">FES</span><span class="yr2">2023</span></div><b>SUMMER SONIC 2023</b><small>シユイ サポートギター</small></li><li class="card gig ph ph-stage" data-k="FES"><div class="row"><span class="chip ">FES</span><span class="yr2">2023</span></div><b>イナズマロックフェス 2023</b><small>シユイ サポートギター</small></li><li class="card gig ph ph-pedal" data-k="STAGE"><div class="row"><span class="chip ">STAGE</span><span class="yr2">2023</span></div><b>シュレック・ザ・ミュージカル</b><small>舞台</small></li><li class="card gig ph ph-pedal" data-k="STAGE"><div class="row"><span class="chip ">STAGE</span><span class="yr2">2019</span></div><b>あんさんぶるスターズ！オン・ステージ</b><small>舞台・劇中のギター演奏／演技指導</small></li><li class="card gig ph ph-play" data-k="TV"><div class="row"><span class="chip tv">TV</span></div><b>CDTV</b><small>バック演奏（2回出演）</small></li></ul>
+      <a class="btn line sm" style="margin-top:30px" href="https://www.youtube.com/@KokiKitagawa" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>演奏を見る</a>
+    </div></section><section class="s" id="works"><div class="wrap">
+      <div class="sh"><span class="no">04</span><h2>Works</h2><p>作品・制作実績</p></div>
+      <p class="lede" style="margin-bottom:44px;max-width:32em">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
+      <div class="cats"><button class="cat" type="button" data-cat="01"><img src="img/studio-1600.webp" alt="紫の光に照らされた作曲デスクとギター" loading="lazy" decoding="async" class=""><span class="n">01</span><span class="t">Songwriting / Arrangement</span><span class="j">作詞・作曲・編曲</span><span class="d">アイドル・声優ユニットへの提供曲を、作詞からギターまで一人で仕上げます。</span><span class="c">10 SONGS</span></button><button class="cat" type="button" data-cat="02"><img src="img/guitar-900.webp" alt="ギターの指板を押さえる北川弘喜の手元" loading="lazy" decoding="async" class=""><span class="n">02</span><span class="t">Guitar / Session</span><span class="j">ギター参加楽曲</span><span class="d">レコーディングでギターを担当。リモートRECにも、スタジオ立ち会いにも対応。</span><span class="c">5 WORKS</span></button><button class="cat" type="button" data-cat="03"><img src="img/desk-900.webp" alt="夜の机に置いたエレキギターの指板" loading="lazy" decoding="async" class=""><span class="n">03</span><span class="t">Sound Production</span><span class="j">カラオケ音源制作</span><span class="d">配信で活躍する有名歌い手のカラオケ音源を、原曲どおりに再現して制作（作品名は非公開）。</span><span class="c">6 TRACKS</span></button><button class="cat" type="button" data-cat="04"><img src="img/pedal-1200.webp" alt="ライブ会場のステージに組まれたエフェクターボード" loading="lazy" decoding="async" class=""><span class="n">04</span><span class="t">Stage / Live</span><span class="j">ライブ・舞台出演</span><span class="d">フェス・ツアー・舞台・地上波で、サポートギタリストとして演奏。</span><span class="c">10 STAGES / TV 2</span></button></div>
+      <div class="feat-head"><h3>Featured Works</h3><p>ジャケットを押すと、ここで再生できます。</p></div>
+      <div class="feat" id="feat"><article class="song"><button class="art" type="button" data-track="7sTd15vzgK8YVyr6eWiVcE" aria-label="FLAME を再生" style="background-image:url('https://i.scdn.co/image/ab67616d0000b27391252ddd166cf1d26d00ba1c')"><span class="no">01</span><span class="play"><i></i>LISTEN</span></button>
+        <h4>FLAME</h4><div class="who">Jams Collection<em>2025</em></div>
+        <ul class="tags"><li>COMPOSE</li><li>ARRANGE</li><li>GUITAR</li></ul><div class="jr">作詞・作曲・編曲・ギター</div>
+        <a class="sp" href="https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>Spotifyで聴く</a></article><article class="song"><button class="art" type="button" data-track="3laM9HmVwaKT9ooW8K7pv5" aria-label="Memory を再生" style="background-image:url('https://i.scdn.co/image/ab67616d0000b2730a05115477078b67edc9bd9b')"><span class="no">02</span><span class="play"><i></i>LISTEN</span></button>
+        <h4>Memory</h4><div class="who">B-PROJECT<em>2024</em></div>
+        <ul class="tags"><li>COMPOSE</li><li>ARRANGE</li><li>GUITAR</li></ul><div class="jr">作詞・作曲・編曲・ギター</div>
+        <a class="sp" href="https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>Spotifyで聴く</a></article><article class="song"><button class="art" type="button" data-track="7d7lYGu9Xw5cHC8EYxwH4H" aria-label="視聴覚Fighter を再生" style="background-image:url('https://i.scdn.co/image/ab67616d0000b2737df65844b18024309f50687c')"><span class="no">03</span><span class="play"><i></i>LISTEN</span></button>
+        <h4>視聴覚Fighter</h4><div class="who">Pastel closet<em>2026</em></div>
+        <ul class="tags"><li>COMPOSE</li><li>ARRANGE</li><li>GUITAR</li></ul><div class="jr">作詞・作曲・編曲・ギター</div>
+        <a class="sp" href="https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>Spotifyで聴く</a></article></div>
+      <div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots"><i class="on"></i><i class=""></i><i class=""></i></span></div>
+      <div class="player" id="player"></div>
+      <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">21 CREDITS</span></summary>
+        <div class="in">
+          <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
+            <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>16</em></button>
+            <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>10</em></button>
+            <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>5</em></button>
+            <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>6</em></button></div>
+          <ul class="grid4" id="cgrid"><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2025</span></div><b>FLAME</b><small>Jams Collection</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2024</span></div><b>Memory</b><small>B-PROJECT</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2026</span></div><b>視聴覚Fighter</b><small>Pastel closet</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2025</span></div><b>Now Feel Saddest!?</b><small>星名美怜</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2025</span></div><b>恋のエビデンス</b><small>Bunny La Crew</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2025</span></div><b>鬼KawaWe!!!</b><small>Pastel closet</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2024</span></div><b>恋のスピード違反</b><small>Bunny La Crew</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2024</span></div><b>トキメキ NEW WORLD</b><small>Jams Collection</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2024</span></div><b>ドキドキシャッターチャンス</b><small>Jams Collection</small></li><li class="card credit ph ph-studio" data-k="compose"><div class="row"><span class="chip gr">COMPOSE</span><span class="yr2">2023</span></div><b>夏ときめいちゃいマッスル</b><small>Jams Collection</small></li><li class="card credit ph ph-guitar" data-k="guitar"><div class="row"><span class="chip ">GUITAR</span><span class="yr2">2024</span></div><b>Goin Goin</b><small>Chico</small></li><li class="card credit ph ph-guitar" data-k="guitar"><div class="row"><span class="chip ">GUITAR</span><span class="yr2">2024</span></div><b>Sense of Wonder</b><small>寿美菜子</small></li><li class="card credit ph ph-guitar" data-k="guitar"><div class="row"><span class="chip ">GUITAR</span><span class="yr2">2022</span></div><b>Startin&#39;</b><small>Dream Shizuka</small></li><li class="card credit ph ph-guitar" data-k="guitar"><div class="row"><span class="chip ">GUITAR</span><span class="yr2">2024</span></div><b>エピローグ</b><small>シユイ</small></li><li class="card credit ph ph-guitar" data-k="guitar"><div class="row"><span class="chip ">GUITAR</span></div><b>UUUM ONE PIECE MUUUSIC COVER ALBUM</b><small>UUUM</small></li>
+            <li class="card credit ph ph-desk" data-k="karaoke"><div class="row"><span class="chip gr">PRODUCTION</span><span class="yr2">×6</span></div><b>有名歌い手のカラオケ音源</b><small>原曲を再現して制作・作品名は非公開</small></li></ul>
+        </div></details>
+    </div></section><section class="s" id="listen"><div class="wrap">
+      <div class="sh"><span class="no">05</span><h2>Listen</h2><p>聴く・見る</p></div>
+      <div class="listen">
+        <a class="media" href="https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q" target="_blank" rel="noopener">
+          <div class="bg mosaic" aria-hidden="true"><span style="background-image:url('https://i.scdn.co/image/ab67616d0000b27391252ddd166cf1d26d00ba1c')"></span><span style="background-image:url('https://i.scdn.co/image/ab67616d0000b2730a05115477078b67edc9bd9b')"></span><span style="background-image:url('https://i.scdn.co/image/ab67616d0000b2737df65844b18024309f50687c')"></span></div>
+          <span class="ico" style="background:#1DB954"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></span><b>Spotify</b><p>提供曲・参加曲をまとめて聴く</p><span class="go">OPEN PLAYLIST</span></a>
+        <a class="media" href="https://www.youtube.com/@KokiKitagawa" target="_blank" rel="noopener">
+          <div class="bg" aria-hidden="true"><img src="img/play-1400.webp" alt="" loading="lazy" decoding="async" class=""></div>
+          <span class="ico" style="background:#FF0000"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></span><b>YouTube</b><p>演奏・制作実績を見る</p><span class="go">OPEN CHANNEL</span></a>
+      </div>
+      <div class="workcta">
+        <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら</p>
+          <ul class="serv"><li class="card"><b>作詞・作曲</b><small>デモ制作まで</small></li><li class="card"><b>編曲・トラック制作</b></li><li class="card"><b>ギター レコーディング</b><small>リモート／立ち会い</small></li><li class="card"><b>ライブサポート</b><small>ツアー・フェス・TV</small></li></ul>
+          <p class="small" style="margin-top:14px">納期：デモ・編曲・ギターREC いずれも3日程度　｜　リモートREC／スタジオ立ち会い どちらも対応　｜　料金：応相談</p></div>
+        <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
+      </div>
+    </div></section><div class="band rev" aria-hidden="true"><div class="tr"><span>Lesson</span><i></i><span>Beginner</span><i></i><span>Online</span><i></i><span>Pro</span><i></i><span>Lesson</span><i></i><span>Beginner</span><i></i><span>Online</span><i></i><span>Pro</span><i></i><span>Lesson</span><i></i><span>Beginner</span><i></i><span>Online</span><i></i><span>Pro</span><i></i><span>Lesson</span><i></i><span>Beginner</span><i></i><span>Online</span><i></i><span>Pro</span><i></i></div></div><section class="s" id="lesson"><div class="wrap">
+      <div class="sh"><span class="no">06</span><h2>Lesson</h2><p>ギターレッスン</p></div>
+      <div class="les">
+        <div class="pw"><div class="photo reveal"><img src="img/lesson-900.webp" alt="ギターを持ち、こちらを見てほほえむ北川弘喜" loading="lazy" decoding="async" class=""></div><span class="bigword or" aria-hidden="true">Let's play</span></div>
+        <div>
+          <p class="lede">現場で培った経験を、あなたのギターへ。</p>
+          <ul class="lstats"><li class="card"><b>1,000<small>回以上</small></b><span>これまでのレッスン</span></li><li class="card"><b>3〜83<small>歳</small></b><span>生徒さんの年齢</span></li><li class="card"><b>200<small>人以上</small></b><span>教えてきた生徒さん</span></li></ul>
+          <ul class="tg"><li>初心者〜経験者まで</li><li>オンライン対応</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
+          <div class="card trial ph ph-lesson"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分</small></div><div class="p">¥3,500</div>
+            <button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button></div>
+          <ul class="plans"><li class="card plan  ph ph-hands"><div class="nm">月2回</div><div class="ct">60分×2回</div>
+        <div class="p">¥17,000<small>/ 月</small></div><div class="per">1回あたり ¥8,500<em>単発より月¥1,000おトク</em></div>
+        <button class="pick" type="button" data-open="レッスン" data-plan="月2回">このプランを選ぶ</button></li><li class="card plan rec ph ph-guitar"><span class="badge">人気No.1</span><div class="nm">月4回</div><div class="ct">60分×4回</div>
+        <div class="p">¥32,000<small>/ 月</small></div><div class="per">1回あたり ¥8,000<em>単発より月¥4,000おトク</em></div>
+        <button class="pick" type="button" data-open="レッスン" data-plan="月4回">このプランを選ぶ</button></li><li class="card plan  ph ph-play"><div class="nm">月8回</div><div class="ct">60分×8回</div>
+        <div class="p">¥60,000<small>/ 月</small></div><div class="per">1回あたり ¥7,500<em>単発より月¥12,000おトク</em></div>
+        <button class="pick" type="button" data-open="レッスン" data-plan="月8回">このプランを選ぶ</button></li>
+            <li class="card plan ph ph-guitars"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥9,000<small>/ 回</small></div><div class="per">好きなときに1回から</div>
+            <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>
+          <p class="small" style="margin:14px 0 0">料金はすべて税込です。レンタルスタジオで行う場合、スタジオ代は別にかかります。</p>
+          <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
+            <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前の月の20日を過ぎたら 22時から</small></td></tr>
+            <tr><th>土・日</th><td>12時から<small>前の月の20日を過ぎたら 21時から</small></td></tr>
+            <tr><th>場所</th><td>レンタルスタジオ／ご自宅／オンライン</td></tr><tr><th>お支払い</th><td>現金・クレジットカード（Square）</td></tr></table>
+            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月ぶんをご予約ください。</p></div></details>
+        </div>
+      </div>
+      <div class="les-extra">
+        <div><h3><span>STEP</span>はじめるまで</h3>
+          <ol class="flow">
+            <li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
+            <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>
+            <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
+          </ol></div>
+        <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
+          <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
+          <details><summary>オンラインでも受けられる？</summary><p>受けられます。レンタルスタジオ・ご自宅・オンラインから選べます。</p></details>
+          <details><summary>スタジオ代はかかる？</summary><p>レンタルスタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
+          <details><summary>支払い方法は？</summary><p>現金・クレジットカード（Square）に対応しています。</p></details>
+          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月ぶんをご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
+        </div>
+      </div>
+    </div></section><section class="s" id="contact" style="--bgimg:url('img/strings-1600.webp')"><div class="wrap">
+      <div class="sh"><span class="no">07</span><h2>Contact</h2><p>お問い合わせ</p></div>
+      <div class="ct">
+        <div class="side">
+          <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
+          <dl><dt>お仕事</dt><dd>作詞・作曲／編曲・トラック制作／ギターREC／ライブサポート</dd><dt>納期</dt><dd>デモ・編曲・ギターREC いずれも3日程度</dd><dt>料金</dt><dd>応相談</dd><dt>レッスン</dt><dd>体験 初回60分 ¥3,500</dd></dl>
+          <div class="quick">
+            <a class="dm" href="https://www.instagram.com/kitagawa_kouki/" target="_blank" rel="noopener"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></i><span><b>Instagram の DM でも受け付けています</b><small>曲の尺と納期だけ書いていただければ返信します</small></span></a>
+          </div>
+        </div>
+        <form class="f" id="form" novalidate>
+          <fieldset class="kinds"><legend>ご用件を選んでください<i>必須</i></legend>
+            <label class="kc or"><input type="radio" name="kind" value="レッスン"><span><b>レッスン</b><small>体験・月謝・単発</small></span></label><label class="kc "><input type="radio" name="kind" value="お仕事"><span><b>お仕事</b><small>作曲・編曲・ギターREC・ライブサポート</small></span></label><label class="kc "><input type="radio" name="kind" value="その他"><span><b>その他</b><small>取材・ご相談など</small></span></label>
+            <input type="hidden" id="f_kind"><p class="err" hidden></p></fieldset>
+          <div class="two">
+            <div><label for="f_name">お名前<i>必須</i></label><input id="f_name" name="name" autocomplete="name" required><p class="err" hidden></p></div>
+            <div><label for="f_mail">メールアドレス<i>必須</i></label><input id="f_mail" name="email" type="email" inputmode="email" autocomplete="email" required><p class="err" hidden></p></div>
+          </div>
+          <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：体験レッスンの希望日について"></div>
+          <div><label for="f_msg">メッセージ<i>必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
+          <input type="hidden" name="from" id="f_from">
+          <button class="btn gr send" type="submit" id="send">この内容で送る</button>
+          <div class="done" id="done" hidden role="status">ありがとうございます。送信しました。2日以内にメールでご返信します。</div>
+          <p class="err" id="sendErr" hidden>送信できませんでした。通信の状態を確かめて、もう一度お試しください。うまくいかない場合は Instagram の DM からご連絡ください。</p>
+        </form>
+      </div>
+    </div></section>
+</main>
 
 <footer>
   <div class="wrap">
@@ -633,7 +204,7 @@ footer{background:var(--black)}
       <nav aria-label="フッター"><a href="#profile">PROFILE</a><a href="#career">CAREER</a><a href="#live">LIVE / TV</a><a href="#works">WORKS</a><a href="#listen">LISTEN</a><a href="#lesson">LESSON</a><a href="#contact">CONTACT</a></nav>
       <small>© 2026 Koki Kitagawa</small>
     </div>
-    <div class="sns" data-sns></div>
+    <div class="sns"><a href="https://www.instagram.com/kitagawa_kouki/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://www.tiktok.com/@koki.kitagawa" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.53.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></a><a href="https://x.com/Gt_koki_" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a><a href="https://www.youtube.com/@KokiKitagawa" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><a href="https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q" target="_blank" rel="noopener" aria-label="Spotify"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></a></div>
   </div>
 </footer>
 
@@ -652,321 +223,10 @@ footer{background:var(--black)}
     <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
     <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
   </div>
-  <div class="sns" data-sns></div>
+  <div class="sns"><a href="https://www.instagram.com/kitagawa_kouki/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg></a><a href="https://www.tiktok.com/@koki.kitagawa" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.53.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg></a><a href="https://x.com/Gt_koki_" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg></a><a href="https://www.youtube.com/@KokiKitagawa" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a><a href="https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q" target="_blank" rel="noopener" aria-label="Spotify"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></a></div>
 </div>
 
-<script>
-const D = {"profile": {"name": "北川弘喜", "nameEn": "Koki Kitagawa", "bio": ["曲を書く人と、曲を鳴らす人は、たいてい別々にいる。", "北川弘喜はその両方に立つ。B-PROJECT、星名美怜、Bunny La Crew への提供曲では、作詞・作曲・編曲からギターまでを一人で通す。SUMMER SONIC やイナズマロックフェスのステージではサポートギタリストとして音を鳴らし、CDTV では地上波のバックに立った。", "舞台の仕事も持つ。『あんさんぶるスターズ！オン・ステージ』では劇中のギターを入れ、演技指導まで担当した。楽器を弾くだけでは終わらない現場を、いくつも通っている。", "2021年から専門学校と音楽教室で指導にあたり、個人レッスンでは初心者からプロまでを見る。教えることと作ることが、同じ場所でつながっている。"], "career": [{"label": "2022年〜", "detail": "プロとして活動（東京拠点）"}, {"label": "2021年〜", "detail": "専門学校・音楽教室で指導"}, {"label": "個人レッスン", "detail": "初心者〜プロフェッショナル"}], "gear": {"publish": true, "groups": [{"name": "制作・録音", "items": ["Pro Tools", "Universal Audio Apollo Twin X", "sE Electronics sE2300", "Eclipse TD-M1"]}, {"name": "ギター", "items": ["Suhr Modern", "Gibson Custom Shop Les Paul Standard", "Fender Custom Shop Stratocaster"]}, {"name": "アンプ・キャビネット", "items": ["Bogner Ecstasy Classic", "Marshall JCM900 Hi Gain Master Volume", "Bogner 212CB", "Laney LFR-112"]}, {"name": "モデラー", "items": ["Fractal Audio Axe-Fx II XL+", "Line 6 Helix Floor"]}]}, "work": {"price": "応相談", "delivery": "デモ・編曲・ギターREC いずれも3日程度", "style": "リモートREC／スタジオ立ち会い どちらも対応", "services": [{"name": "作詞・作曲", "note": "デモ制作まで"}, {"name": "編曲・トラック制作", "note": ""}, {"name": "ギター レコーディング", "note": "リモート／立ち会い"}, {"name": "ライブサポート", "note": "ツアー・フェス・TV"}]}, "lesson": {"target": "初心者〜プロフェッショナル", "plans": [{"name": "体験レッスン", "price": "60分 3,500円", "note": "初回のみ"}, {"name": "単発", "price": "9,000円", "note": "1回60分"}, {"name": "月2回", "price": "17,000円 / 月", "note": "1回60分（1回あたり8,500円）"}, {"name": "月4回", "price": "32,000円 / 月", "note": "1回60分（1回あたり8,000円）", "recommended": true}, {"name": "月8回", "price": "60,000円 / 月", "note": "1回60分（1回あたり7,500円）"}], "place": "レンタルスタジオ／ご自宅／オンライン", "payment": "現金・クレジットカード（Square）", "priceNote": "料金はすべて税込。レンタルスタジオで行う場合、スタジオ代は別"}, "links": {"spotify": "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q", "youtube": "https://www.youtube.com/@KokiKitagawa", "instagram": "https://www.instagram.com/kitagawa_kouki/", "x": "https://x.com/Gt_koki_", "tiktok": "https://www.tiktok.com/@koki.kitagawa"}}, "credits": [{"title": "FLAME", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": "ab67616d0000b27391252ddd166cf1d26d00ba1c", "spotify": "https://open.spotify.com/track/7sTd15vzgK8YVyr6eWiVcE", "spotifyRank": 1}, {"title": "Memory", "artist": "B-PROJECT", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": "ab67616d0000b2730a05115477078b67edc9bd9b", "spotify": "https://open.spotify.com/track/3laM9HmVwaKT9ooW8K7pv5", "spotifyRank": 2}, {"title": "視聴覚Fighter", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2026, "jacket": "ab67616d0000b2737df65844b18024309f50687c", "spotify": "https://open.spotify.com/track/7d7lYGu9Xw5cHC8EYxwH4H", "spotifyRank": 3}, {"title": "Now Feel Saddest!?", "artist": "星名美怜", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のエビデンス", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "鬼KawaWe!!!", "artist": "Pastel closet", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2025, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "恋のスピード違反", "artist": "Bunny La Crew", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "トキメキ NEW WORLD", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "ドキドキシャッターチャンス", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "夏ときめいちゃいマッスル", "artist": "Jams Collection", "category": "compose", "roles": ["作詞", "作曲", "編曲", "ギター"], "year": 2023, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Goin Goin", "artist": "Chico", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Sense of Wonder", "artist": "寿美菜子", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "Startin'", "artist": "Dream Shizuka", "category": "guitar", "roles": ["ギター"], "year": 2022, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "エピローグ", "artist": "シユイ", "category": "guitar", "roles": ["ギター"], "year": 2024, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "UUUM ONE PIECE MUUUSIC COVER ALBUM", "artist": "UUUM", "category": "guitar", "roles": ["ギター"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}, {"title": "非公開", "artist": "有名歌い手", "category": "karaoke", "roles": ["カラオケ音源制作"], "year": null, "jacket": null, "spotify": null, "spotifyRank": null}], "live": [{"title": "REIRIE Live Tour 2025 -Bad=DoLL-", "year": 2025, "venue": "名古屋", "artist": "REIRIE", "role": "サポートギター"}, {"title": "SAKAE SP-RING 2024", "year": 2024, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "SUMMER SONIC 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "イナズマロックフェス 2023", "year": 2023, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 1st Live「シユイさんといっしょ #01」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "LAWSON presents シユイ 2nd Live「シユイさんといっしょ #02」", "year": null, "venue": "", "artist": "シユイ", "role": "サポートギター"}, {"title": "REIRIE FreeLive「JAM」", "year": null, "venue": "新宿歌舞伎町", "artist": "REIRIE", "role": "サポートギター"}, {"title": "HUG ROCK FESTIVAL", "year": null, "venue": "", "artist": "somei", "role": "サポートギター"}], "media": [{"title": "CDTV", "year": null, "artist": "", "role": "バックで演者参加", "type": "tv"}, {"title": "CDTV", "year": null, "artist": "", "role": "バックで演者参加", "type": "tv"}, {"title": "あんさんぶるスターズ！オン・ステージ", "year": 2019, "artist": "", "role": "劇中のギター演奏／演技指導", "type": "stage"}, {"title": "シュレック・ザ・ミュージカル", "year": 2023, "artist": "", "role": null, "type": "stage"}], "lessonPlans": {"trial": {"price": 3500}, "single": {"price": 9000}, "monthly": [{"name": "月2回", "count": 2, "price": 17000}, {"name": "月4回", "count": 4, "price": 32000, "rec": true}, {"name": "月8回", "count": 8, "price": 60000}]}, "timeline": [{"year": 2019, "items": [{"t": "あんさんぶるスターズ！オン・ステージ", "s": "劇中のギター演奏、演技指導", "key": true}]}, {"year": 2021, "items": [{"t": "専門学校・音楽教室で指導をはじめる", "s": ""}]}, {"year": 2022, "items": [{"t": "プロとして活動開始", "s": "東京拠点"}]}, {"year": 2023, "items": [{"t": "SUMMER SONIC 2023・イナズマロックフェス 2023", "s": "シユイ サポートギター", "key": true}]}, {"year": 2024, "items": [{"t": "B-PROJECT「Memory」", "s": "作詞・作曲・編曲・ギター", "key": true}]}, {"year": 2025, "items": [{"t": "Jams Collection「FLAME」ほか", "s": "星名美怜・Bunny La Crew・Pastel closet にも楽曲提供"}]}, {"year": 2026, "items": [{"t": "Pastel closet「視聴覚Fighter」", "s": "作詞・作曲・編曲・ギター"}]}], "liveYears": [["LAWSON presents シユイ 1st", 2025], ["LAWSON presents シユイ 2nd", 2025], ["REIRIE FreeLive", 2025], ["HUG ROCK", 2024]], "form": {"action": "https://docs.google.com/forms/d/e/1FAIpQLSfvnTQ09UhGhzNjL7lpcy01ZUpQUyUhQizAKKZVJMnw4f4GmQ/formResponse", "kind": "entry.1760490644", "name": "entry.955876901", "email": "entry.578010398", "subject": "entry.411187707", "message": "entry.197220302", "from": "entry.2074772989"}, "lessonStats": [{"v": "1,000", "u": "回以上", "l": "これまでのレッスン"}, {"v": "3〜83", "u": "歳", "l": "生徒さんの年齢"}, {"v": "200", "u": "人以上", "l": "教えてきた生徒さん"}]};
-const IMG = {"heroPc": "img/hero-pc-2000.webp", "heroSp": "img/hero-sp-900.webp", "profile": "img/profile-900.webp", "lesson": "img/lesson-900.webp", "stage": "img/stage-1600.webp", "live": "img/live-720.webp", "studio": "img/studio-1600.webp", "guitar": "img/guitar-900.webp", "desk": "img/desk-900.webp", "pedal": "img/pedal-1200.webp", "play": "img/play-1400.webp", "strings": "img/strings-1600.webp", "hands": "img/hands-1400.webp", "guitars": "img/guitars-900.webp"};
-const ICON = {"ig": "M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077", "yt": "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z", "x": "M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z", "sp": "M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z", "tt": "M12.53.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"};
-const P = D.profile, C = D.credits;
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[k]}"/></svg>`;
-const SNS = [["instagram","ig","Instagram"],["tiktok","tt","TikTok"],["x","x","X"],["youtube","yt","YouTube"],["spotify","sp","Spotify"]];
-const snsHTML = () => SNS.map(([k,i,n]) => `<a href="${P.links[k]}" target="_blank" rel="noopener" aria-label="${n}">${svg(i)}</a>`).join("");
-const pic = (k, alt, cls="") => `<img src="${IMG[k]}" alt="${esc(alt)}" loading="lazy" decoding="async" class="${cls}">`;
-const sh = (no, en, jp) => `<div class="sh"><span class="no">${no}</span><h2>${en}</h2><p>${jp}</p></div>`;
-const yen = n => n.toLocaleString("ja-JP");
-
-const comp = C.filter(c => c.category==="compose"), gtr = C.filter(c => c.category==="guitar"), kara = C.filter(c => c.category==="karaoke");
-const feat = C.filter(c => c.spotify).sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
-const TAG = {"作曲":"COMPOSE","編曲":"ARRANGE","ギター":"GUITAR","レコーディング":"RECORDING","制作":"PRODUCTION"};
-const tagsOf = c => [...new Set((c.roles||[]).map(r => TAG[r]).filter(Boolean))];
-const tv = D.media.filter(m => m.type==="tv"), stage = D.media.filter(m => m.type==="stage");
-
-function hero(){
-  return `<section class="hero" id="top" aria-label="北川弘喜">
-    <picture><source media="(max-width:820px)" srcset="${IMG.heroSp}"><img src="${IMG.heroPc}" alt="紫の照明の中、ギターのネックを斜めに構えて弾く北川弘喜" fetchpriority="high"></picture>
-    <div class="wrap">
-      <p class="role">GUITARIST / COMPOSER</p>
-      <h1><span>書けるギタリスト、</span><span>弾ける作曲家。</span></h1>
-      <p class="name">KOKI KITAGAWA</p>
-      <p class="lead">ライブ・舞台・テレビのサポートギターから、作詞・作曲・編曲まで。「弾く」と「作る」の両方で、プロの現場に立っています。</p>
-      <div class="cta">
-        <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
-        <button class="btn line" type="button" data-open="レッスン">レッスンを申し込む</button>
-      </div>
-      <ul class="proof"><li>SUMMER SONIC 2023</li><li>CDTV</li><li>B-PROJECT 楽曲提供</li></ul>
-      <div class="nums"><div><b>${comp.length}<small>曲</small></b><span>楽曲提供</span></div><div><b>${gtr.length}<small>作品</small></b><span>ギター参加</span></div><div><b>${D.live.length+stage.length}<small>本</small></b><span>ステージ</span></div><div><b>${tv.length}<small>回</small></b><span>TV出演</span></div></div>
-    </div>
-  </section>`;
-}
-
-const yearOf = t => { const m = D.liveYears.find(([p]) => t.startsWith(p)); return m ? m[1] : null; };
-const PH = ["guitar","studio","lesson","stage","live","pedal","play","desk","hands","guitars"];
-document.head.insertAdjacentHTML("beforeend", `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}</style>`);
-const ph = k => `ph ph-${k}`;
-const chip = (t, cls="") => `<span class="chip ${cls}">${t}</span>`;
-
-function profile(){
-  const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
-  const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","live"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","studio"],["LESSON","ギターレッスン","初心者からプロ志向まで","hands"]];
-  return `<section class="s" id="profile"><div class="wrap">
-    ${sh("01","Profile","プロフィール・経歴")}
-    <div class="prof">
-      <div class="pw"><div class="photo reveal">${pic("profile","椅子に座ってギターを弾く北川弘喜")}</div><span class="bigword" aria-hidden="true">Guitarist</span></div>
-      <div>
-        <p class="lede">${esc(P.bio[0])}</p>
-        <div class="body" style="margin:0 0 28px"><p>${esc(P.bio[1])}</p></div>
-        <ul class="cards3">${SK.map(s=>`<li class="card ${ph(s[3])}"><span class="chip">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>
-        <ul class="cards3 mini">${P.career.map(c=>`<li class="card"><small>${esc(c.label)}</small><b>${esc(c.detail)}</b></li>`).join("")}</ul>
-        <div class="sns">${snsHTML()}</div>
-        <details class="acc open-card"><summary><b>プロフィールを詳しく読む</b></summary>
-          <div class="in body"><p>アーティストのサポートギターから、作詞・作曲・編曲、カラオケ音源制作まで、「弾く」と「作る」の両面から音楽に携わる。</p>${P.bio.slice(2).map(p=>`<p>${esc(p)}</p>`).join("")}</div></details>
-        <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
-          <div class="in"><ul class="gcards">${g}</ul></div></details>
-      </div>
-    </div>
-  </div></section>`;
-}
-
-function career(){
-  const T = D.timeline;
-  return `<section class="s" id="career"><div class="wrap">
-    ${sh("02","Career","経歴・実績")}
-    <ol class="career">${T.map(y => `<li class="yr"><div class="y">${y.year}</div><ul>${y.items.map(it=>`<li class="${it.key?"k":""}"><b>${esc(it.t)}</b>${it.s?`<span>${esc(it.s)}</span>`:""}</li>`).join("")}</ul></li>`).join("")}</ol>
-    <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#live" style="text-decoration:underline;text-underline-offset:4px">LIVE / TV</a> にまとめています。</p>
-  </div></section>`;
-}
-
-function live(){
-  const kind = t => /SUMMER SONIC|フェス|FESTIVAL|SP-RING/i.test(t) ? "FES" : "LIVE";
-  const items = [
-    ...D.live.map(x => ({k:kind(x.title), t:x.title, s:`${x.artist} サポートギター${x.venue?"・"+x.venue:""}`, y:x.year || yearOf(x.title)})),
-    ...stage.map(x => ({k:"STAGE", t:x.title, s:x.role ? "舞台・"+x.role : "舞台", y:x.year})),
-    {k:"TV", t:"CDTV", s:`バック演奏（${tv.length}回出演）`, y:null}];
-  items.sort((a,b) => (b.y||0)-(a.y||0));
-  const F = [["ALL","すべて"],["FES","フェス"],["LIVE","ライブ"],["STAGE","舞台"],["TV","テレビ"]];
-  return `<section class="s" id="live"><div class="wrap">
-    ${sh("03","Live / TV","ライブ・舞台・テレビ")}
-    <div class="strip">
-      <div class="photo reveal">${pic("stage","リハーサル中のステージに並ぶエレキギターとアコースティックギター")}<span class="cap">STAGE</span></div>
-      <div class="photo reveal">${pic("live","ライブのステージでギターを弾く北川弘喜")}<span class="cap">LIVE</span></div>
-      <div class="photo reveal">${pic("pedal","ライブ会場のステージに組まれたエフェクターボード")}<span class="cap">GEAR</span></div>
-    </div>
-    <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
-    <ul class="grid3" id="gigs">${items.map(x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`).join("")}</ul>
-    <a class="btn line sm" style="margin-top:30px" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}演奏を見る</a>
-  </div></section>`;
-}
-
-function works(){
-  const CATS = [
-    {n:"01",t:"Songwriting / Arrangement",j:"作詞・作曲・編曲",d:"アイドル・声優ユニットへの提供曲を、作詞からギターまで一人で仕上げます。",c:`${comp.length} SONGS`,img:"studio",alt:"紫の光に照らされた作曲デスクとギター"},
-    {n:"02",t:"Guitar / Session",j:"ギター参加楽曲",d:"レコーディングでギターを担当。リモートRECにも、スタジオ立ち会いにも対応。",c:`${gtr.length} WORKS`,img:"guitar",alt:"ギターの指板を押さえる北川弘喜の手元"},
-    {n:"03",t:"Sound Production",j:"カラオケ音源制作",d:"配信で活躍する有名歌い手のカラオケ音源を、原曲どおりに再現して制作（作品名は非公開）。",c:`${kara.length} TRACKS`,img:"desk",alt:"夜の机に置いたエレキギターの指板"},
-    {n:"04",t:"Stage / Live",j:"ライブ・舞台出演",d:"フェス・ツアー・舞台・地上波で、サポートギタリストとして演奏。",c:`${D.live.length+stage.length} STAGES / TV ${tv.length}`,img:"pedal",alt:"ライブ会場のステージに組まれたエフェクターボード"}];
-  const li = c => `<li>${esc(c.title)}<span>${esc(c.artist)}${c.year?` ${c.year}`:""}</span></li>`;
-  return `<section class="s" id="works"><div class="wrap">
-    ${sh("04","Works","作品・制作実績")}
-    <p class="lede" style="margin-bottom:44px;max-width:32em">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
-    <div class="cats">${CATS.map(x => `<button class="cat" type="button" data-cat="${x.n}">${pic(x.img,x.alt)}<span class="n">${x.n}</span><span class="t">${x.t}</span><span class="j">${x.j}</span><span class="d">${x.d}</span><span class="c">${x.c}</span></button>`).join("")}</div>
-    <div class="feat-head"><h3>Featured Works</h3><p>ジャケットを押すと、ここで再生できます。</p></div>
-    <div class="feat" id="feat">${feat.map((c,i) => {
-      const id = (c.spotify||"").split("/track/")[1];
-      return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)} を再生" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="play"><i></i>LISTEN</span></button>
-      <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div>
-      <ul class="tags">${tagsOf(c).map(t=>`<li>${t}</li>`).join("")}</ul><div class="jr">${esc((c.roles||[]).join("・"))}</div>
-      <a class="sp" href="${c.spotify}" target="_blank" rel="noopener">${svg("sp")}Spotifyで聴く</a></article>`;}).join("")}</div>
-    <div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>
-    <div class="player" id="player"></div>
-    <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${comp.length+gtr.length+kara.length} CREDITS</span></summary>
-      <div class="in">
-        <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
-          <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${comp.length+gtr.length+1}</em></button>
-          <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
-          <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
-          <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
-        <ul class="grid4" id="cgrid">${[...comp,...gtr].map(c=>`<li class="card credit ${ph(c.category==="compose"?"studio":"guitar")}" data-k="${c.category}"><div class="row">${chip(c.category==="compose"?"COMPOSE":"GUITAR", c.category==="compose"?"gr":"")}${c.year?`<span class="yr2">${c.year}</span>`:""}</div><b>${esc(c.title)}</b><small>${esc(c.artist)}</small></li>`).join("")}
-          <li class="card credit ${ph("desk")}" data-k="karaoke"><div class="row">${chip("PRODUCTION","gr")}<span class="yr2">×${kara.length}</span></div><b>有名歌い手のカラオケ音源</b><small>原曲を再現して制作・作品名は非公開</small></li></ul>
-      </div></details>
-  </div></section>`;
-}
-
-function listen(){
-  const W = P.work;
-  return `<section class="s" id="listen"><div class="wrap">
-    ${sh("05","Listen","聴く・見る")}
-    <div class="listen">
-      <a class="media" href="${P.links.spotify}" target="_blank" rel="noopener">
-        <div class="bg mosaic" aria-hidden="true">${feat.map(c=>`<span style="background-image:url('https://i.scdn.co/image/${c.jacket}')"></span>`).join("")}</div>
-        <span class="ico" style="background:#1DB954">${svg("sp")}</span><b>Spotify</b><p>提供曲・参加曲をまとめて聴く</p><span class="go">OPEN PLAYLIST</span></a>
-      <a class="media" href="${P.links.youtube}" target="_blank" rel="noopener">
-        <div class="bg" aria-hidden="true">${pic("play","")}</div>
-        <span class="ico" style="background:#FF0000">${svg("yt")}</span><b>YouTube</b><p>演奏・制作実績を見る</p><span class="go">OPEN CHANNEL</span></a>
-    </div>
-    <div class="workcta">
-      <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら</p>
-        <ul class="serv">${W.services.map(s=>`<li class="card"><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</li>`).join("")}</ul>
-        <p class="small" style="margin-top:14px">納期：${esc(W.delivery)}　｜　${esc(W.style)}　｜　料金：${esc(W.price)}</p></div>
-      <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
-    </div>
-  </div></section>`;
-}
-
-function lesson(){
-  const L = D.lessonPlans, base = L.single.price;
-  const plan = p => { const per = Math.round(p.price/p.count), save = base*p.count - p.price;
-    return `<li class="card plan ${p.rec?"rec":""} ${ph(({2:"hands",4:"guitar",8:"play"})[p.count])}">${p.rec?'<span class="badge">人気No.1</span>':""}<div class="nm">${esc(p.name)}</div><div class="ct">60分×${p.count}回</div>
-      <div class="p">¥${yen(p.price)}<small>/ 月</small></div><div class="per">1回あたり ¥${yen(per)}${save>0?`<em>単発より月¥${yen(save)}おトク</em>`:""}</div>
-      <button class="pick" type="button" data-open="レッスン" data-plan="${esc(p.name)}">このプランを選ぶ</button></li>`; };
-  return `<section class="s" id="lesson"><div class="wrap">
-    ${sh("06","Lesson","ギターレッスン")}
-    <div class="les">
-      <div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>
-      <div>
-        <p class="lede">現場で培った経験を、あなたのギターへ。</p>
-        <ul class="lstats">${D.lessonStats.map(x=>`<li class="card"><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
-        <ul class="tg"><li>初心者〜経験者まで</li><li>オンライン対応</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
-        <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分</small></div><div class="p">¥${yen(L.trial.price)}</div>
-          <button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button></div>
-        <ul class="plans">${L.monthly.map(plan).join("")}
-          <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
-          <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>
-        <p class="small" style="margin:14px 0 0">料金はすべて税込です。レンタルスタジオで行う場合、スタジオ代は別にかかります。</p>
-        <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
-          <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前の月の20日を過ぎたら 22時から</small></td></tr>
-          <tr><th>土・日</th><td>12時から<small>前の月の20日を過ぎたら 21時から</small></td></tr>
-          <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${esc(P.lesson.payment)}</td></tr></table>
-          <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月ぶんをご予約ください。</p></div></details>
-      </div>
-    </div>
-    <div class="les-extra">
-      <div><h3><span>STEP</span>はじめるまで</h3>
-        <ol class="flow">
-          <li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
-          <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>
-          <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
-        </ol></div>
-      <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
-        <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
-        <details><summary>オンラインでも受けられる？</summary><p>受けられます。レンタルスタジオ・ご自宅・オンラインから選べます。</p></details>
-        <details><summary>スタジオ代はかかる？</summary><p>レンタルスタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
-        <details><summary>支払い方法は？</summary><p>${esc(P.lesson.payment)}に対応しています。</p></details>
-        <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月ぶんをご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
-      </div>
-    </div>
-  </div></section>`;
-}
-
-const KINDS = ["レッスン","お仕事","その他"];
-const KDESC = {"レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
-function contact(){
-  const W = P.work;
-  return `<section class="s" id="contact" style="--bgimg:url('${IMG.strings}')"><div class="wrap">
-    ${sh("07","Contact","お問い合わせ")}
-    <div class="ct">
-      <div class="side">
-        <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
-        <dl><dt>お仕事</dt><dd>作詞・作曲／編曲・トラック制作／ギターREC／ライブサポート</dd><dt>納期</dt><dd>${esc(W.delivery)}</dd><dt>料金</dt><dd>${esc(W.price)}</dd><dt>レッスン</dt><dd>体験 初回60分 ¥${yen(D.lessonPlans.trial.price)}</dd></dl>
-        <div class="quick">
-          <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>Instagram の DM でも受け付けています</b><small>曲の尺と納期だけ書いていただければ返信します</small></span></a>
-        </div>
-      </div>
-      <form class="f" id="form" novalidate>
-        <fieldset class="kinds"><legend>ご用件を選んでください<i>必須</i></legend>
-          ${KINDS.map((k,i)=>`<label class="kc ${k==="レッスン"?"or":""}"><input type="radio" name="kind" value="${k}"><span><b>${k}</b><small>${KDESC[k]}</small></span></label>`).join("")}
-          <input type="hidden" id="f_kind"><p class="err" hidden></p></fieldset>
-        <div class="two">
-          <div><label for="f_name">お名前<i>必須</i></label><input id="f_name" name="name" autocomplete="name" required><p class="err" hidden></p></div>
-          <div><label for="f_mail">メールアドレス<i>必須</i></label><input id="f_mail" name="email" type="email" inputmode="email" autocomplete="email" required><p class="err" hidden></p></div>
-        </div>
-        <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：体験レッスンの希望日について"></div>
-        <div><label for="f_msg">メッセージ<i>必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
-        <input type="hidden" name="from" id="f_from">
-        <button class="btn gr send" type="submit" id="send">この内容で送る</button>
-        <div class="done" id="done" hidden role="status">ありがとうございます。送信しました。2日以内にメールでご返信します。</div>
-        <p class="err" id="sendErr" hidden>送信できませんでした。通信の状態を確かめて、もう一度お試しください。うまくいかない場合は Instagram の DM からご連絡ください。</p>
-      </form>
-    </div>
-  </div></section>`;
-}
-
-const band = (words, rev) => { const one = words.map(w=>`<span>${w}</span><i></i>`).join(""); return `<div class="band ${rev?"rev":""}" aria-hidden="true"><div class="tr">${one}${one}${one}${one}</div></div>`; };
-document.getElementById("main").innerHTML = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+live()+works()+listen()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact();
-document.querySelectorAll("[data-sns]").forEach(e => e.innerHTML = snsHTML());
-
-/* 申し込みボタン → フォームへ（種別を選んだ状態で） */
-const menu = document.getElementById("menu"), menuBtn = document.getElementById("menuBtn");
-function closeMenu(){ menu.hidden = true; menuBtn.setAttribute("aria-expanded","false"); document.body.style.overflow=""; }
-menuBtn.addEventListener("click", () => { menu.hidden = false; menuBtn.setAttribute("aria-expanded","true"); document.body.style.overflow="hidden"; document.getElementById("menuX").focus(); });
-document.getElementById("menuX").addEventListener("click", closeMenu);
-menu.addEventListener("click", e => { if(e.target.closest("a")) closeMenu(); });
-document.addEventListener("keydown", e => { if(e.key==="Escape" && !menu.hidden) closeMenu(); });
-document.addEventListener("click", e => {
-  const b = e.target.closest("[data-open]"); if(!b) return;
-  closeMenu(); setKind(b.dataset.open);
-  if(b.dataset.plan){ document.getElementById("f_sub").value = `レッスンの申し込み（${b.dataset.plan}）`; }
-  document.getElementById("contact").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
-  setTimeout(() => document.getElementById("f_name").focus({preventScroll:true}), 600);
-});
-/* ご用件のカード */
-const kindEl = document.getElementById("f_kind");
-function setKind(v){ kindEl.value = v; document.querySelectorAll('input[name="kind"]').forEach(r => r.checked = r.value===v); }
-document.querySelectorAll('input[name="kind"]').forEach(r => r.addEventListener("change", () => { kindEl.value = r.value; }));
-/* 絞り込みチップ */
-document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e => {
-  const b = e.target.closest(".fchip"); if(!b) return;
-  g.querySelectorAll(".fchip").forEach(x => x.setAttribute("aria-pressed", x===b));
-  document.querySelectorAll(`#${g.dataset.grid} > li`).forEach(li => li.hidden = !(b.dataset.f==="ALL" || li.dataset.k===b.dataset.f));
-}));
-/* 横スクロールの矢印 */
-document.querySelectorAll(".arw").forEach(b => b.addEventListener("click", () => { const el = document.getElementById(b.dataset.for); el.scrollBy({left: el.clientWidth*.8*Number(b.dataset.dir), behavior:"smooth"}); }));
-/* WORKS のカテゴリ → 全実績を開く */
-document.querySelectorAll(".cat").forEach(b => b.addEventListener("click", () => { const d = document.getElementById("credits"); d.open = true; d.scrollIntoView({behavior:"smooth",block:"start"}); }));
-
-/* Spotify ミニプレイヤー（1つだけ） */
-document.querySelectorAll(".art[data-track]").forEach(b => b.addEventListener("click", () => {
-  const pl = document.getElementById("player");
-  document.querySelectorAll(".song.on").forEach(x => x.classList.remove("on")); b.closest(".song").classList.add("on");
-  pl.innerHTML = `<iframe title="Spotify プレイヤー" src="https://open.spotify.com/embed/track/${b.dataset.track}?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-  pl.scrollIntoView({behavior:"smooth",block:"nearest"});
-}));
-const feEl = document.getElementById("feat"), dots = document.querySelectorAll(".swipe .dots i");
-feEl.addEventListener("scroll", () => { const w = feEl.scrollWidth - feEl.clientWidth; const i = w>0 ? Math.round(feEl.scrollLeft/w*(dots.length-1)) : 0; dots.forEach((d,j)=>d.classList.toggle("on",i===j)); }, {passive:true});
-
-/* PCでは アコーディオンを開いた状態にする（スマホだけ たためる） */
-const mq = matchMedia("(min-width:821px)");
-function syncAcc(){ document.querySelectorAll("details.pc-open").forEach(d => { if(mq.matches) d.open = true; }); }
-syncAcc(); mq.addEventListener("change", syncAcc);
-
-/* ヘッダー・現在地・下のボタン */
-const hd = document.getElementById("hd"), dock = document.getElementById("dock"), navA = [...document.querySelectorAll("#nav a")];
-let inContact = false; const heroEl = document.getElementById("top");
-const onScroll = () => { hd.classList.toggle("solid", scrollY > 40); dock.classList.toggle("hide", inContact || scrollY < heroEl.offsetHeight * .7); };
-addEventListener("scroll", onScroll, {passive:true}); onScroll();
-if("IntersectionObserver" in window){
-  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const id = e.target.id; navA.forEach(a => a.classList.toggle("on", a.getAttribute("href")==="#"+id)); } }), {rootMargin:"-45% 0px -50% 0px"});
-  document.querySelectorAll("#main > section").forEach(s => io.observe(s));
-  const ct = new IntersectionObserver(es => es.forEach(e => { inContact = e.isIntersecting; onScroll(); }), {threshold:.08});
-  ct.observe(document.getElementById("contact"));
-  const rv = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in"); rv.unobserve(e.target); } }), {rootMargin:"0px 0px -8% 0px"});
-  document.querySelectorAll(".reveal").forEach(x => rv.observe(x));
-  document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv"); c.style.transitionDelay = `${(i%6)*70}ms`; rv.observe(c); });
-} else document.querySelectorAll(".reveal").forEach(x => x.classList.add("in"));
-
-/* フォーム（見本：送信はしない） */
-const from = (new URLSearchParams(location.search).get("from")||"").toLowerCase();
-document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",sp:"Spotify"})[from] || "";
-document.getElementById("form").addEventListener("submit", e => {
-  e.preventDefault(); let ok = true, first = null;
-  const check = (id, test, msg) => { const el = document.getElementById(id), er = el.closest("div,fieldset").querySelector(".err"); const bad = !test(el.value.trim());
-    er.hidden = !bad; er.textContent = bad ? msg : ""; el.setAttribute("aria-invalid", bad); if(bad){ ok = false; first = first || el; } };
-  check("f_name", v => v, "お名前を入れてください");
-  check("f_mail", v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "メールアドレスの形を確かめてください（例：name@example.com）");
-  check("f_kind", v => v, "ご用件を選んでください");
-  check("f_msg", v => v, "メッセージを入れてください");
-  if(!ok){ (first.type==="hidden" ? document.querySelector('input[name="kind"]') : first).focus(); return; }
-  /* Googleフォームへ送る（届いた内容はスプレッドシートにたまり、メールでお知らせが来る） */
-  const F = D.form, v = id => document.getElementById(id).value.trim(), btn = document.getElementById("send");
-  const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:v("f_sub"),[F.message]:v("f_msg"),[F.from]:v("f_from")});
-  btn.disabled = true; btn.textContent = "送信中…"; document.getElementById("sendErr").hidden = true;
-  fetch(F.action, {method:"POST", mode:"no-cors", body})
-    .then(() => { document.getElementById("form").querySelectorAll("input,textarea,button").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; })
-    .catch(() => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; });
-  return;
-  document.getElementById("done").hidden = false; document.getElementById("send").disabled = true;
-});
-</script>
+<script type="application/json" id="cfg">{"form":{"action":"https://docs.google.com/forms/d/e/1FAIpQLSfvnTQ09UhGhzNjL7lpcy01ZUpQUyUhQizAKKZVJMnw4f4GmQ/formResponse","kind":"entry.1760490644","name":"entry.955876901","email":"entry.578010398","subject":"entry.411187707","message":"entry.197220302","from":"entry.2074772989"}}</script>
+<script src="assets/js/main.js" defer></script>
 </body>
 </html>

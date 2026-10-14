@@ -2,66 +2,74 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<script>document.documentElement.classList.add("js")</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080d">
+<title>北川弘喜 | ギタリスト・作曲家 Koki Kitagawa</title>
+<meta name="description" content="書けるギタリスト、弾ける作曲家。北川弘喜（Koki Kitagawa）の公式サイト。ライブ・舞台・TVでのサポートギター、作詞・作曲・編曲、ギターレッスン。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="北川弘喜 Koki Kitagawa | 書けるギタリスト、弾ける作曲家。">
+<meta property="og:description" content="ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。">
+<!--@meta-->
+<meta name="twitter:card" content="summary_large_image">
+<!--@jsonld-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- @head -->
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/kk-design-system.css">
 <link rel="stylesheet" href="assets/css/site.css">
+<!--@phstyle-->
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
-
-<!-- 固定クローム：中央上のロゴ／左端の縦ナビ／右上のSNS -->
-<header class="site-header">
-  <div>
-    <h1 class="t-logo">北川弘喜</h1>
-    <p class="t-logo-en">Koki Kitagawa &mdash; Guitarist / Composer</p>
+<a class="sr" href="#main">本文へ</a>
+<header class="hd" id="hd">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="KOKI KITAGAWA トップへ">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a>
+    <nav class="nav" id="nav" aria-label="ページ内">
+      <a href="#profile">PROFILE</a><a href="#career">CAREER</a><a href="#live">LIVE / TV</a><a href="#works">WORKS</a><a href="#listen">LISTEN</a><a href="#lesson">LESSON</a><a href="#contact">CONTACT</a>
+    </nav>
+    <div class="sns"><!--@sns--></div>
+    <button class="btn gr sm" type="button" data-open="お仕事">仕事を依頼する</button>
+    <button class="menu-btn" type="button" id="menuBtn" aria-label="メニューを開く" aria-expanded="false" aria-controls="menu"><i></i></button>
   </div>
 </header>
 
-<nav class="site-nav" aria-label="ページ内の案内">
-  <a href="#about">About</a>
-  <a href="#works">Works</a>
-  <a href="#credits">Credits</a>
-  <a href="#live">Live</a>
-  <a href="#lesson">Lesson</a>
-  <a href="#contact">Contact</a>
-  <a class="site-nav__cta" href="#contact">ご依頼</a>
-</nav>
-
-<div class="social">
-  <a class="btn btn--nav" href="#contact">ご依頼</a>
-  <a href="https://www.instagram.com/kitagawa_kouki/" target="_blank" rel="noopener" aria-label="Instagram"><span class="i i--instagram">IG</span></a>
-  <a href="https://www.youtube.com/@KokiKitagawa" target="_blank" rel="noopener" aria-label="YouTube"><span class="i i--youtube">YT</span></a>
-  <a href="https://x.com/Gt_koki_" target="_blank" rel="noopener" aria-label="X"><span class="i i--x">X</span></a>
-</div>
-
-<main class="shell">
-
-  <!-- @hero -->
-
-  <!-- @about -->
-
-  <!-- @works -->
-
-  <!-- @credits -->
-
-  <!-- @live -->
-
-  <!-- @lesson -->
-
-  <!-- @contact -->
-
+<main id="main">
+<!--@main-->
 </main>
 
-<footer class="site-footer shell">
-  <div class="container">
-    <p class="t-caption">&copy; <!-- @year --> Koki Kitagawa</p>
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="big">KOKI KITAGAWA</div>
+      <nav aria-label="フッター"><a href="#profile">PROFILE</a><a href="#career">CAREER</a><a href="#live">LIVE / TV</a><a href="#works">WORKS</a><a href="#listen">LISTEN</a><a href="#lesson">LESSON</a><a href="#contact">CONTACT</a></nav>
+      <small>© 2026 Koki Kitagawa</small>
+    </div>
+    <div class="sns"><!--@sns--></div>
   </div>
 </footer>
 
+<div class="dock hide" id="dock">
+  <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
+  <button class="btn gr" type="button" data-open="お仕事">仕事依頼</button>
+</div>
+
+<div class="menu" id="menu" hidden role="dialog" aria-modal="true" aria-label="メニュー">
+  <div class="top"><span class="logo">KOKI KITAGAWA</span><button class="x" type="button" id="menuX" aria-label="メニューを閉じる">×</button></div>
+  <nav>
+    <a href="#profile">PROFILE <small>プロフィール</small></a><a href="#career">CAREER <small>経歴</small></a><a href="#live">LIVE / TV <small>ライブ・テレビ</small></a>
+    <a href="#works">WORKS <small>作品</small></a><a href="#listen">LISTEN <small>聴く・見る</small></a><a href="#lesson">LESSON <small>レッスン</small></a><a href="#contact">CONTACT <small>お問い合わせ</small></a>
+  </nav>
+  <div class="btns">
+    <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
+    <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
+  </div>
+  <div class="sns"><!--@sns--></div>
+</div>
+
+<script type="application/json" id="cfg"><!--@config--></script>
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>
