@@ -4,7 +4,10 @@
    ページの文章・カードはすべてここで組み立てて、静的な HTML として書き出す。
    ボタンの動き（絞り込み・メニュー・フォーム送信など）は assets/js/main.js。
    ============================================================ */
-export const ROOT_FILES = ["src/template.html","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json"];
+export const ROOT_FILES = ["src/template.html","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
+const ASSETS = ["assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
+/* 中身から短い印をつくる（CSS・JSを直したら、見る人のブラウザに古いものが残らないよう ?v= を変える） */
+const stamp = t => { let h = 5381; for(let i=0;i<t.length;i++) h = ((h<<5) + h + t.charCodeAt(i)) >>> 0; return h.toString(36); };
 
 export function buildOutputs(files){
   const J = k => JSON.parse(files[k]);
@@ -260,6 +263,7 @@ export function buildOutputs(files){
   const cfg = JSON.stringify({form: site.form}).replace(/</g,"\\u003c");
 
   let html = files["src/template.html"];
+  for(const f of ASSETS) html = html.split(`"${f}"`).join(`"${f}?v=${stamp(files[f])}"`);
   const put = (mark, val) => { if(!html.includes(mark)) warnings.push("差込口が見つかりません: " + mark); html = html.split(mark).join(val); };
   put("<!--@meta-->", meta);
   put("<!--@jsonld-->", `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g,"\\u003c")}</script>`);
