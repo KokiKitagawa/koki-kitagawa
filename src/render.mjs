@@ -27,6 +27,7 @@ export function buildOutputs(files){
   const SNS = [["instagram","ig","Instagram"],["tiktok","tt","TikTok"],["x","x","X"],["youtube","yt","YouTube"],["spotify","sp","Spotify"]];
   const snsHTML = () => SNS.map(([k,i,n]) => `<a href="${P.links[k]}" target="_blank" rel="noopener" aria-label="${n}">${svg(i)}</a>`).join("");
   const pic = (k, alt, cls="") => `<img src="${IMG[k]}" alt="${esc(alt)}" loading="lazy" decoding="async" class="${cls}">`;
+  const swipe = k => `<div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${Array.from({length:k},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>`;
   const sh = (no, en, jp) => `<div class="sh"><span class="no">${no}</span><h2>${en}</h2><p>${jp}</p></div>`;
   const yen = n => n.toLocaleString("ja-JP");
 
@@ -122,9 +123,9 @@ export function buildOutputs(files){
     return `<section class="s" id="works"><div class="wrap">
       ${sh("04","Works","作品・制作実績")}
       <p class="lede" style="margin-bottom:44px;max-width:32em">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
-      <div class="cats">${CATS.map(x => `<button class="cat" type="button" data-cat="${x.n}">${pic(x.img,x.alt)}<span class="n">${x.n}</span><span class="t">${x.t}</span><span class="j">${x.j}</span><span class="d">${x.d}</span><span class="c">${x.c}</span></button>`).join("")}</div>
+      <div class="cats hs" id="cats">${CATS.map(x => `<button class="cat" type="button" data-cat="${x.n}">${pic(x.img,x.alt)}<span class="n">${x.n}</span><span class="t">${x.t}</span><span class="j">${x.j}</span><span class="d">${x.d}</span><span class="c">${x.c}</span></button>`).join("")}</div>${swipe(CATS.length)}
       <div class="feat-head"><h3>Featured Works</h3><p>ジャケットを押すと、ここで再生できます。</p></div>
-      <div class="feat" id="feat">${feat.map((c,i) => {
+      <div class="feat hs" id="feat">${feat.map((c,i) => {
         const id = (c.spotify||"").split("/track/")[1];
         return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)} を再生" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="play"><i></i>LISTEN</span></button>
         <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div>
@@ -182,9 +183,9 @@ export function buildOutputs(files){
           <ul class="tg"><li>初心者〜経験者まで</li><li>オンライン対応</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button></div>
-          <ul class="plans">${L.monthly.map(plan).join("")}
+          <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
-            <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>
+            <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>${swipe(L.monthly.length+1)}
           <p class="small" style="margin:14px 0 0">料金はすべて税込です。レンタルスタジオで行う場合、スタジオ代は別にかかります。</p>
           <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
             <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前の月の20日を過ぎたら 22時から</small></td></tr>
@@ -195,11 +196,11 @@ export function buildOutputs(files){
       </div>
       <div class="les-extra">
         <div><h3><span>STEP</span>はじめるまで</h3>
-          <ol class="flow">
+          <ol class="flow hs" id="flow">
             <li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
-          </ol></div>
+          </ol>${swipe(3)}</div>
         <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
           <details><summary>オンラインでも受けられる？</summary><p>受けられます。レンタルスタジオ・ご自宅・オンラインから選べます。</p></details>

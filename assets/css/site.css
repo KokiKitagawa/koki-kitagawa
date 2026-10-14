@@ -598,3 +598,16 @@ footer{background:var(--black)}
   .card:hover,.card.settled:hover,.cat:hover,.song:hover,.media:hover,.card:active,.cat:active,.song:active,.media:active{transform:none!important}
   .cat:hover img,.media:hover .bg img,.ph:hover::before{transform:none}
 }
+/* ===== スマホは横スクロール（WORKSのカテゴリ・料金・STEP。Featured Worksと同じ形） ===== */
+@media (max-width:820px){
+  .hs{display:grid;grid-auto-flow:column;grid-template-columns:none;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+    margin-left:calc(var(--gut) * -1);margin-right:calc(var(--gut) * -1);padding:0 var(--gut) 4px;scroll-padding:0 var(--gut);scrollbar-width:none}
+  .hs::-webkit-scrollbar{display:none}
+  .hs>*{scroll-snap-align:start}
+  .cats.hs{grid-auto-columns:78%;margin-bottom:0}
+  .cats.hs+.swipe{margin-bottom:clamp(64px,10vw,130px)}
+  .plans.hs{grid-auto-columns:74%;padding-top:14px}
+  .flow.hs{grid-auto-columns:80%}
+  .flow.hs .card{display:block}
+  .flow.hs .n{margin-bottom:12px}
+}

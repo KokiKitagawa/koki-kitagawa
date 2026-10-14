@@ -37,8 +37,16 @@ document.querySelectorAll(".art[data-track]").forEach(b => b.addEventListener("c
   pl.innerHTML = `<iframe title="Spotify プレイヤー" src="https://open.spotify.com/embed/track/${b.dataset.track}?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
   pl.scrollIntoView({behavior:"smooth",block:"nearest"});
 }));
-const feEl = document.getElementById("feat"), dots = document.querySelectorAll(".swipe .dots i");
-feEl.addEventListener("scroll", () => { const w = feEl.scrollWidth - feEl.clientWidth; const i = w>0 ? Math.round(feEl.scrollLeft/w*(dots.length-1)) : 0; dots.forEach((d,j)=>d.classList.toggle("on",i===j)); }, {passive:true});
+/* 横スクロールの点（すぐ後ろの「横にスワイプ」と連動） */
+document.querySelectorAll(".hs").forEach(el => {
+  const sw = el.nextElementSibling; if(!sw || !sw.classList.contains("swipe")) return;
+  const dots = sw.querySelectorAll(".dots i");
+  const upd = () => { const w = el.scrollWidth - el.clientWidth; const i = w>0 ? Math.round(el.scrollLeft/w*(dots.length-1)) : 0; dots.forEach((d,j)=>d.classList.toggle("on",i===j)); };
+  el.addEventListener("scroll", upd, {passive:true}); upd();
+});
+/* 料金はスマホでは「人気No.1」（月4回）が見える位置から */
+const plansEl = document.getElementById("plans"), rec = plansEl && plansEl.querySelector(".rec");
+if(rec && matchMedia("(max-width:820px)").matches) plansEl.scrollLeft = rec.offsetLeft - parseFloat(getComputedStyle(plansEl).paddingLeft);
 
 /* PCでは アコーディオンを開いた状態にする（スマホだけ たためる） */
 const mq = matchMedia("(min-width:821px)");
