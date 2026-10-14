@@ -61,14 +61,15 @@ export function buildOutputs(files){
 
   const yearOf = t => { const m = D.liveYears.find(([p]) => t.startsWith(p)); return m ? m[1] : null; };
   const PH = ["guitar","studio","lesson","stage","live","pedal","play","desk","hands","guitars"];
-  const phStyle = `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}</style>`;
+  const SBG = {profile:"profile", career:"pedal", works:"studio", lesson:"lesson", contact:"play"};   // セクションの背景に大きくぼかして敷く写真
+  const phStyle = `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}${Object.entries(SBG).map(([id,k])=>`#${id}.sbg::before{background-image:url("${IMG[k]}")}`).join("")}</style>`;
   const ph = k => `ph ph-${k}`;
   const chip = (t, cls="") => `<span class="chip ${cls}">${t}</span>`;
 
   function profile(){
     const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
     const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","stage","リハーサル中のステージに並ぶギター"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","studio","紫の光に照らされた作曲デスクとギター"],["LESSON","ギターレッスン","初心者からプロ志向まで","hands","ギターの弦を押さえる手元"]];
-    return `<section class="s" id="profile"><div class="wrap">
+    return `<section class="s sbg" id="profile"><div class="wrap">
       ${sh("01","Profile","プロフィール・経歴")}
       <div class="prof">
         <div class="pw"><div class="photo reveal">${pic("profile","椅子に座ってギターを弾く北川弘喜")}</div><span class="bigword" aria-hidden="true">Guitarist</span></div>
@@ -86,7 +87,7 @@ export function buildOutputs(files){
 
   function career(){
     const T = D.timeline;
-    return `<section class="s" id="career"><div class="wrap">
+    return `<section class="s sbg" id="career"><div class="wrap">
       ${sh("02","Career","経歴・実績")}
       <ol class="tl">${T.map(y => `<li class="tly${y.items.some(i=>i.key)?" has-key":""}"><div class="y">${y.year}</div><div class="evs">${y.items.map(it => it.key
         ? `<article class="card hlc">${pic(({2019:"pedal",2023:"stage",2024:"studio"})[y.year]||"guitar","")}<div class="tx"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div></article>`
@@ -106,7 +107,7 @@ export function buildOutputs(files){
     const F = [["ALL","すべて"],["FES","フェス"],["LIVE","ライブ"],["STAGE","舞台"],["TV","テレビ"]];
     const gig = x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`;
     const W = P.work, nMusic = comp.length+gtr.length+kara.length;
-    return `<section class="s" id="works"><div class="wrap">
+    return `<section class="s sbg" id="works"><div class="wrap">
       ${sh("03","Works","作品・ライブ・出演")}
       <div class="works-top"><p class="lede">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
         <div class="seg" role="tablist" aria-label="作品の種類">
@@ -160,7 +161,7 @@ export function buildOutputs(files){
       return `<li class="card plan ${p.rec?"rec":""} ${ph(({2:"hands",4:"guitar",8:"play"})[p.count])}">${p.rec?'<span class="badge">人気No.1</span>':""}<div class="nm">${esc(p.name)}</div><div class="ct">60分×${p.count}回</div>
         <div class="p">¥${yen(p.price)}<small>/ 月</small></div><div class="per">1回あたり ¥${yen(per)}${save>0?`<em>単発より月¥${yen(save)}おトク</em>`:""}</div>
         <button class="pick" type="button" data-open="レッスン" data-plan="${esc(p.name)}">このプランを選ぶ</button></li>`; };
-    return `<section class="s" id="lesson"><div class="wrap">
+    return `<section class="s sbg" id="lesson"><div class="wrap">
       ${sh("04","Lesson","ギターレッスン")}
       <div class="les">
         <div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>
@@ -203,7 +204,7 @@ export function buildOutputs(files){
   const KDESC = {"レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
   function contact(){
     const W = P.work;
-    return `<section class="s" id="contact" style="background-image:linear-gradient(180deg,rgba(6,8,13,.86),rgba(6,8,13,.94)),url('${IMG.strings}')"><div class="wrap">
+    return `<section class="s sbg" id="contact" style="background-image:linear-gradient(180deg,rgba(6,8,13,.86),rgba(6,8,13,.94)),url('${IMG.strings}')"><div class="wrap">
       ${sh("05","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">
