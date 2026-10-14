@@ -623,3 +623,7 @@ details.acc>.in,details.open-card>.in,.faq details>p{overflow:hidden}
 /* ===== 語や単位の途中で折れないように ===== */
 h1,h2,h3,h4,p,b,small,dd,summary,.lede{word-break:auto-phrase;text-wrap:pretty}
 .dm b{text-wrap:balance}
+/* ===== プロフィール：目立つ経歴＋生い立ち ===== */
+.prof .lede.hl{font-weight:700;font-size:clamp(17px,1.5vw,19px);line-height:1.85;max-width:none;margin-bottom:20px}
+.prof .bio{margin:0 0 30px;max-width:none}
+.prof .bio p{font-size:14.5px;line-height:2}

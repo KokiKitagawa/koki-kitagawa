@@ -69,12 +69,10 @@ export function buildOutputs(files){
       <div class="prof">
         <div class="pw"><div class="photo reveal">${pic("profile","椅子に座ってギターを弾く北川弘喜")}</div><span class="bigword" aria-hidden="true">Guitarist</span></div>
         <div>
-          <p class="lede">${esc(P.bio[0])}</p>
-          <div class="body" style="margin:0 0 28px"><p>${esc(P.bio[1])}</p></div>
+          <p class="lede hl">${esc(P.bio[0])}</p>
+          <div class="body bio">${P.bio.slice(1).map(x=>`<p>${esc(x)}</p>`).join("")}</div>
           <ul class="cards3">${SK.map(s=>`<li class="card ${ph(s[3])}"><span class="chip">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>
           <div class="sns">${snsHTML()}</div>
-          <details class="acc open-card"><summary><b>プロフィールを詳しく読む</b></summary>
-            <div class="in body"><p>アーティストのサポートギターから、作詞・作曲・編曲、カラオケ音源制作まで、「弾く」と「作る」の両面から音楽に携わる。</p>${P.bio.slice(2).map(p=>`<p>${esc(p)}</p>`).join("")}</div></details>
           <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
             <div class="in"><ul class="gcards">${g}</ul></div></details>
         </div>
