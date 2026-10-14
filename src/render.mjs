@@ -215,7 +215,7 @@ export function buildOutputs(files){
   const KDESC = {"レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
   function contact(){
     const W = P.work;
-    return `<section class="s" id="contact" style="--bgimg:url('${IMG.strings}')"><div class="wrap">
+    return `<section class="s" id="contact" style="background-image:linear-gradient(180deg,rgba(6,8,13,.86),rgba(6,8,13,.94)),url('${IMG.strings}')"><div class="wrap">
       ${sh("07","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">

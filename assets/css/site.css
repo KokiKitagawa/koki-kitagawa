@@ -238,7 +238,7 @@ table.hours{width:100%;border-collapse:collapse;font-size:14px}
 .hours td small{display:block;color:var(--faint);font-size:12.5px}
 
 /* ---------- CONTACT ---------- */
-#contact{background:linear-gradient(180deg,rgba(6,8,13,.86),rgba(6,8,13,.94)),var(--bgimg,none) center/cover no-repeat}
+#contact{background-color:var(--black);background-position:center;background-size:cover;background-repeat:no-repeat}
 .ct{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr);gap:clamp(40px,6vw,96px);align-items:start}
 .ct .side p{color:var(--sub);margin:0 0 26px;max-width:24em}
 .ct .side dl{display:grid;grid-template-columns:auto 1fr;gap:10px 22px;font-size:14px;margin:0}
