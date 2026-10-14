@@ -55,7 +55,8 @@ if("IntersectionObserver" in window){
   document.querySelectorAll("#main > section").forEach(s => io.observe(s));
   const ct = new IntersectionObserver(es => es.forEach(e => { inContact = e.isIntersecting; onScroll(); }), {threshold:.08});
   ct.observe(document.getElementById("contact"));
-  const rv = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in"); rv.unobserve(e.target); } }), {rootMargin:"0px 0px -8% 0px"});
+  const rv = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const t = e.target; t.classList.add("in"); rv.unobserve(t);
+    if(t.classList.contains("rv")) setTimeout(() => { t.style.transitionDelay = ""; t.classList.add("settled"); }, 1200); } }), {rootMargin:"0px 0px -8% 0px"});
   document.querySelectorAll(".reveal").forEach(x => rv.observe(x));
   document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv"); c.style.transitionDelay = `${(i%6)*70}ms`; rv.observe(c); });
 } else document.querySelectorAll(".reveal").forEach(x => x.classList.add("in"));
