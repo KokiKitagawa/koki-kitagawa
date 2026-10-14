@@ -37,13 +37,36 @@ tabs.forEach(t => { t.addEventListener("click", () => showTab(t.dataset.tab));
   t.addEventListener("keydown", e => { if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return; const i = (tabs.indexOf(t) + (e.key==="ArrowRight"?1:-1) + tabs.length) % tabs.length; tabs[i].focus(); showTab(tabs[i].dataset.tab); }); });
 document.querySelectorAll("[data-tab-go]").forEach(a => a.addEventListener("click", () => showTab(a.dataset.tabGo)));
 
-/* Spotify ミニプレイヤー（1つだけ） */
-document.querySelectorAll(".art[data-track]").forEach(b => b.addEventListener("click", () => {
-  const pl = document.getElementById("player");
-  document.querySelectorAll(".song.on").forEach(x => x.classList.remove("on")); b.closest(".song").classList.add("on");
-  pl.innerHTML = `<iframe title="Spotify プレイヤー" src="https://open.spotify.com/embed/track/${b.dataset.track}?utm_source=generator&theme=0" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-  pl.scrollIntoView({behavior:"smooth",block:"nearest"});
+/* ジャケットの再生ボタン：1タップで再生、別の曲を押すと前の曲は止まる（Spotify の埋め込みを1つだけ使う） */
+const arts = [...document.querySelectorAll(".art[data-track]")], host = document.getElementById("spHost");
+let ctrl = null, cur = null, wantPlay = false, apiAsked = false, apiFailed = false, lastPlay = 0;
+const setUI = (b, playing) => { arts.forEach(x => { const on = x===b && playing; x.closest(".song").classList.toggle("playing", on); x.setAttribute("aria-pressed", on); }); };
+function loadApi(){
+  if(apiAsked || !arts.length) return; apiAsked = true;
+  window.onSpotifyIframeApiReady = api => api.createController(document.getElementById("spEmbed"), {uri:"spotify:track:"+arts[0].dataset.track, width:"100%", height:80}, c => {
+    ctrl = c;
+    c.addListener("playback_update", e => { const d = e.data; if(!cur) return;
+      if(!d.isPaused){ wantPlay = false; host.classList.remove("show"); }
+      setUI(cur, !d.isPaused);
+      const bar = cur.querySelector(".bar i"); if(bar && d.duration) bar.style.transform = `scaleX(${Math.min(1, d.position/d.duration)})`; });
+    if(wantPlay && cur) start(cur);
+  });
+  const sc = document.createElement("script"); sc.src = "https://open.spotify.com/embed/iframe-api/v1"; sc.async = true; sc.onerror = () => { apiFailed = true; if(cur) setUI(cur, false); }; document.head.appendChild(sc);
+}
+function start(b){
+  if(!ctrl){ wantPlay = true; loadApi(); setTimeout(() => { if(!ctrl && cur===b) setUI(b, false); }, 6000); return; }
+  ctrl.loadUri("spotify:track:"+b.dataset.track); ctrl.play(); lastPlay = Date.now(); wantPlay = true;
+  /* 少し待っても鳴らないとき（ブラウザが自動再生を止めた等）は、プレイヤーを下に出して押してもらう */
+  setTimeout(() => { if(wantPlay && cur===b && Date.now()-lastPlay >= 2400) host.classList.add("show"); }, 2500);
+}
+arts.forEach(b => b.addEventListener("click", () => {
+  if(apiFailed){ window.open("https://open.spotify.com/track/"+b.dataset.track, "_blank", "noopener"); return; }   // 埋め込みが読めないときは Spotify を開く
+  if(cur===b && ctrl){ ctrl.togglePlay(); return; }
+  arts.forEach(x => { const bar = x.querySelector(".bar i"); if(bar) bar.style.transform = "scaleX(0)"; });
+  cur = b; setUI(b, true); start(b);
 }));
+const featEl = document.getElementById("feat");
+if(featEl && "IntersectionObserver" in window){ const o = new IntersectionObserver(es => { if(es.some(e=>e.isIntersecting)){ loadApi(); o.disconnect(); } }, {rootMargin:"600px 0px"}); o.observe(featEl); }
 /* 横スクロールの点（すぐ後ろの「横にスワイプ」と連動） */
 document.querySelectorAll(".hs").forEach(el => {
   const sw = el.nextElementSibling; if(!sw || !sw.classList.contains("swipe")) return;

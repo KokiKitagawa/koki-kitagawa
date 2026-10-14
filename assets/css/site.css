@@ -730,3 +730,29 @@ footer .sns a,.menu .sns a{width:40px;height:40px}
   .seg button{justify-content:center;padding:0 10px}
   .outlinks{grid-template-columns:minmax(0,1fr);gap:10px}
 }
+/* ===== ジャケットの真ん中の再生ボタン ===== */
+.song .art{border-radius:18px;box-shadow:0 22px 44px -24px rgba(0,0,0,.9),inset 0 0 0 1px rgba(255,255,255,.08)}
+.song .art::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(0,0,0,.28),rgba(0,0,0,0) 60%);opacity:.9;transition:opacity .3s}
+.song .pp{position:absolute;left:50%;top:50%;z-index:2;width:74px;height:74px;margin:-37px 0 0 -37px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.2);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 10px 30px rgba(0,0,0,.35);
+  transition:transform .25s cubic-bezier(.2,.7,.2,1),background .25s}
+.song .pp .tri{width:0;height:0;margin-left:5px;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent}
+.song .pp .bars{display:none;width:18px;height:22px;background:linear-gradient(90deg,#fff 0 6px,transparent 6px 12px,#fff 12px 18px)}
+.song.playing .pp .tri{display:none} .song.playing .pp .bars{display:block}
+.song.playing .pp{background:rgba(29,185,84,.85)}
+@media (hover:hover){.song .art:hover .pp{transform:scale(1.08)}}
+.song .art:active .pp{transform:scale(.94)}
+.song .eq{position:absolute;right:14px;top:12px;z-index:2;display:none;gap:3px;align-items:flex-end;height:16px}
+.song .eq i{width:3px;height:100%;background:#fff;border-radius:2px;transform-origin:bottom;animation:eq .9s ease-in-out infinite}
+.song .eq i:nth-child(2){animation-delay:-.3s} .song .eq i:nth-child(3){animation-delay:-.6s}
+.song.playing .eq{display:flex}
+@keyframes eq{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.song .bar{position:absolute;left:0;right:0;bottom:0;height:4px;z-index:2;background:rgba(255,255,255,.18);opacity:0;transition:opacity .3s}
+.song .bar i{display:block;height:100%;background:#1DB954;transform:scaleX(0);transform-origin:left;transition:transform .5s linear}
+.song.playing .bar{opacity:1}
+.song.playing .art{box-shadow:0 0 0 2px #1DB954,0 22px 44px -24px rgba(0,0,0,.9)}
+.song h4{margin:18px 0 2px}
+@media (prefers-reduced-motion:reduce){.song .eq i{animation:none;transform:scaleY(.7)}}
+.sp-host{position:fixed;left:12px;right:12px;bottom:-120px;z-index:45;max-width:420px;margin:0 auto;border-radius:14px;overflow:hidden;opacity:0;pointer-events:none;transition:bottom .35s cubic-bezier(.2,.7,.2,1),opacity .35s}
+.sp-host.show{bottom:calc(84px + env(safe-area-inset-bottom));opacity:1;pointer-events:auto;box-shadow:0 18px 50px rgba(0,0,0,.6)}
+@media (min-width:821px){.sp-host.show{bottom:24px}}

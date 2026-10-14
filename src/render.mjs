@@ -115,12 +115,10 @@ export function buildOutputs(files){
       <div class="tabp on" id="p-music" role="tabpanel" aria-labelledby="t-music">
         <div class="feat hs" id="feat">${feat.map((c,i) => {
           const id = (c.spotify||"").split("/track/")[1];
-          return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)} を再生" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="play"><i></i>LISTEN</span></button>
-          <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div>
-          <ul class="tags">${tagsOf(c).map(t=>`<li>${t}</li>`).join("")}</ul><div class="jr">${esc((c.roles||[]).join("・"))}</div>
-          <a class="sp" href="${c.spotify}" target="_blank" rel="noopener">${svg("sp")}Spotifyで聴く</a></article>`;}).join("")}</div>
+          return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)}（${esc(c.artist)}）を再生" aria-pressed="false" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="pp" aria-hidden="true"><i class="tri"></i><i class="bars"></i></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="bar" aria-hidden="true"><i></i></span></button>
+          <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div></article>`;}).join("")}</div>
         <div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>
-        <div class="player" id="player"></div>
+        <div class="sp-host" id="spHost" aria-hidden="true"><div id="spEmbed"></div></div>
         <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${nMusic} CREDITS</span></summary>
           <div class="in">
             <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
