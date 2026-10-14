@@ -51,7 +51,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .logo{font:800 17px/1 var(--en);font-stretch:112%;letter-spacing:.16em;white-space:nowrap}
 .logo small{display:block;margin-top:5px;font-size:9.5px;font-weight:500;letter-spacing:.3em;color:var(--sub)}
 .nav{display:flex;gap:24px;margin-left:auto}
-.nav a{font:600 12.5px/1 var(--en);letter-spacing:.16em;color:var(--sub);padding:8px 0;position:relative}
+.nav a{font:600 12.5px/1 var(--en);letter-spacing:.16em;color:var(--sub);padding:8px 0;position:relative;white-space:nowrap}
 .nav a:hover,.nav a.on{color:var(--ink)}
 .nav a.on::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--ink)}
 .sns{display:flex;gap:6px}
@@ -312,7 +312,7 @@ footer small{display:block;margin-top:26px;color:var(--faint);font-size:12px}
 .menu .btns{display:grid;gap:12px;margin-bottom:26px}
 .menu .btns .btn{min-height:58px;font-size:16px}
 
-@media (max-width:1180px){
+@media (max-width:1279px){
   .nav,.hd .sns,.hd .btn{display:none}
   .menu-btn{display:grid}
   .cats{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -615,7 +615,7 @@ footer{background:var(--black)}
   <div class="wrap">
     <a class="logo" href="#top" aria-label="KOKI KITAGAWA トップへ">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a>
     <nav class="nav" id="nav" aria-label="ページ内">
-      <a href="#top">HOME</a><a href="#profile">PROFILE</a><a href="#career">CAREER</a><a href="#lesson">LESSON</a><a href="#live">LIVE</a><a href="#works">WORKS</a><a href="#contact">CONTACT</a>
+      <a href="#profile">PROFILE</a><a href="#career">CAREER</a><a href="#live">LIVE / TV</a><a href="#works">WORKS</a><a href="#listen">LISTEN</a><a href="#lesson">LESSON</a><a href="#contact">CONTACT</a>
     </nav>
     <div class="sns" data-sns></div>
     <button class="btn gr sm" type="button" data-open="仕事依頼">仕事を依頼する</button>
@@ -644,8 +644,8 @@ footer{background:var(--black)}
 <div class="menu" id="menu" hidden role="dialog" aria-modal="true" aria-label="メニュー">
   <div class="top"><span class="logo">KOKI KITAGAWA</span><button class="x" type="button" id="menuX" aria-label="メニューを閉じる">×</button></div>
   <nav>
-    <a href="#top">HOME <small>トップ</small></a><a href="#profile">PROFILE <small>プロフィール</small></a><a href="#career">CAREER <small>経歴</small></a>
-    <a href="#lesson">LESSON <small>レッスン</small></a><a href="#live">LIVE <small>ライブ・TV</small></a><a href="#works">WORKS <small>作品</small></a><a href="#contact">CONTACT <small>お問い合わせ</small></a>
+    <a href="#profile">PROFILE <small>プロフィール</small></a><a href="#career">CAREER <small>経歴</small></a><a href="#live">LIVE / TV <small>ライブ・テレビ</small></a>
+    <a href="#works">WORKS <small>作品</small></a><a href="#listen">LISTEN <small>聴く・見る</small></a><a href="#lesson">LESSON <small>レッスン</small></a><a href="#contact">CONTACT <small>お問い合わせ</small></a>
   </nav>
   <div class="btns">
     <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
@@ -936,7 +936,7 @@ let inContact = false; const heroEl = document.getElementById("top");
 const onScroll = () => { hd.classList.toggle("solid", scrollY > 40); dock.classList.toggle("hide", inContact || scrollY < heroEl.offsetHeight * .7); };
 addEventListener("scroll", onScroll, {passive:true}); onScroll();
 if("IntersectionObserver" in window){
-  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const id = e.target.id; navA.forEach(a => a.classList.toggle("on", a.getAttribute("href")==="#"+(id==="listen"?"works":id))); } }), {rootMargin:"-45% 0px -50% 0px"});
+  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const id = e.target.id; navA.forEach(a => a.classList.toggle("on", a.getAttribute("href")==="#"+id)); } }), {rootMargin:"-45% 0px -50% 0px"});
   document.querySelectorAll("#main > section").forEach(s => io.observe(s));
   const ct = new IntersectionObserver(es => es.forEach(e => { inContact = e.isIntersecting; onScroll(); }), {threshold:.08});
   ct.observe(document.getElementById("contact"));
