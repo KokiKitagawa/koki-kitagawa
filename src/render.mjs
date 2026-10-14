@@ -220,8 +220,24 @@ export function buildOutputs(files){
             <div><label for="f_name">お名前<i>必須</i></label><input id="f_name" name="name" autocomplete="name" required><p class="err" hidden></p></div>
             <div><label for="f_mail">メールアドレス<i>必須</i></label><input id="f_mail" name="email" type="email" inputmode="email" autocomplete="email" required><p class="err" hidden></p></div>
           </div>
+          <div class="xf" data-for="レッスン">
+            <div class="two">
+              <div><label for="f_plan">希望プラン<i>必須</i></label><select id="f_plan"><option value="">選んでください</option>${["体験レッスン",...D.lessonPlans.monthly.map(m=>m.name),"単発","まだ決めていない"].map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
+              <div><label for="f_level">ギター歴</label><select id="f_level"><option value="">選んでください</option><option>はじめて</option><option>1年未満</option><option>1〜3年</option><option>3年以上</option></select></div>
+            </div>
+            <fieldset class="opts"><legend>受ける場所</legend>${["レンタルスタジオ","ご自宅","オンライン","相談したい"].map(x=>`<label class="opt"><input type="radio" name="f_place" value="${x}"><span>${x}</span></label>`).join("")}</fieldset>
+            <div><label for="f_when">希望の曜日・時間</label><input id="f_when" placeholder="例：水曜の夜、土日の昼"></div>
+          </div>
+          <div class="xf" data-for="お仕事">
+            <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["作詞・作曲","編曲・トラック制作","ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
+            <div class="two">
+              <div><label for="f_due">納期</label><input id="f_due" placeholder="例：11月末まで"></div>
+              <div><label for="f_budget">ご予算</label><input id="f_budget" placeholder="例：5万円前後／相談したい"></div>
+            </div>
+            <div><label for="f_ref">参考音源のURL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
+          </div>
           <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：体験レッスンの希望日について"></div>
-          <div><label for="f_msg">メッセージ<i>必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
+          <div><label for="f_msg">メッセージ<i id="msgReq">必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
           <input type="hidden" name="from" id="f_from">
           <button class="btn gr send" type="submit" id="send">この内容で送る</button>
           <div class="done" id="done" hidden role="status">ありがとうございます。送信しました。2日以内にメールでご返信します。</div>

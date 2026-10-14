@@ -11,14 +11,23 @@ document.addEventListener("keydown", e => { if(e.key==="Escape" && !menu.hidden)
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-open]"); if(!b) return;
   closeMenu(); setKind(b.dataset.open);
-  if(b.dataset.plan){ document.getElementById("f_sub").value = `レッスンの申し込み（${b.dataset.plan}）`; }
+  if(b.dataset.plan){ document.getElementById("f_plan").value = b.dataset.plan; }
   document.getElementById("contact").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
   setTimeout(() => document.getElementById("f_name").focus({preventScroll:true}), 600);
 });
 /* ご用件のカード */
 const kindEl = document.getElementById("f_kind");
-function setKind(v){ kindEl.value = v; document.querySelectorAll('input[name="kind"]').forEach(r => r.checked = r.value===v); }
-document.querySelectorAll('input[name="kind"]').forEach(r => r.addEventListener("change", () => { kindEl.value = r.value; }));
+/* ご用件で、下の入力欄を切り替える（レッスン／お仕事／その他） */
+const PH = {"レッスン":"ご質問や、レッスンで弾けるようになりたい曲など（なくても大丈夫です）","お仕事":"曲の雰囲気、尺、使い道など（なくても大丈夫です）","その他":"ご用件をお書きください"};
+function applyKind(v){ kindEl.value = v;
+  document.querySelectorAll(".xf").forEach(x => x.classList.toggle("on", x.dataset.for===v));
+  document.getElementById("f_msg").placeholder = PH[v] || "ご希望の内容、日程、納期など";
+  document.getElementById("msgReq").hidden = v==="レッスン" || v==="お仕事";
+  const sb = document.getElementById("send"); sb.classList.toggle("or", v==="レッスン"); sb.classList.toggle("gr", v!=="レッスン");
+  document.getElementById("f_sub").placeholder = v==="お仕事" ? "例：楽曲制作のご相談" : v==="レッスン" ? "例：体験レッスンの希望日について" : "例：取材のご依頼";
+}
+function setKind(v){ document.querySelectorAll('input[name="kind"]').forEach(r => r.checked = r.value===v); applyKind(v); }
+document.querySelectorAll('input[name="kind"]').forEach(r => r.addEventListener("change", () => applyKind(r.value)));
 /* 絞り込みチップ */
 document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e => {
   const b = e.target.closest(".fchip"); if(!b) return;
@@ -126,14 +135,25 @@ document.getElementById("form").addEventListener("submit", e => {
   check("f_name", v => v, "お名前を入れてください");
   check("f_mail", v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "メールアドレスの形を確かめてください（例：name@example.com）");
   check("f_kind", v => v, "ご用件を選んでください");
-  check("f_msg", v => v, "メッセージを入れてください");
+  const kind = kindEl.value;
+  if(kind==="レッスン") check("f_plan", v => v, "希望プランを選んでください");
+  if(kind==="お仕事"){ const box = document.getElementById("f_jobs"), er = box.querySelector(".err"), none = !box.querySelector("input:checked");
+    er.hidden = !none; er.textContent = none ? "ご依頼の内容を1つ以上選んでください" : ""; if(none){ ok = false; first = first || box.querySelector("input"); } }
+  if(kind!=="レッスン" && kind!=="お仕事") check("f_msg", v => v, "メッセージを入れてください");
   if(!ok){ (first.type==="hidden" ? document.querySelector('input[name="kind"]') : first).focus(); return; }
   /* Googleフォームへ送る（届いた内容はスプレッドシートにたまり、メールでお知らせが来る） */
   const F = CFG.form, v = id => document.getElementById(id).value.trim(), btn = document.getElementById("send");
-  const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:v("f_sub"),[F.message]:v("f_msg"),[F.from]:v("f_from")});
+  /* 追加の項目は「メッセージ」の頭にまとめて送る（Googleフォームの設定はそのまま） */
+  const sel = n => [...document.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value).join("、");
+  const extra = kind==="レッスン" ? [["希望プラン",v("f_plan")],["ギター歴",v("f_level")],["受ける場所",sel("f_place")],["希望の曜日・時間",v("f_when")]]
+    : kind==="お仕事" ? [["ご依頼の内容",sel("f_job")],["納期",v("f_due")],["ご予算",v("f_budget")],["参考音源",v("f_ref")]] : [];
+  const head = extra.filter(x => x[1]).map(x => `【${x[0]}】${x[1]}`).join("\n");
+  const msg = [head, v("f_msg")].filter(Boolean).join("\n\n");
+  const sub = v("f_sub") || (kind==="レッスン" ? `レッスンの申し込み（${v("f_plan")}）` : kind==="お仕事" ? `お仕事のご相談（${sel("f_job")}）` : "");
+  const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:sub,[F.message]:msg,[F.from]:v("f_from")});
   btn.disabled = true; btn.textContent = "送信中…"; document.getElementById("sendErr").hidden = true;
   fetch(F.action, {method:"POST", mode:"no-cors", body})
-    .then(() => { document.getElementById("form").querySelectorAll("input,textarea,button").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; })
+    .then(() => { document.getElementById("form").querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; })
     .catch(() => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; });
 });
 })();
