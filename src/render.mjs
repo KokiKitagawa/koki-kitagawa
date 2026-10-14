@@ -49,8 +49,12 @@ export function buildOutputs(files){
           <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
           <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
         </div>
-        <ul class="proof"><li>SUMMER SONIC 2023</li><li>CDTV</li><li>B-PROJECT 楽曲提供</li></ul>
-        <div class="nums"><div><b>${comp.length}<small>曲</small></b><span>楽曲提供</span></div><div><b>${gtr.length}<small>作品</small></b><span>ギター参加</span></div><div><b>${D.live.length+stage.length}<small>本</small></b><span>ステージ</span></div><div><b>${tv.length}<small>回</small></b><span>TV出演</span></div></div>
+        <ul class="marks" aria-label="主な実績">
+          <li><b>SUMMER SONIC</b><span>2023 出演・サポートギター</span></li>
+          <li><b><span class="ib">イナズマロック</span><span class="ib">フェス</span></b><span>2023 出演・サポートギター</span></li>
+          <li><b>CDTV</b><span>地上波出演</span></li>
+          <li><b>B-PROJECT</b><span>楽曲提供（作詞・作曲・編曲）</span></li>
+        </ul>
       </div>
     </section>`;
   }
