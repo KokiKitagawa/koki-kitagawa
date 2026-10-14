@@ -12,9 +12,11 @@
     "desk": "img/desk-900.webp",
     "pedal": "img/pedal-1200.webp",
     "play": "img/play-1400.webp",
-    "strings": "img/strings-1600.webp",
     "hands": "img/hands-1400.webp",
     "guitars": "img/guitars-900.webp",
-    "ogp": "img/ogp.jpg"
+    "ogp": "img/ogp.jpg",
+    "venue": "img/venue-1600.webp",
+    "tubesBlue": "img/tubes-blue-1600.webp",
+    "tubesAmber": "img/tubes-amber-1600.webp"
   }
 }

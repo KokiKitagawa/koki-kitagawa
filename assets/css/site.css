@@ -824,3 +824,95 @@ form.f{border-radius:24px;background:rgba(20,26,40,.62);box-shadow:inset 0 0 0 1
   .card:hover,.cat:hover,.media:hover{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),0 26px 50px -24px rgba(0,0,0,.85)}
 }
 @media (max-width:820px){ section.s.sbg::before{filter:blur(50px) saturate(1.7);inset:-80px} }
+
+/* ===== v5（2026-10-14）：ブラッシュアップ ===== */
+/* トップのキャッチ：「書ける」「弾ける」を色と下線で立たせ、筆記体の Write & Play を重ねる */
+.hero h1.cp{position:relative;font-size:clamp(44px,6.8vw,104px);line-height:1.12;letter-spacing:.01em;text-shadow:0 4px 30px rgba(0,0,0,.45)}
+.hero h1.cp span.l1,.hero h1.cp span.l2{display:block;white-space:nowrap}
+.hero h1.cp span.l2{padding-left:.9em}
+.kw{position:relative;display:inline-block;font-style:normal;z-index:0}
+@media (max-width:820px){
+  .hero h1.cp{font-size:clamp(34px,10.4vw,52px)}
+  .hero h1.cp span.l2{padding-left:.6em}
+}
+/* 主な実績：同じ大きさのカード4枚（PC 4列・スマホ 2×2） */
+.marks{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;border-top:0;padding-top:0;max-width:980px;justify-content:stretch}
+.marks li,.marks li:first-child{position:relative;padding:16px 18px 15px;border-left:0;border-radius:18px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.04));box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 18px 40px -24px rgba(0,0,0,.85);
+  backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3)}
+.marks li::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--or)}
+.marks li:nth-child(3)::before{background:#fff}
+.marks li:nth-child(4)::before{background:var(--gr-hi)}
+.marks li>i{display:block;font:700 9.5px/1 var(--en);font-style:normal;letter-spacing:.22em;color:rgba(255,255,255,.6);margin-bottom:9px}
+@media (hover:hover){.marks li{transition:transform .25s cubic-bezier(.2,.7,.2,1)}.marks li:hover{transform:translateY(-3px)}}
+@media (max-width:820px){
+  .marks{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .marks li,.marks li:nth-child(odd),.marks li:first-child{padding:13px 12px 12px 14px}
+  .marks li>i{font-size:8.5px;margin-bottom:7px}
+}
+/* 流れる文字の帯：6本の弦の上を細い文字が流れる（全部うすい線の文字に統一） */
+.band{position:relative;padding:26px 0;background:var(--black)}
+.band::before{content:"";position:absolute;left:0;right:0;top:50%;height:58%;transform:translateY(-50%);pointer-events:none;
+  background:repeating-linear-gradient(180deg,rgba(220,228,245,.16) 0 1px,transparent 1px calc(100%/5 - .2px));opacity:.9}
+.band span,.band span:nth-child(4n+1){position:relative;color:transparent;-webkit-text-stroke:1px rgba(220,228,245,.5)}
+.band i{width:.28em;height:.28em;margin:0 .7em;background:transparent;box-shadow:0 0 0 1.5px var(--or-hi);position:relative}
+.band.rev i{background:transparent;box-shadow:0 0 0 1.5px var(--gr-hi)}
+.band .tr{animation-duration:60s}
+@media (max-width:820px){.band{padding:18px 0}}
+/* SNS：5つとも同じ大きさ */
+.prof .sns.pills{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.prof .sns.pills a{width:auto;justify-content:center;padding:0 8px}
+@media (max-width:820px){.prof .sns.pills{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* CAREER：写真カードをやめて、年表の文字だけで見せる（大きい仕事は色の点と見出し） */
+.ev.key{padding:4px 0 8px}
+.ev.key .k{display:block;font:700 10.5px/1 var(--en);letter-spacing:.22em;color:#a9c1ff;margin-bottom:8px}
+.ev.key b{font-size:clamp(17px,1.6vw,21px);line-height:1.45}
+.ev.key small{font-size:13px;margin-top:6px}
+/* 背景の真空管：スクロールに合わせてゆっくり動き、ぼんやり明滅する */
+section.s.pb{isolation:isolate;overflow:clip}
+.pbg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.pbg i{position:absolute;left:0;right:0;top:-18%;bottom:-18%;background:center/cover no-repeat;transform:translate3d(0,var(--py,0px),0) scale(1.06);will-change:transform;opacity:.62;filter:saturate(1.25) contrast(1.05)}
+.pbg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,11,19,.9) 0%,rgba(8,11,19,.55) 22%,rgba(8,11,19,.6) 70%,rgba(8,11,19,.95) 100%),linear-gradient(90deg,rgba(8,11,19,.75),rgba(8,11,19,.15) 70%)}
+.pbg.amber::after{background:linear-gradient(180deg,rgba(8,11,19,.92) 0%,rgba(8,11,19,.5) 25%,rgba(8,11,19,.62) 72%,rgba(8,11,19,.96) 100%),linear-gradient(270deg,rgba(8,11,19,.2),rgba(8,11,19,.8) 75%)}
+@media (prefers-reduced-motion:no-preference){ .pbg i{animation:hum 6s ease-in-out infinite alternate} }
+@keyframes hum{from{filter:saturate(1.2) brightness(.92)}to{filter:saturate(1.35) brightness(1.12)}}
+@media (prefers-reduced-motion:reduce){ .pbg i{transform:none} }
+#career{background:var(--black)}
+#contact{background:var(--black)}
+/* CONTACT：「その他」は青紫で区別 */
+.kc.bl input:checked+span{background:rgba(77,125,255,.16);box-shadow:inset 0 0 0 1.5px var(--stage)}
+.f .note a,footer small a{text-decoration:underline;text-underline-offset:3px}
+/* 生徒さんの声 */
+.voices{margin-top:clamp(56px,7vw,90px)}
+.voices h3{margin:0 0 18px;font-size:18px;font-weight:700;display:flex;align-items:baseline;gap:12px}
+.voices h3 span{font:700 12px/1 var(--en);letter-spacing:.24em;color:var(--or-hi)}
+.vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0;padding:0}
+.voice p{margin:0 0 12px;font-size:14.5px;line-height:1.9}
+@media (max-width:820px){.vgrid.hs{grid-auto-columns:82%}}
+/* プライバシーポリシーのページ */
+.docw{max-width:820px;padding-top:calc(var(--head) + 60px);padding-bottom:100px}
+.dsec{padding:22px 0;border-top:1px solid var(--line)}
+.dsec h3{margin:0 0 8px;font-size:16px}
+.dsec p{margin:0;color:var(--sub);font-size:14.5px}
+/* v5 調整 */
+.hero picture img{object-position:32% 30%}
+@media (max-width:820px){.hero picture img{object-position:62% 30%}}
+.marks b{white-space:normal;font-size:clamp(17px,1.55vw,22px)}
+.pbg i{opacity:.8}
+.pbg::after{background:linear-gradient(180deg,rgba(8,11,19,.92) 0%,rgba(8,11,19,.35) 20%,rgba(8,11,19,.4) 75%,rgba(8,11,19,.95) 100%),linear-gradient(90deg,rgba(8,11,19,.7),rgba(8,11,19,0) 70%)}
+.pbg.amber::after{background:linear-gradient(180deg,rgba(8,11,19,.92) 0%,rgba(8,11,19,.35) 22%,rgba(8,11,19,.45) 75%,rgba(8,11,19,.96) 100%),linear-gradient(270deg,rgba(8,11,19,.15),rgba(8,11,19,.75) 70%)}
+@media (max-width:820px){
+  .pbg::after{background:linear-gradient(180deg,rgba(8,11,19,.92) 0%,rgba(8,11,19,.5) 18%,rgba(8,11,19,.6) 80%,rgba(8,11,19,.96) 100%)}
+}
+/* v5.4 キャッチ：「書ける」「弾ける」の後ろで、色の光がぼんやり灯る（北川くんが選択。線・Write & Play は無し） */
+.hero h1.cp .kw{color:inherit}
+.hero h1.cp .kw::after{content:none}
+.hero h1.cp .kw::before{content:"";position:absolute;inset:.05em -.2em -.05em;z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--or) 85%,transparent),transparent);filter:blur(10px)}
+.hero h1.cp .kw.bl::before{background:radial-gradient(closest-side,color-mix(in srgb,var(--gr-hi) 80%,transparent),transparent)}
+@media (prefers-reduced-motion:no-preference){
+  .hero h1.cp .kw::before{animation:glowin 1.2s ease-out both .6s}
+  .hero h1.cp .l2 .kw::before{animation-delay:.9s}
+}
+@keyframes glowin{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@media (max-width:820px){.hero .name{margin-top:20px}.hero h1.cp .kw::before{filter:blur(7px);inset:0 -.15em -.08em}}

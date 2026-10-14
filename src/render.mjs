@@ -4,7 +4,7 @@
    ページの文章・カードはすべてここで組み立てて、静的な HTML として書き出す。
    ボタンの動き（絞り込み・メニュー・フォーム送信など）は assets/js/main.js。
    ============================================================ */
-export const ROOT_FILES = ["src/template.html","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
+export const ROOT_FILES = ["src/template.html","data/voices.json","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
 const ASSETS = ["assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
 /* 中身から短い印をつくる（CSS・JSを直したら、見る人のブラウザに古いものが残らないよう ?v= を変える） */
 const stamp = t => { let h = 5381; for(let i=0;i<t.length;i++) h = ((h<<5) + h + t.charCodeAt(i)) >>> 0; return h.toString(36); };
@@ -19,7 +19,7 @@ export function buildOutputs(files){
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
-    lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, timeline: site.timeline, liveYears: site.liveYears
+    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, timeline: site.timeline, liveYears: site.liveYears
   };
   const IMG = images.paths, ICON = site.icons;
   const warnings = [];
@@ -45,18 +45,18 @@ export function buildOutputs(files){
       <picture><source media="(max-width:820px)" srcset="${IMG.heroSp}"><img src="${IMG.heroPc}" alt="紫の照明の中、ギターのネックを斜めに構えて弾く北川弘喜" fetchpriority="high"></picture>
       <div class="wrap">
         <p class="role">GUITARIST / COMPOSER</p>
-        <h1><span>書けるギタリスト、</span><span>弾ける作曲家。</span></h1>
+        <h1 class="cp"><span class="l1"><em class="kw or">書ける</em>ギタリスト、</span><span class="l2"><em class="kw bl">弾ける</em>作曲家。</span></h1>
         <p class="name">KOKI KITAGAWA</p>
-        <p class="lead">ライブ・舞台・テレビのサポートギターから、作詞・作曲・編曲まで。「弾く」と「作る」の両方で、プロの現場に立っています。</p>
+        <p class="lead">ギタリストとしてライブやレコーディング、コンポーザーとして作詞・作曲・編曲まで。「弾く」と「作る」の両方で活動しています。</p>
         <div class="cta">
           <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
           <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
         </div>
         <ul class="marks" aria-label="主な実績">
-          <li><b>SUMMER SONIC</b><span>2023 出演・サポートギター</span></li>
-          <li><b><span class="ib">イナズマロック</span><span class="ib">フェス</span></b><span>2023 出演・サポートギター</span></li>
-          <li><b>CDTV</b><span>地上波出演</span></li>
-          <li><b>B-PROJECT</b><span>楽曲提供（作詞・作曲・編曲）</span></li>
+          <li><i>FESTIVAL</i><b>SUMMER SONIC</b><span>2023 出演・サポートギター</span></li>
+          <li><i>FESTIVAL</i><b><span class="ib">イナズマロック</span><span class="ib">フェス</span></b><span>2023 出演・サポートギター</span></li>
+          <li><i>TV</i><b>CDTV</b><span>地上波出演</span></li>
+          <li><i>SONGWRITING</i><b>B-PROJECT</b><span>楽曲提供（作詞・作曲・編曲）</span></li>
         </ul>
       </div>
     </section>`;
@@ -64,9 +64,10 @@ export function buildOutputs(files){
 
   const yearOf = t => { const m = D.liveYears.find(([p]) => t.startsWith(p)); return m ? m[1] : null; };
   const PH = ["guitar","studio","lesson","stage","live","pedal","play","desk","hands","guitars"];
-  const SBG = {profile:"profile", career:"pedal", works:"studio", lesson:"lesson", contact:"play"};   // セクションの背景に大きくぼかして敷く写真
+  const SBG = {profile:"profile", works:"studio", lesson:"lesson"};   // career と contact は真空管の写真をスクロールで動かす（pbg）   // セクションの背景に大きくぼかして敷く写真
   const phStyle = `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}${Object.entries(SBG).map(([id,k])=>`#${id}.sbg::before{background-image:url("${IMG[k]}")}`).join("")}</style>`;
   const ph = k => `ph ph-${k}`;
+  const pbg = (k, tone) => `<div class="pbg ${tone}" aria-hidden="true"><i style="background-image:url('${IMG[k]}')"></i></div>`;
   const chip = (t, cls="") => `<span class="chip ${cls}">${t}</span>`;
 
   function profile(){
@@ -90,10 +91,10 @@ export function buildOutputs(files){
 
   function career(){
     const T = D.timeline;
-    return `<section class="s sbg" id="career"><div class="wrap">
+    return `<section class="s pb" id="career">${pbg("tubesBlue","blue")}<div class="wrap">
       ${sh("02","Career","経歴・実績")}
       <ol class="tl">${T.map(y => `<li class="tly${y.items.some(i=>i.key)?" has-key":""}"><div class="y">${y.year}</div><div class="evs">${y.items.map(it => it.key
-        ? `<article class="card hlc">${pic(({2019:"pedal",2023:"stage",2024:"studio"})[y.year]||"guitar","")}<div class="tx"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div></article>`
+        ? `<div class="ev key"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`
         : `<div class="ev"><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`).join("")}</div></li>`).join("")}</ol>
       <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#works" data-tab-go="stage" style="text-decoration:underline;text-underline-offset:4px">WORKS</a> にまとめています。</p>
     </div></section>`;
@@ -126,7 +127,7 @@ export function buildOutputs(files){
         <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${nMusic} CREDITS</span></summary>
           <div class="in">
             <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
-              <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${comp.length+gtr.length+1}</em></button>
+              <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${nMusic}</em></button>
               <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
               <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
               <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
@@ -136,9 +137,9 @@ export function buildOutputs(files){
       </div>
       <div class="tabp" id="p-stage" role="tabpanel" aria-labelledby="t-stage">
         <div class="strip">
-          <div class="photo reveal">${pic("stage","リハーサル中のステージに並ぶエレキギターとアコースティックギター")}<span class="cap">STAGE</span></div>
-          <div class="photo reveal">${pic("live","ライブのステージでギターを弾く北川弘喜")}<span class="cap">LIVE</span></div>
-          <div class="photo reveal">${pic("pedal","ライブ会場のステージに組まれたエフェクターボード")}<span class="cap">GEAR</span></div>
+          <div class="photo reveal">${pic("venue","本番前のホール。ステージに照明が当たっている")}<span class="cap">VENUE</span></div>
+          <div class="photo reveal">${pic("stage","ライブ会場のステージに立てたギターとアンプ")}<span class="cap">STAGE</span></div>
+          <div class="photo reveal">${pic("pedal","青い照明のステージに組んだエフェクターボード")}<span class="cap">GEAR</span></div>
         </div>
         <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
         <ul class="grid3" id="gigs">${items.slice(0,6).map(gig).join("")}</ul>
@@ -147,12 +148,12 @@ export function buildOutputs(files){
       </div>
       <div class="outlinks">
         <a class="ol sp" href="${P.links.spotify}" target="_blank" rel="noopener">${svg("sp")}<span><b>Spotify</b><small>提供曲・参加曲をまとめて聴く</small></span></a>
-        <a class="ol yt" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}<span><b>YouTube</b><small>演奏・制作実績を見る</small></span></a>
+        <a class="ol yt" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}<span><b>YouTube</b><small>演奏を見る</small></span></a>
       </div>
       <div class="workcta">
         <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら</p>
           <ul class="serv">${W.services.map(s=>`<li class="card"><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</li>`).join("")}</ul>
-          <p class="small" style="margin-top:14px">納期：${esc(W.delivery)}　｜　${esc(W.style)}　｜　料金：${esc(W.price)}</p></div>
+          <p class="small" style="margin-top:14px">${esc(W.style)}　｜　料金：${esc(W.price)}</p></div>
         <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
       </div>
     </div></section>`;
@@ -179,9 +180,10 @@ export function buildOutputs(files){
             <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>${swipe(L.monthly.length+1)}
           <p class="small" style="margin:14px 0 0">料金はすべて税込です。レンタルスタジオで行う場合、スタジオ代は別にかかります。</p>
           <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
-            <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前の月の20日を過ぎたら 22時から</small></td></tr>
-            <tr><th>土・日</th><td>12時から<small>前の月の20日を過ぎたら 21時から</small></td></tr>
-            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${esc(P.lesson.payment)}</td></tr></table>
+            <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前月20日を過ぎてからのご予約は 22時から</small></td></tr>
+            <tr><th>土・日</th><td>12時から<small>前月20日を過ぎてからのご予約は 21時から</small></td></tr>
+            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${esc(P.lesson.payment)}</td></tr>
+            <tr><th>キャンセル・振替</th><td>${esc(P.lesson.cancel)}</td></tr></table>
             <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月ぶんをご予約ください。</p></div></details>
         </div>
       </div>
@@ -194,20 +196,26 @@ export function buildOutputs(files){
           </ol>${swipe(3)}</div>
         <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
-          <details><summary>オンラインでも受けられる？</summary><p>受けられます。レンタルスタジオ・ご自宅・オンラインから選べます。</p></details>
+          <details><summary>オンラインでも受けられる？</summary><p>受けられます。レンタルスタジオかオンラインかを選べます。</p></details>
           <details><summary>スタジオ代はかかる？</summary><p>レンタルスタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
           <details><summary>支払い方法は？</summary><p>${esc(P.lesson.payment)}に対応しています。</p></details>
+          <details><summary>キャンセル・日程の変更はできる？</summary><p>${esc(P.lesson.cancel)}</p></details>
           <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月ぶんをご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
         </div>
-      </div>
+      </div>${voices()}
     </div></section>`;
+  }
+  /* 生徒さんの声：data/voices.json に本人からもらった言葉が入ったときだけ出す */
+  function voices(){
+    if(!D.voices.length) return "";
+    return `<div class="voices"><h3><span>VOICE</span>生徒さんの声</h3><ul class="vgrid hs" id="voices">${D.voices.map(v=>`<li class="card voice"><p>${esc(v.text)}</p><small>${esc([v.who,v.years].filter(Boolean).join("・"))}</small></li>`).join("")}</ul>${D.voices.length>1?swipe(D.voices.length):""}</div>`;
   }
 
   const KINDS = ["レッスン","お仕事","その他"];
   const KDESC = {"レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
   function contact(){
     const W = P.work;
-    return `<section class="s sbg" id="contact" style="background-image:linear-gradient(180deg,rgba(6,8,13,.86),rgba(6,8,13,.94)),url('${IMG.strings}')"><div class="wrap">
+    return `<section class="s pb" id="contact">${pbg("tubesAmber","amber")}<div class="wrap">
       ${sh("05","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">
@@ -218,7 +226,7 @@ export function buildOutputs(files){
         </div>
         <form class="f" id="form" novalidate>
           <fieldset class="kinds"><legend>ご用件を選んでください<i>必須</i></legend>
-            ${KINDS.map((k,i)=>`<label class="kc ${k==="レッスン"?"or":""}"><input type="radio" name="kind" value="${k}"><span><b>${k}</b><small>${KDESC[k]}</small></span></label>`).join("")}
+            ${KINDS.map((k,i)=>`<label class="kc ${({"レッスン":"or","その他":"bl"})[k]||""}"><input type="radio" name="kind" value="${k}"><span><b>${k}</b><small>${KDESC[k]}</small></span></label>`).join("")}
             <input type="hidden" id="f_kind"><p class="err" hidden></p></fieldset>
           <div class="two">
             <div><label for="f_name">お名前<i>必須</i></label><input id="f_name" name="name" autocomplete="name" required><p class="err" hidden></p></div>
@@ -229,7 +237,7 @@ export function buildOutputs(files){
               <div><label for="f_plan">希望プラン<i>必須</i></label><select id="f_plan"><option value="">選んでください</option>${["体験レッスン",...D.lessonPlans.monthly.map(m=>m.name),"単発","まだ決めていない"].map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
               <div><label for="f_level">ギター歴</label><select id="f_level"><option value="">選んでください</option><option>はじめて</option><option>1年未満</option><option>1〜3年</option><option>3年以上</option></select></div>
             </div>
-            <fieldset class="opts"><legend>受ける場所</legend>${["レンタルスタジオ","ご自宅","オンライン","相談したい"].map(x=>`<label class="opt"><input type="radio" name="f_place" value="${x}"><span>${x}</span></label>`).join("")}</fieldset>
+            <fieldset class="opts"><legend>受ける場所</legend>${["レンタルスタジオ","オンライン","相談したい"].map(x=>`<label class="opt"><input type="radio" name="f_place" value="${x}"><span>${x}</span></label>`).join("")}</fieldset>
             <div><label for="f_when">希望の曜日・時間</label><input id="f_when" placeholder="例：水曜の夜、土日の昼"></div>
           </div>
           <div class="xf" data-for="お仕事">
@@ -243,6 +251,7 @@ export function buildOutputs(files){
           <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：体験レッスンの希望日について"></div>
           <div><label for="f_msg">メッセージ<i id="msgReq">必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
           <input type="hidden" name="from" id="f_from">
+          <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
           <button class="btn gr send" type="submit" id="send">この内容で送る</button>
           <div class="done" id="done" hidden role="status">ありがとうございます。送信しました。2日以内にメールでご返信します。</div>
           <p class="err" id="sendErr" hidden>送信できませんでした。通信の状態を確かめて、もう一度お試しください。うまくいかない場合は Instagram の DM からご連絡ください。</p>
@@ -251,6 +260,7 @@ export function buildOutputs(files){
     </div></section>`;
   }
 
+  /* 流れる文字の帯：6本の弦の上を、細い文字がゆっくり流れる（フレットの印でつなぐ） */
   const band = (words, rev) => { const one = words.map(w=>`<span>${w}</span><i></i>`).join(""); return `<div class="band ${rev?"rev":""}" aria-hidden="true"><div class="tr">${one}${one}${one}${one}</div></div>`; };
 
   const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact();
@@ -273,5 +283,48 @@ export function buildOutputs(files){
   put("<!--@config-->", cfg);
   for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
   if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
-  return { files: {"index.html": html}, warnings };
+  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url)}, warnings };
+}
+
+/* プライバシーポリシー（privacy.html）。トップと同じCSSを使う */
+function privacyPage(files, p, url){
+  const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${f}?v=${stamp(files[f])}">`).join("\n");
+  const S = [
+    ["運営者", `このサイト（${url}）は、ギタリスト・作曲家の ${p.name}（${p.nameEn}）が個人で運営しています。`],
+    ["お預かりする情報", "お問い合わせフォームに入力いただいた、お名前・メールアドレス・ご用件・メッセージなどの内容です。"],
+    ["使い道", "お問い合わせへの返信と、レッスン・お仕事のご連絡のためだけに使います。それ以外の目的には使いません。"],
+    ["保管のしかた", "フォームの内容は Google フォーム（Google LLC のサービス）を通じて受け取り、Google のスプレッドシートに保存します。"],
+    ["第三者への提供", "法令にもとづく場合を除き、ご本人の同意なく第三者に渡すことはありません。"],
+    ["外部のサービス", "楽曲の再生に Spotify の埋め込みプレーヤーを、文字の表示に Google Fonts を使っています。これらのサービスが、それぞれの方針にもとづいて閲覧の情報を扱うことがあります。"],
+    ["確認・削除のご依頼", "お預かりした情報の確認や削除をご希望のときは、お問い合わせフォームまたは Instagram の DM からご連絡ください。"],
+    ["改定", "内容を変えるときは、このページでお知らせします。"]
+  ];
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  return `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080d">
+<title>プライバシーポリシー | 北川弘喜 Koki Kitagawa</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="${url}privacy.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+${css}
+</head>
+<body class="doc">
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a></div></header>
+<main class="wrap docw">
+  <div class="sh"><span class="no">—</span><h2>Privacy</h2><p>プライバシーポリシー</p></div>
+  ${S.map(([h,t]) => `<section class="dsec"><h3>${esc(h)}</h3><p>${esc(t)}</p></section>`).join("\n  ")}
+  <p class="small">2026年10月14日 制定</p>
+  <p><a class="btn line" href="./">トップへ戻る</a></p>
+</main>
+</body>
+</html>
+`;
 }

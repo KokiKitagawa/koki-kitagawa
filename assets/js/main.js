@@ -125,6 +125,16 @@ if("IntersectionObserver" in window){
   document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv"); c.style.transitionDelay = `${(i%6)*70}ms`; rv.observe(c); });
 } else document.querySelectorAll(".reveal").forEach(x => x.classList.add("in"));
 
+/* 背景の真空管：スクロールに合わせて少しだけずらす（奥行き） */
+const pbgs = [...document.querySelectorAll(".pbg i")];
+if(pbgs.length && !reduce.matches){
+  let tick = false;
+  const par = () => { tick = false; const vh = innerHeight;
+    pbgs.forEach(i => { const r = i.parentElement.getBoundingClientRect(); if(r.bottom < -200 || r.top > vh + 200) return;
+      i.style.setProperty("--py", ((r.top + r.height/2 - vh/2) * -0.18).toFixed(1) + "px"); }); };
+  addEventListener("scroll", () => { if(!tick){ tick = true; requestAnimationFrame(par); } }, {passive:true}); par();
+}
+
 /* フォーム：Googleフォームへ送る */
 const from = (new URLSearchParams(location.search).get("from")||"").toLowerCase();
 document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",sp:"Spotify"})[from] || "";
