@@ -702,3 +702,31 @@ footer .sns a,.menu .sns a{width:40px;height:40px}
   .card.hlc .tx{grid-row:2;padding:0 18px 18px;margin-top:-26px;position:relative}
   .ev b{font-size:14.5px}
 }
+/* ===== WORKS：楽曲とライブ・TVを1つにまとめてタブで切り替え ===== */
+.works-top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px 40px;flex-wrap:wrap;margin-bottom:clamp(30px,4vw,48px)}
+.works-top .lede{margin:0;max-width:26em}
+.seg{display:inline-grid;grid-auto-flow:column;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.seg button{min-height:44px;padding:0 22px;border:0;border-radius:999px;background:transparent;color:var(--sub);font-weight:700;font-size:14.5px;letter-spacing:.06em;cursor:pointer;transition:background .25s,color .25s;display:inline-flex;align-items:center;gap:8px}
+.seg button em{font:600 11.5px/1 var(--en);font-style:normal;color:var(--faint)}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--black);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.seg button[aria-selected="true"] em{color:#5a6377}
+.js .tabp:not(.on){display:none}
+.js .tabp.on{animation:tabin .45s cubic-bezier(.2,.7,.2,1)}
+@keyframes tabin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.js .tabp.on{animation:none}}
+.outlinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:clamp(48px,6vw,72px)}
+.ol{display:flex;align-items:center;gap:16px;padding:18px 22px;border-radius:20px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);transition:transform .25s cubic-bezier(.2,.7,.2,1),background .25s}
+.ol svg{width:40px;height:40px;flex:none;padding:9px;border-radius:50%;fill:#fff}
+.ol.sp svg{background:#1DB954} .ol.yt svg{background:#FF0000}
+.ol b{display:block;font:800 19px/1.1 var(--en);letter-spacing:.02em}
+.ol small{display:block;margin-top:4px;font-size:12.5px;color:var(--sub)}
+@media (hover:hover){.ol:hover{transform:translateY(-3px);background:rgba(255,255,255,.08)}}
+.workcta{margin-top:12px}
+@media (max-width:820px){
+  .works-top{display:block}
+  .works-top .lede{margin-bottom:22px}
+  .seg{display:grid;grid-auto-columns:1fr;width:100%}
+  .seg button{justify-content:center;padding:0 10px}
+  .outlinks{grid-template-columns:minmax(0,1fr);gap:10px}
+}

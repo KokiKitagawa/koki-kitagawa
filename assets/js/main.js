@@ -30,8 +30,12 @@ document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e
 }));
 /* 横スクロールの矢印 */
 document.querySelectorAll(".arw").forEach(b => b.addEventListener("click", () => { const el = document.getElementById(b.dataset.for); el.scrollBy({left: el.clientWidth*.8*Number(b.dataset.dir), behavior:"smooth"}); }));
-/* WORKS のカテゴリ → 全実績を開く */
-document.querySelectorAll(".cat").forEach(b => b.addEventListener("click", () => { const d = document.getElementById("credits"); d.open = true; d.scrollIntoView({behavior:"smooth",block:"start"}); }));
+/* WORKS のタブ（楽曲／ライブ・TV） */
+const tabs = [...document.querySelectorAll('.seg [role="tab"]')];
+function showTab(name){ tabs.forEach(t => { const on = t.dataset.tab===name; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; document.getElementById(t.getAttribute("aria-controls")).classList.toggle("on", on); }); }
+tabs.forEach(t => { t.addEventListener("click", () => showTab(t.dataset.tab));
+  t.addEventListener("keydown", e => { if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return; const i = (tabs.indexOf(t) + (e.key==="ArrowRight"?1:-1) + tabs.length) % tabs.length; tabs[i].focus(); showTab(tabs[i].dataset.tab); }); });
+document.querySelectorAll("[data-tab-go]").forEach(a => a.addEventListener("click", () => showTab(a.dataset.tabGo)));
 
 /* Spotify ミニプレイヤー（1つだけ） */
 document.querySelectorAll(".art[data-track]").forEach(b => b.addEventListener("click", () => {

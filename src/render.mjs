@@ -91,78 +91,61 @@ export function buildOutputs(files){
       <ol class="tl">${T.map(y => `<li class="tly${y.items.some(i=>i.key)?" has-key":""}"><div class="y">${y.year}</div><div class="evs">${y.items.map(it => it.key
         ? `<article class="card hlc">${pic(({2019:"pedal",2023:"stage",2024:"studio"})[y.year]||"guitar","")}<div class="tx"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div></article>`
         : `<div class="ev"><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`).join("")}</div></li>`).join("")}</ol>
-      <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#live" style="text-decoration:underline;text-underline-offset:4px">LIVE / TV</a> にまとめています。</p>
+      <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#works" data-tab-go="stage" style="text-decoration:underline;text-underline-offset:4px">WORKS</a> にまとめています。</p>
     </div></section>`;
   }
 
-  function live(){
+  function works(){
     const kind = t => /SUMMER SONIC|フェス|FESTIVAL|SP-RING/i.test(t) ? "FES" : "LIVE";
     const items = [
       ...D.live.map(x => ({k:kind(x.title), t:x.title, s:`${x.artist} サポートギター${x.venue?"・"+x.venue:""}`, y:x.year || yearOf(x.title)})),
       ...stage.map(x => ({k:"STAGE", t:x.title, s:x.role ? "舞台・"+x.role : "舞台", y:x.year})),
       {k:"TV", t:"CDTV", s:`バック演奏（${tv.length}回出演）`, y:null}];
-    items.sort((a,b) => (b.y||0)-(a.y||0));
+    const BIG = /SUMMER SONIC|イナズマ|CDTV|あんさんぶる/;   // 大きい仕事は最初の6件に必ず入れる
+    items.sort((a,b) => (BIG.test(b.t)-BIG.test(a.t)) || (b.y||0)-(a.y||0));
     const F = [["ALL","すべて"],["FES","フェス"],["LIVE","ライブ"],["STAGE","舞台"],["TV","テレビ"]];
-    return `<section class="s" id="live"><div class="wrap">
-      ${sh("03","Live / TV","ライブ・舞台・テレビ")}
-      <div class="strip">
-        <div class="photo reveal">${pic("stage","リハーサル中のステージに並ぶエレキギターとアコースティックギター")}<span class="cap">STAGE</span></div>
-        <div class="photo reveal">${pic("live","ライブのステージでギターを弾く北川弘喜")}<span class="cap">LIVE</span></div>
-        <div class="photo reveal">${pic("pedal","ライブ会場のステージに組まれたエフェクターボード")}<span class="cap">GEAR</span></div>
-      </div>
-      <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
-      ${(() => { const gig = x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`;
-        return `<ul class="grid3" id="gigs">${items.slice(0,6).map(gig).join("")}</ul>
-      <details class="acc gigs-more" id="gigsMore"><summary><b>すべて見る（${items.length}）</b><span class="meta">+${items.length-6}</span></summary>
-        <div class="in"><ul class="grid3" id="gigs2">${items.slice(6).map(gig).join("")}</ul></div></details>`; })()}
-      <a class="btn line sm" style="margin-top:30px" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}演奏を見る</a>
-    </div></section>`;
-  }
-
-  function works(){
-    const CATS = [
-      {n:"01",t:"Songwriting / Arrangement",j:"作詞・作曲・編曲",d:"アイドル・声優ユニットへの提供曲を、作詞からギターまで一人で仕上げます。",c:`${comp.length} SONGS`,img:"studio",alt:"紫の光に照らされた作曲デスクとギター"},
-      {n:"02",t:"Guitar / Session",j:"ギター参加楽曲",d:"レコーディングでギターを担当。リモートRECにも、スタジオ立ち会いにも対応。",c:`${gtr.length} WORKS`,img:"guitar",alt:"ギターの指板を押さえる北川弘喜の手元"},
-      {n:"03",t:"Sound Production",j:"カラオケ音源制作",d:"配信で活躍する有名歌い手のカラオケ音源を、原曲どおりに再現して制作（作品名は非公開）。",c:`${kara.length} TRACKS`,img:"desk",alt:"夜の机に置いたエレキギターの指板"},
-      {n:"04",t:"Stage / Live",j:"ライブ・舞台出演",d:"フェス・ツアー・舞台・地上波で、サポートギタリストとして演奏。",c:`${D.live.length+stage.length} STAGES / TV ${tv.length}`,img:"pedal",alt:"ライブ会場のステージに組まれたエフェクターボード"}];
-    const li = c => `<li>${esc(c.title)}<span>${esc(c.artist)}${c.year?` ${c.year}`:""}</span></li>`;
+    const gig = x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`;
+    const W = P.work, nMusic = comp.length+gtr.length+kara.length;
     return `<section class="s" id="works"><div class="wrap">
-      ${sh("04","Works","作品・制作実績")}
-      <p class="lede" style="margin-bottom:44px;max-width:32em">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
-      <div class="cats hs" id="cats">${CATS.map(x => `<button class="cat" type="button" data-cat="${x.n}">${pic(x.img,x.alt)}<span class="n">${x.n}</span><span class="t">${x.t}</span><span class="j">${x.j}</span><span class="d">${x.d}</span><span class="c">${x.c}</span></button>`).join("")}</div>${swipe(CATS.length)}
-      <div class="feat-head"><h3>Featured Works</h3><p>ジャケットを押すと、ここで再生できます。</p></div>
-      <div class="feat hs" id="feat">${feat.map((c,i) => {
-        const id = (c.spotify||"").split("/track/")[1];
-        return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)} を再生" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="play"><i></i>LISTEN</span></button>
-        <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div>
-        <ul class="tags">${tagsOf(c).map(t=>`<li>${t}</li>`).join("")}</ul><div class="jr">${esc((c.roles||[]).join("・"))}</div>
-        <a class="sp" href="${c.spotify}" target="_blank" rel="noopener">${svg("sp")}Spotifyで聴く</a></article>`;}).join("")}</div>
-      <div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>
-      <div class="player" id="player"></div>
-      <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${comp.length+gtr.length+kara.length} CREDITS</span></summary>
-        <div class="in">
-          <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
-            <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${comp.length+gtr.length+1}</em></button>
-            <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
-            <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
-            <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
-          <ul class="grid4" id="cgrid">${[...comp,...gtr].map(c=>`<li class="card credit ${ph(c.category==="compose"?"studio":"guitar")}" data-k="${c.category}"><div class="row">${chip(c.category==="compose"?"COMPOSE":"GUITAR", c.category==="compose"?"gr":"")}${c.year?`<span class="yr2">${c.year}</span>`:""}</div><b>${esc(c.title)}</b><small>${esc(c.artist)}</small></li>`).join("")}
-            <li class="card credit ${ph("desk")}" data-k="karaoke"><div class="row">${chip("PRODUCTION","gr")}<span class="yr2">×${kara.length}</span></div><b>有名歌い手のカラオケ音源</b><small>原曲を再現して制作・作品名は非公開</small></li></ul>
-        </div></details>
-    </div></section>`;
-  }
-
-  function listen(){
-    const W = P.work;
-    return `<section class="s" id="listen"><div class="wrap">
-      ${sh("05","Listen","聴く・見る")}
-      <div class="listen">
-        <a class="media" href="${P.links.spotify}" target="_blank" rel="noopener">
-          <div class="bg mosaic" aria-hidden="true">${feat.map(c=>`<span style="background-image:url('https://i.scdn.co/image/${c.jacket}')"></span>`).join("")}</div>
-          <span class="ico" style="background:#1DB954">${svg("sp")}</span><b>Spotify</b><p>提供曲・参加曲をまとめて聴く</p><span class="go">OPEN PLAYLIST</span></a>
-        <a class="media" href="${P.links.youtube}" target="_blank" rel="noopener">
-          <div class="bg" aria-hidden="true">${pic("play","")}</div>
-          <span class="ico" style="background:#FF0000">${svg("yt")}</span><b>YouTube</b><p>演奏・制作実績を見る</p><span class="go">OPEN CHANNEL</span></a>
+      ${sh("03","Works","作品・ライブ・出演")}
+      <div class="works-top"><p class="lede">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
+        <div class="seg" role="tablist" aria-label="作品の種類">
+          <button type="button" role="tab" id="t-music" aria-controls="p-music" aria-selected="true" data-tab="music">楽曲<em>${nMusic}</em></button>
+          <button type="button" role="tab" id="t-stage" aria-controls="p-stage" aria-selected="false" data-tab="stage">ライブ・TV<em>${items.length}</em></button></div></div>
+      <div class="tabp on" id="p-music" role="tabpanel" aria-labelledby="t-music">
+        <div class="feat hs" id="feat">${feat.map((c,i) => {
+          const id = (c.spotify||"").split("/track/")[1];
+          return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)} を再生" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="play"><i></i>LISTEN</span></button>
+          <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div>
+          <ul class="tags">${tagsOf(c).map(t=>`<li>${t}</li>`).join("")}</ul><div class="jr">${esc((c.roles||[]).join("・"))}</div>
+          <a class="sp" href="${c.spotify}" target="_blank" rel="noopener">${svg("sp")}Spotifyで聴く</a></article>`;}).join("")}</div>
+        <div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>
+        <div class="player" id="player"></div>
+        <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${nMusic} CREDITS</span></summary>
+          <div class="in">
+            <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
+              <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${comp.length+gtr.length+1}</em></button>
+              <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
+              <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
+              <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
+            <ul class="grid4" id="cgrid">${[...comp,...gtr].map(c=>`<li class="card credit ${ph(c.category==="compose"?"studio":"guitar")}" data-k="${c.category}"><div class="row">${chip(c.category==="compose"?"COMPOSE":"GUITAR", c.category==="compose"?"gr":"")}${c.year?`<span class="yr2">${c.year}</span>`:""}</div><b>${esc(c.title)}</b><small>${esc(c.artist)}</small></li>`).join("")}
+              <li class="card credit ${ph("desk")}" data-k="karaoke"><div class="row">${chip("PRODUCTION","gr")}<span class="yr2">×${kara.length}</span></div><b>有名歌い手のカラオケ音源</b><small>原曲を再現して制作・作品名は非公開</small></li></ul>
+          </div></details>
+      </div>
+      <div class="tabp" id="p-stage" role="tabpanel" aria-labelledby="t-stage">
+        <div class="strip">
+          <div class="photo reveal">${pic("stage","リハーサル中のステージに並ぶエレキギターとアコースティックギター")}<span class="cap">STAGE</span></div>
+          <div class="photo reveal">${pic("live","ライブのステージでギターを弾く北川弘喜")}<span class="cap">LIVE</span></div>
+          <div class="photo reveal">${pic("pedal","ライブ会場のステージに組まれたエフェクターボード")}<span class="cap">GEAR</span></div>
+        </div>
+        <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
+        <ul class="grid3" id="gigs">${items.slice(0,6).map(gig).join("")}</ul>
+        <details class="acc gigs-more" id="gigsMore"><summary><b>すべて見る（${items.length}）</b><span class="meta">+${items.length-6}</span></summary>
+          <div class="in"><ul class="grid3" id="gigs2">${items.slice(6).map(gig).join("")}</ul></div></details>
+      </div>
+      <div class="outlinks">
+        <a class="ol sp" href="${P.links.spotify}" target="_blank" rel="noopener">${svg("sp")}<span><b>Spotify</b><small>提供曲・参加曲をまとめて聴く</small></span></a>
+        <a class="ol yt" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}<span><b>YouTube</b><small>演奏・制作実績を見る</small></span></a>
       </div>
       <div class="workcta">
         <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら</p>
@@ -180,7 +163,7 @@ export function buildOutputs(files){
         <div class="p">¥${yen(p.price)}<small>/ 月</small></div><div class="per">1回あたり ¥${yen(per)}${save>0?`<em>単発より月¥${yen(save)}おトク</em>`:""}</div>
         <button class="pick" type="button" data-open="レッスン" data-plan="${esc(p.name)}">このプランを選ぶ</button></li>`; };
     return `<section class="s" id="lesson"><div class="wrap">
-      ${sh("06","Lesson","ギターレッスン")}
+      ${sh("04","Lesson","ギターレッスン")}
       <div class="les">
         <div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>
         <div>
@@ -223,7 +206,7 @@ export function buildOutputs(files){
   function contact(){
     const W = P.work;
     return `<section class="s" id="contact" style="background-image:linear-gradient(180deg,rgba(6,8,13,.86),rgba(6,8,13,.94)),url('${IMG.strings}')"><div class="wrap">
-      ${sh("07","Contact","お問い合わせ")}
+      ${sh("05","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">
           <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
@@ -252,7 +235,7 @@ export function buildOutputs(files){
 
   const band = (words, rev) => { const one = words.map(w=>`<span>${w}</span><i></i>`).join(""); return `<div class="band ${rev?"rev":""}" aria-hidden="true"><div class="tr">${one}${one}${one}${one}</div></div>`; };
 
-  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+live()+works()+listen()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact();
+  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact();
 
   const url = p.siteUrl;
   const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">`;
