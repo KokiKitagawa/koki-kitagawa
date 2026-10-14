@@ -493,7 +493,7 @@ form.f{border-radius:18px}
   .card small{font-size:11.5px}
   .card .row{margin-bottom:10px}
   .workcta .serv{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .kinds{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kinds{grid-template-columns:minmax(0,1fr)}
   .plan{display:flex;align-items:stretch;text-align:left}
   .plan .p{text-align:left;margin-top:14px}
   .plan .p small{display:inline}
@@ -618,7 +618,7 @@ footer{background:var(--black)}
       <a href="#profile">PROFILE</a><a href="#career">CAREER</a><a href="#live">LIVE / TV</a><a href="#works">WORKS</a><a href="#listen">LISTEN</a><a href="#lesson">LESSON</a><a href="#contact">CONTACT</a>
     </nav>
     <div class="sns" data-sns></div>
-    <button class="btn gr sm" type="button" data-open="仕事依頼">仕事を依頼する</button>
+    <button class="btn gr sm" type="button" data-open="お仕事">仕事を依頼する</button>
     <button class="menu-btn" type="button" id="menuBtn" aria-label="メニューを開く" aria-expanded="false" aria-controls="menu"><i></i></button>
   </div>
 </header>
@@ -638,7 +638,7 @@ footer{background:var(--black)}
 
 <div class="dock hide" id="dock">
   <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
-  <button class="btn gr" type="button" data-open="仕事依頼">仕事依頼</button>
+  <button class="btn gr" type="button" data-open="お仕事">仕事依頼</button>
 </div>
 
 <div class="menu" id="menu" hidden role="dialog" aria-modal="true" aria-label="メニュー">
@@ -649,7 +649,7 @@ footer{background:var(--black)}
   </nav>
   <div class="btns">
     <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
-    <button class="btn gr" type="button" data-open="仕事依頼">仕事を依頼する</button>
+    <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
   </div>
   <div class="sns" data-sns></div>
 </div>
@@ -682,7 +682,7 @@ function hero(){
       <p class="name">KOKI KITAGAWA</p>
       <p class="lead">ライブ・舞台・テレビのサポートギターから、作詞・作曲・編曲まで。「弾く」と「作る」の両方で、プロの現場に立っています。</p>
       <div class="cta">
-        <button class="btn gr" type="button" data-open="仕事依頼">仕事を依頼する</button>
+        <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
         <button class="btn line" type="button" data-open="レッスン">レッスンを申し込む</button>
       </div>
       <ul class="proof"><li>SUMMER SONIC 2023</li><li>CDTV</li><li>B-PROJECT 楽曲提供</li></ul>
@@ -798,7 +798,7 @@ function listen(){
       <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら</p>
         <ul class="serv">${W.services.map(s=>`<li class="card"><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</li>`).join("")}</ul>
         <p class="small" style="margin-top:14px">納期：${esc(W.delivery)}　｜　${esc(W.style)}　｜　料金：${esc(W.price)}</p></div>
-      <button class="btn gr" type="button" data-open="仕事依頼">仕事を依頼する</button>
+      <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
     </div>
   </div></section>`;
 }
@@ -848,8 +848,8 @@ function lesson(){
   </div></section>`;
 }
 
-const KINDS = ["レッスン","仕事依頼","作曲・編曲","ギター演奏依頼","その他"];
-const KDESC = {"レッスン":"体験・月謝・単発","仕事依頼":"制作・演奏・ライブサポート","作曲・編曲":"作詞・作曲・編曲・トラック","ギター演奏依頼":"REC・ライブ・TV","その他":"取材・ご相談など"};
+const KINDS = ["レッスン","お仕事","その他"];
+const KDESC = {"レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
 function contact(){
   const W = P.work;
   return `<section class="s" id="contact" style="--bgimg:url('${IMG.strings}')"><div class="wrap">
@@ -859,7 +859,7 @@ function contact(){
         <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
         <dl><dt>お仕事</dt><dd>作詞・作曲／編曲・トラック制作／ギターREC／ライブサポート</dd><dt>納期</dt><dd>${esc(W.delivery)}</dd><dt>料金</dt><dd>${esc(W.price)}</dd><dt>レッスン</dt><dd>体験 初回60分 ¥${yen(D.lessonPlans.trial.price)}</dd></dl>
         <div class="quick">
-          <button class="btn line" type="button" data-open="仕事依頼">制作・演奏・ライブサポート等のお仕事はこちら</button>
+          <button class="btn line" type="button" data-open="お仕事">制作・演奏・ライブサポート等のお仕事はこちら</button>
           <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>Instagram の DM でも受け付けています</b><small>曲の尺と納期だけ書いていただければ返信します</small></span></a>
         </div>
       </div>
