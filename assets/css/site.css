@@ -940,3 +940,12 @@ section.s.pb{isolation:isolate;overflow:clip}
 .bk .x{width:44px;height:44px;border:0;background:none;font-size:28px;cursor:pointer}
 .bk iframe{flex:1;width:100%;border:0;border-radius:14px;background:#fff}
 .bk a{text-align:center;text-decoration:underline;text-underline-offset:3px}
+/* v6.1（2026-10-15）：体験レッスンの中身／お知らせ */
+.tsteps{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 14px;margin:2px 0 4px;padding:0;font-size:12.5px;color:var(--sub)}
+.tsteps li{list-style:none;display:inline-flex;align-items:center;gap:6px}
+.tsteps span{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--or-soft);color:var(--or-hi);font:700 10.5px/1 var(--en)}
+.news{margin:14px 0 0;padding:0;max-width:980px;display:grid;gap:6px}
+.news li{list-style:none;display:flex;gap:14px;align-items:baseline;font-size:13px;color:var(--sub)}
+.news time{font:600 11.5px/1 var(--en);letter-spacing:.08em;color:var(--or-hi);flex:none}
+.news a{text-decoration:underline;text-underline-offset:3px}
+@media (max-width:820px){.tsteps{font-size:12px}.news li{font-size:12.5px}}

@@ -1,5 +1,6 @@
 # tools/make-images.py — ページの写真（img/）を書き出す。元の写真は読むだけで、上書きしない。
 # 使い方：サイト本体のフォルダで  python3 tools/make-images.py   （Pillow と numpy が必要）
+# 2026-10-15：現場・部屋の写真は表示サイズに合わせて小さく（ページを速く）
 # 2026-10-14 v5：写真を「HP用_追加素材」（本人の新しい撮影）と「LINEで届いた写真」（現場・部屋・真空管）に差し替え。
 #   新しい撮影はひげが目立たないので、ひげ処理（tools/retouch.py）はしない。
 import os, numpy as np
@@ -41,10 +42,10 @@ im=src(ADD,"IMG_7313.JPG"); out(im.crop((0,1125,6000,4000)),"play",1400,**P)
 im=src(ADD,"IMG_7351.JPG"); out(im.crop((0,2400,4000,5400)),"guitar",900,gamma=1.05)      # ギターだけ（ボディ）
 im=src(ADD,"IMG_7351.JPG"); out(im.crop((0,500,4000,3500)),"guitars",900,gamma=1.05)      # ギターだけ（ネック）
 # 現場・部屋（LINEで届いた写真）
-im=src(LINE,"IMG_3336.JPG"); out(im,"stage",1600,sat=.95,vig=.1)        # ステージに立てたギター
+im=src(LINE,"IMG_3336.JPG"); out(im,"stage",1000,sat=.95,vig=.1,q=74)        # ステージに立てたギター
 im=src(LINE,"IMG_9593.JPG"); out(im,"pedal",1200,sat=.95,vig=.1)        # ステージのエフェクターボード
-im=src(LINE,"IMG_9717.JPG"); out(im,"venue",1600,sat=.95,vig=.1)        # 本番前のホール
-im=src(LINE,"IMG_6212.JPG"); out(im,"studio",1600,sat=.9,vig=.12)       # 作曲部屋（ギターと机）
+im=src(LINE,"IMG_9717.JPG"); out(im,"venue",1200,sat=.95,vig=.1,q=74)        # 本番前のホール
+im=src(LINE,"IMG_6212.JPG"); out(im,"studio",1000,sat=.9,vig=.12,q=74)       # 作曲部屋（ギターと机）
 im=src(LINE,"IMG_6604.jpeg"); out(im,"desk",900,sat=.9,vig=.12)         # 作曲部屋（モニターと鍵盤）
 # セクションの背景（真空管）— スクロールで動かす
 im=src(LINE,"IMG_1711.jpeg"); out(im,"tubes-blue",1600,sat=1.0,vig=.0,grain=1.0)

@@ -19,7 +19,7 @@ export function buildOutputs(files){
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
-    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, timeline: site.timeline, liveYears: site.liveYears
+    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
   };
   const IMG = images.paths, ICON = site.icons;
   const warnings = [];
@@ -57,7 +57,8 @@ export function buildOutputs(files){
           <li><i>FESTIVAL</i><b><span class="ib">イナズマロック</span><span class="ib">フェス</span></b><span>2023 出演・サポートギター</span></li>
           <li><i>TV</i><b>CDTV</b><span>地上波出演</span></li>
           <li><i>SONGWRITING</i><b>B-PROJECT</b><span>楽曲提供（作詞・作曲・編曲）</span></li>
-        </ul>
+        </ul>${D.news.length ? `
+        <ul class="news" aria-label="お知らせ">${D.news.map(n=>`<li><time>${esc(n.date||"")}</time>${n.url?`<a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.text)}</a>`:`<span>${esc(n.text)}</span>`}</li>`).join("")}</ul>` : ""}
       </div>
     </section>`;
   }
@@ -180,8 +181,9 @@ export function buildOutputs(files){
         <div>
           <p class="lede">現場で培った経験を、あなたのギターへ。</p>
           <ul class="lstats">${D.lessonStats.map(x=>`<li class="card"><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
-          <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
-          <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分</small></div><div class="p">¥${yen(L.trial.price)}</div>
+          <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>3歳から大人まで</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
+          <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
+            <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
             ${D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
@@ -205,6 +207,10 @@ export function buildOutputs(files){
           </ol>${swipe(3)}</div>
         <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
+          <details><summary>ギターを持っていなくても受けられる？</summary><p>${esc(P.lesson.guitarRental)}</p></details>
+          <details><summary>体験レッスンでは何をする？</summary><p>${esc((P.lesson.trialSteps||[]).join("→"))}の流れで、60分です。</p></details>
+          <details><summary>体験のあと、入会をすすめられる？</summary><p>${esc(P.lesson.noPush)}</p></details>
+          <details><summary>何歳から受けられる？</summary><p>${esc(P.lesson.ages)}</p></details>
           <details><summary>どこでレッスンする？</summary><p>${esc(P.lesson.place)}。オンラインでも受けられます。</p></details>
           <details><summary>スタジオ代はかかる？</summary><p>スタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
           <details><summary>支払い方法は？</summary><p>${esc(P.lesson.payment)}に対応しています。</p></details>
@@ -280,13 +286,18 @@ export function buildOutputs(files){
   const ld = {"@context":"https://schema.org","@type":"Person","name":p.name,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
     "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
     "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean)};
+  const ldLesson = {"@context":"https://schema.org","@type":"Service","name":"北川弘喜のギターレッスン（小岩・オンライン）","serviceType":"ギターレッスン",
+    "provider":{"@type":"Person","name":p.name,"url":url},"areaServed":[{"@type":"Place","name":"東京都江戸川区 小岩"},{"@type":"Place","name":"オンライン"}],
+    "availableChannel":{"@type":"ServiceChannel","serviceLocation":{"@type":"Place","name":"サウンドスタジオM小岩店","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区","streetAddress":"西小岩1-27-16 オルフェウスビル4F"}}},
+    "offers":[{"@type":"Offer","name":"体験レッスン（60分）","price":site.lessonPlans.trial.price,"priceCurrency":"JPY"},{"@type":"Offer","name":"単発レッスン（60分）","price":site.lessonPlans.single.price,"priceCurrency":"JPY"}],
+    "url":url+"#lesson"};
   const cfg = JSON.stringify({form: site.form}).replace(/</g,"\\u003c");
 
   let html = files["src/template.html"];
   for(const f of ASSETS) html = html.split(`"${f}"`).join(`"${f}?v=${stamp(files[f])}"`);
   const put = (mark, val) => { if(!html.includes(mark)) warnings.push("差込口が見つかりません: " + mark); html = html.split(mark).join(val); };
   put("<!--@meta-->", meta);
-  put("<!--@jsonld-->", `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g,"\\u003c")}</script>`);
+  put("<!--@jsonld-->", [ld, ldLesson].map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
   put("<!--@phstyle-->", phStyle);
   put("<!--@main-->", main);
   /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */

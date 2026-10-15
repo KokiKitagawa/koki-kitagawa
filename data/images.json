@@ -5,9 +5,9 @@
     "heroSp": "img/hero-sp-900.webp",
     "profile": "img/profile-900.webp",
     "lesson": "img/lesson-900.webp",
-    "stage": "img/stage-1600.webp",
+    "stage": "img/stage-1000.webp",
     "live": "img/live-720.webp",
-    "studio": "img/studio-1600.webp",
+    "studio": "img/studio-1000.webp",
     "guitar": "img/guitar-900.webp",
     "desk": "img/desk-900.webp",
     "pedal": "img/pedal-1200.webp",
@@ -15,7 +15,7 @@
     "hands": "img/hands-1400.webp",
     "guitars": "img/guitars-900.webp",
     "ogp": "img/ogp.jpg",
-    "venue": "img/venue-1600.webp",
+    "venue": "img/venue-1200.webp",
     "tubesBlue": "img/tubes-blue-1600.webp",
     "tubesAmber": "img/tubes-amber-1600.webp"
   }
