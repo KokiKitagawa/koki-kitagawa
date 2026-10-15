@@ -154,9 +154,10 @@ export function buildOutputs(files){
         <a class="ol yt" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}<span><b>YouTube</b><small>演奏を見る</small></span></a>
       </div>
       <div class="workcta">
-        <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら</p>
+        <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p>
           <ul class="serv">${W.services.map(s=>`<li class="card"><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</li>`).join("")}</ul>
-          <p class="small" style="margin-top:14px">${esc(W.style)}　｜　料金：${esc(W.price)}</p></div>
+          <ol class="wflow">${W.flow.map((s,i)=>`<li><span>${String(i+1).padStart(2,"0")}</span>${esc(s)}</li>`).join("")}</ol>
+          <p class="small" style="margin-top:14px">${esc(W.style)}　｜　料金：${esc(W.price)}　｜　${esc(W.revisionNote)}</p></div>
         <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
       </div>
     </div></section>`;
@@ -236,7 +237,7 @@ export function buildOutputs(files){
         <div class="side">
           <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
           <div class="quick">
-            <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>Instagram の DM でも受け付けています</b><small>曲の尺と納期だけ書いていただければ返信します</small></span></a>
+            <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>お仕事のご依頼は、こちらのフォームからお願いします</small></span></a>
           </div>
         </div>
         <form class="f" id="form" novalidate>
@@ -258,8 +259,12 @@ export function buildOutputs(files){
           <div class="xf" data-for="お仕事">
             <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["作詞・作曲","編曲・トラック制作","ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
             <div class="two">
+              <div><label for="f_company">会社名・団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="個人の方は「個人」とご記入ください"><p class="err" hidden></p></div>
+              <div><label for="f_use">使い道</label><select id="f_use"><option value="">選んでください</option>${W.uses.map(x=>`<option>${esc(x)}</option>`).join("")}</select></div>
+            </div>
+            <div class="two">
+              <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option>${W.budgets.map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
               <div><label for="f_due">納期</label><input id="f_due" placeholder="例：11月末まで"></div>
-              <div><label for="f_budget">ご予算</label><input id="f_budget" placeholder="例：5万円前後／相談したい"></div>
             </div>
             <div><label for="f_ref">参考音源のURL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
           </div>
