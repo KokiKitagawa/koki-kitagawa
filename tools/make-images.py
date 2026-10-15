@@ -52,7 +52,5 @@ im=src(LINE,"IMG_1711.jpeg"); out(im,"tubes-blue",1600,sat=1.0,vig=.0,grain=1.0)
 im=src(LINE,"IMG_1713.jpeg"); out(im,"tubes-amber",1600,sat=1.0,vig=.0,grain=1.0,gamma=.9)
 # ライブ写真（前のまま）
 out(Image.open(BASE+"/live-720.webp").convert("RGB"),"live",720,warm=.3,vig=.05)
-# SNSで共有したときの画像（1200×630）
-im=Image.open("img/hero-pc-2000.webp").convert("RGB"); w,h=im.size; nw=round(h*1200/630)   # 本人が入るよう右側を切り出す
-im.crop((w-nw-60,0,w-60,h)).resize((1200,630)).save("img/ogp.jpg",quality=85)
+# SNSで共有したときの画像（1200×630）とアイコンは tools/make-share-images.py（2026-10-15〜。トップの写真を替えたら続けて実行）
 print("ok")

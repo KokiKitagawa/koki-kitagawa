@@ -287,7 +287,7 @@ export function buildOutputs(files){
   const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact()+bookModal;
 
   const url = p.siteUrl;
-  const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">`;
+  const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="ギターを弾く北川弘喜。書けるギタリスト、弾ける作曲家。">`;
   const ld = {"@context":"https://schema.org","@type":"Person","name":p.name,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
     "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
     "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean)};
@@ -311,7 +311,7 @@ export function buildOutputs(files){
   put("<!--@config-->", cfg);
   for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
   if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
-  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking})}, warnings };
+  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking}), "404.html": notFoundPage(files, url, !!D.booking)}, warnings };
 }
 
 /* プライバシーポリシー（privacy.html）。トップと同じCSSを使う */
@@ -341,7 +341,7 @@ function privacyPage(files, p, url, ext = {}){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+${HEAD_ICONS("")}
 ${css}
 </head>
 <body class="doc">
@@ -351,6 +351,46 @@ ${css}
   ${S.map(([h,t]) => `<section class="dsec"><h3>${esc(h)}</h3><p>${esc(t)}</p></section>`).join("\n  ")}
   <p class="small">2026年10月14日 制定</p>
   <p><a class="btn line" href="./">トップへ戻る</a></p>
+</main>
+</body>
+</html>
+`;
+}
+
+/* タブ・ホーム画面のアイコン（トップ以外のページ用）。base は置き場所の頭（404 は どの階層でも出るので本番URL） */
+const HEAD_ICONS = base => `<link rel="icon" href="${base}assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="${base}assets/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="${base}assets/apple-touch-icon.png">`;
+
+/* ページが見つからないとき（404.html）。GitHub Pages は、無いURLを開いた人にこのページを出す。
+   どの階層のURLでも崩れないように、CSS・リンクは本番URLから書く */
+function notFoundPage(files, url, booking){
+  const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${url}${f}?v=${stamp(files[f])}">`).join("\n");
+  return `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080d">
+<title>ページが見つかりません | 北川弘喜 Koki Kitagawa</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+${HEAD_ICONS(url)}
+${css}
+</head>
+<body class="doc">
+<header class="hd solid"><div class="wrap"><a class="logo" href="${url}">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a></div></header>
+<main class="wrap docw nf">
+  <div class="sh"><span class="no">404</span><h2>Not Found</h2><p>ページが見つかりませんでした</p></div>
+  <p class="nf-lead">お探しのページは、URLが変わったか、なくなった可能性があります。<br>お手数ですが、トップページからお探しください。</p>
+  <div class="nf-btns">
+    <a class="btn line" href="${url}">トップへ戻る</a>
+    <a class="btn or" href="${url}#lesson">${booking ? "体験レッスンを見る" : "レッスンを見る"}</a>
+    <a class="btn gr" href="${url}#contact">お問い合わせ</a>
+  </div>
 </main>
 </body>
 </html>
