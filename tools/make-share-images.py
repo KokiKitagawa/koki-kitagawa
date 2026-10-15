@@ -71,28 +71,12 @@ img.save("img/ogp.jpg", quality=86, optimize=True, progressive=True)
 print("img/ogp.jpg", img.size)
 
 # ---------- アイコン（ホーム画面・タブ） ----------
-# 夜の色の地に、ギターの弦3本。真ん中はオレンジ、右は水色に光る（キャッチの2色）
-def icon(size, pad=0.0):
-    s = 4 * size  # 大きく描いて縮める（線をなめらかに）
-    im = Image.new("RGB", (s, s), (10, 18, 34))
-    # 地：上が少し明るい紺
-    g = np.linspace(0, 1, s)[:, None, None]
-    top = np.array((26, 37, 57)); bot = np.array((8, 11, 19))
-    im = Image.fromarray((top * (1 - g) + bot * g + np.zeros((s, s, 3))).astype(np.uint8))
-    inner = s * (1 - 2 * pad); o = s * pad
-    xs = [o + inner * r for r in (.30, .50, .70)]
-    cols = [INK, OR, BLUE]; widths = [.034, .05, .042]
-    for xx, c, wr in zip(xs, cols, widths):
-        if c != INK:
-            im = glow(im, (xx - inner * .16, o + inner * .1, xx + inner * .16, o + inner * .9), c, .9, blur=s * .05)
-    d = ImageDraw.Draw(im)
-    for xx, c, wr in zip(xs, cols, widths):
-        w = inner * wr
-        d.rounded_rectangle((xx - w / 2, o + inner * .17, xx + w / 2, o + inner * .83), w / 2, fill=c if c == INK else tuple(min(255, int(v * .55 + 255 * .45)) for v in c))
-    return im.resize((size, size), Image.LANCZOS)
-
-icon(180, .06).save("assets/apple-touch-icon.png", optimize=True)
-icon(192, .06).save("assets/icon-192.png", optimize=True)
-icon(512, .06).save("assets/icon-512.png", optimize=True)
-icon(48).save("assets/favicon-48.png", optimize=True)
+# 2026-10-15：本人がギターを弾くイラスト（北川くんが ChatGPT で作成。元は 05_写真と動画/AI生成_参考/アイコン用イラスト_1_文字なし.png）。
+#   少し寄って切り出す（ギターの先まで入れて、顔を少し大きく）。元の絵は読むだけで上書きしない。
+ILL = os.path.join(H, "..", "..", "05_写真と動画", "AI生成_参考", "アイコン用イラスト_1_文字なし.png")
+src = Image.open(ILL).convert("RGB")
+s0 = src.width / 1254   # 切り出す位置は 1254px の元絵で決めたもの
+ic = src.crop(tuple(round(v * s0) for v in (150, 30, 1254, 1134)))
+for name, size in [("apple-touch-icon.png", 180), ("icon-192.png", 192), ("icon-512.png", 512), ("favicon-48.png", 48)]:
+    ic.resize((size, size), Image.LANCZOS).save("assets/" + name, optimize=True)
 print("assets/ のアイコン 4つ")

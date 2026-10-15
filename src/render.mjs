@@ -358,8 +358,7 @@ ${css}
 }
 
 /* タブ・ホーム画面のアイコン（トップ以外のページ用）。base は置き場所の頭（404 は どの階層でも出るので本番URL） */
-const HEAD_ICONS = base => `<link rel="icon" href="${base}assets/favicon.svg" type="image/svg+xml">
-<link rel="icon" href="${base}assets/favicon-48.png" sizes="48x48" type="image/png">
+const HEAD_ICONS = base => `<link rel="icon" href="${base}assets/favicon-48.png" sizes="48x48" type="image/png">
 <link rel="apple-touch-icon" href="${base}assets/apple-touch-icon.png">`;
 
 /* ページが見つからないとき（404.html）。GitHub Pages は、無いURLを開いた人にこのページを出す。
