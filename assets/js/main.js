@@ -135,6 +135,24 @@ if(pbgs.length && !reduce.matches){
   addEventListener("scroll", () => { if(!tick){ tick = true; requestAnimationFrame(par); } }, {passive:true}); par();
 }
 
+/* 動画：押したときだけ YouTube を読み込む（ページを軽く・勝手に通信しない） */
+document.querySelectorAll(".pv-frame[data-yt]").forEach(b => b.addEventListener("click", () => {
+  const f = document.createElement("iframe"); f.src = `https://www.youtube-nocookie.com/embed/${b.dataset.yt}?autoplay=1&rel=0`;
+  f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen = true; f.title = b.getAttribute("aria-label");
+  b.replaceChildren(f); b.style.cursor = "default";
+}, {once:true}));
+/* 予約カレンダー：その場で開く（Googleカレンダーの予約ページ） */
+const bk = document.getElementById("bk");
+if(bk){
+  const fr = bk.querySelector("iframe");
+  const closeBk = () => { bk.hidden = true; document.body.style.overflow = ""; };
+  document.addEventListener("click", e => {
+    if(e.target.closest("[data-book]")){ closeMenu(); if(!fr.src) fr.src = fr.dataset.src; bk.hidden = false; document.body.style.overflow = "hidden"; bk.querySelector(".x").focus(); }
+    else if(e.target.closest("[data-book-close]") || e.target === bk) closeBk();
+  });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !bk.hidden) closeBk(); });
+}
+
 /* フォーム：Googleフォームへ送る */
 const from = (new URLSearchParams(location.search).get("from")||"").toLowerCase();
 document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",sp:"Spotify"})[from] || "";

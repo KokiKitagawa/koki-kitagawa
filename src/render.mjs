@@ -19,7 +19,7 @@ export function buildOutputs(files){
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
-    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, timeline: site.timeline, liveYears: site.liveYears
+    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, timeline: site.timeline, liveYears: site.liveYears
   };
   const IMG = images.paths, ICON = site.icons;
   const warnings = [];
@@ -62,6 +62,7 @@ export function buildOutputs(files){
     </section>`;
   }
 
+  const ytId = u => { const m = String(u||"").match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/); return m ? m[1] : ""; };
   const yearOf = t => { const m = D.liveYears.find(([p]) => t.startsWith(p)); return m ? m[1] : null; };
   const PH = ["guitar","studio","lesson","stage","live","pedal","play","desk","hands","guitars"];
   const SBG = {profile:"profile", works:"studio", lesson:"lesson"};   // career と contact は真空管の写真をスクロールで動かす（pbg）   // セクションの背景に大きくぼかして敷く写真
@@ -117,6 +118,7 @@ export function buildOutputs(files){
         <div class="seg" role="tablist" aria-label="作品の種類">
           <button type="button" role="tab" id="t-music" aria-controls="p-music" aria-selected="true" data-tab="music">楽曲<em>${nMusic}</em></button>
           <button type="button" role="tab" id="t-stage" aria-controls="p-stage" aria-selected="false" data-tab="stage">ライブ・TV<em>${items.length}</em></button></div></div>
+      ${videoBlock()}
       <div class="tabp on" id="p-music" role="tabpanel" aria-labelledby="t-music">
         <div class="feat hs" id="feat">${feat.map((c,i) => {
           const id = (c.spotify||"").split("/track/")[1];
@@ -159,6 +161,12 @@ export function buildOutputs(files){
     </div></section>`;
   }
 
+  /* 動画1本（オリジナル曲のPVなど）。data/site.json の video.youtube が空なら出さない */
+  function videoBlock(){
+    const V = D.video; const id = ytId(V.youtube); if(!id) return "";
+    return `<div class="pv"><button class="pv-frame" type="button" data-yt="${id}" aria-label="${esc(V.title||"動画")}を再生" style="background-image:url('https://i.ytimg.com/vi/${id}/maxresdefault.jpg')"><span class="pp" aria-hidden="true"><i class="tri"></i></span></button>
+      <div class="pv-tx"><span class="chip or">ORIGINAL</span><b>${esc(V.title)}</b>${V.sub?`<small>${esc(V.sub)}</small>`:""}</div></div>`;
+  }
   function lesson(){
     const L = D.lessonPlans, base = L.single.price;
     const plan = p => { const per = Math.round(p.price/p.count), save = base*p.count - p.price;
@@ -172,9 +180,9 @@ export function buildOutputs(files){
         <div>
           <p class="lede">現場で培った経験を、あなたのギターへ。</p>
           <ul class="lstats">${D.lessonStats.map(x=>`<li class="card"><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
-          <ul class="tg"><li>初心者〜経験者まで</li><li>オンライン対応</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
+          <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分</small></div><div class="p">¥${yen(L.trial.price)}</div>
-            <button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button></div>
+            ${D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
             <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>${swipe(L.monthly.length+1)}
@@ -190,14 +198,15 @@ export function buildOutputs(files){
       <div class="les-extra">
         <div><h3><span>STEP</span>はじめるまで</h3>
           <ol class="flow hs" id="flow">
-            <li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
-            <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>
+            ${D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
+            <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>場所と当日の流れをお送りします</small></li>` : `<li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
+            <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
           </ol>${swipe(3)}</div>
         <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
-          <details><summary>オンラインでも受けられる？</summary><p>受けられます。レンタルスタジオかオンラインかを選べます。</p></details>
-          <details><summary>スタジオ代はかかる？</summary><p>レンタルスタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
+          <details><summary>どこでレッスンする？</summary><p>${esc(P.lesson.place)}。オンラインでも受けられます。</p></details>
+          <details><summary>スタジオ代はかかる？</summary><p>スタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
           <details><summary>支払い方法は？</summary><p>${esc(P.lesson.payment)}に対応しています。</p></details>
           <details><summary>キャンセル・日程の変更はできる？</summary><p>${esc(P.lesson.cancel)}</p></details>
           <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月ぶんをご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
@@ -208,7 +217,7 @@ export function buildOutputs(files){
   /* 生徒さんの声：data/voices.json に本人からもらった言葉が入ったときだけ出す */
   function voices(){
     if(!D.voices.length) return "";
-    return `<div class="voices"><h3><span>VOICE</span>生徒さんの声</h3><ul class="vgrid hs" id="voices">${D.voices.map(v=>`<li class="card voice"><p>${esc(v.text)}</p><small>${esc([v.who,v.years].filter(Boolean).join("・"))}</small></li>`).join("")}</ul>${D.voices.length>1?swipe(D.voices.length):""}</div>`;
+    return `<div class="voices"><h3><span>VOICE</span>生徒さんの声</h3><ul class="vgrid hs" id="voices">${D.voices.map(v=>`<li class="card voice"><span class="q" aria-hidden="true">“</span><p>${esc(v.text)}</p><div class="who"><b>${esc(v.who||"生徒さん")}</b>${[v.years,v.plan].filter(Boolean).map(x=>`<span class="chip or">${esc(x)}</span>`).join("")}</div></li>`).join("")}</ul>${D.voices.length>1?swipe(D.voices.length):""}</div>`;
   }
 
   const KINDS = ["レッスン","お仕事","その他"];
@@ -237,7 +246,7 @@ export function buildOutputs(files){
               <div><label for="f_plan">希望プラン<i>必須</i></label><select id="f_plan"><option value="">選んでください</option>${["体験レッスン",...D.lessonPlans.monthly.map(m=>m.name),"単発","まだ決めていない"].map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
               <div><label for="f_level">ギター歴</label><select id="f_level"><option value="">選んでください</option><option>はじめて</option><option>1年未満</option><option>1〜3年</option><option>3年以上</option></select></div>
             </div>
-            <fieldset class="opts"><legend>受ける場所</legend>${["レンタルスタジオ","オンライン","相談したい"].map(x=>`<label class="opt"><input type="radio" name="f_place" value="${x}"><span>${x}</span></label>`).join("")}</fieldset>
+            <fieldset class="opts"><legend>受ける場所</legend>${["小岩のスタジオ","オンライン","相談したい"].map(x=>`<label class="opt"><input type="radio" name="f_place" value="${x}"><span>${x}</span></label>`).join("")}</fieldset>
             <div><label for="f_when">希望の曜日・時間</label><input id="f_when" placeholder="例：水曜の夜、土日の昼"></div>
           </div>
           <div class="xf" data-for="お仕事">
@@ -263,12 +272,13 @@ export function buildOutputs(files){
   /* 流れる文字の帯：6本の弦の上を、細い文字がゆっくり流れる（フレットの印でつなぐ） */
   const band = (words, rev) => { const one = words.map(w=>`<span>${w}</span><i></i>`).join(""); return `<div class="band ${rev?"rev":""}" aria-hidden="true"><div class="tr">${one}${one}${one}${one}</div></div>`; };
 
-  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact();
+  const bookModal = D.booking ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
+  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact()+bookModal;
 
   const url = p.siteUrl;
   const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">`;
   const ld = {"@context":"https://schema.org","@type":"Person","name":p.name,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
-    "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressLocality":"東京"},
+    "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
     "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean)};
   const cfg = JSON.stringify({form: site.form}).replace(/</g,"\\u003c");
 
@@ -279,15 +289,17 @@ export function buildOutputs(files){
   put("<!--@jsonld-->", `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g,"\\u003c")}</script>`);
   put("<!--@phstyle-->", phStyle);
   put("<!--@main-->", main);
+  /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */
+  if(D.booking) html = html.split('data-open="レッスン">レッスンを申し込む').join('data-book>体験レッスンを予約');
   put("<!--@sns-->", snsHTML());
   put("<!--@config-->", cfg);
   for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
   if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
-  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url)}, warnings };
+  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking})}, warnings };
 }
 
 /* プライバシーポリシー（privacy.html）。トップと同じCSSを使う */
-function privacyPage(files, p, url){
+function privacyPage(files, p, url, ext = {}){
   const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${f}?v=${stamp(files[f])}">`).join("\n");
   const S = [
     ["運営者", `このサイト（${url}）は、ギタリスト・作曲家の ${p.name}（${p.nameEn}）が個人で運営しています。`],
@@ -295,7 +307,7 @@ function privacyPage(files, p, url){
     ["使い道", "お問い合わせへの返信と、レッスン・お仕事のご連絡のためだけに使います。それ以外の目的には使いません。"],
     ["保管のしかた", "フォームの内容は Google フォーム（Google LLC のサービス）を通じて受け取り、Google のスプレッドシートに保存します。"],
     ["第三者への提供", "法令にもとづく場合を除き、ご本人の同意なく第三者に渡すことはありません。"],
-    ["外部のサービス", "楽曲の再生に Spotify の埋め込みプレーヤーを、文字の表示に Google Fonts を使っています。これらのサービスが、それぞれの方針にもとづいて閲覧の情報を扱うことがあります。"],
+    ["外部のサービス", `楽曲の再生に Spotify の埋め込みプレーヤーを${ext.video ? "、動画の再生に YouTube を" : ""}${ext.booking ? "、レッスンの予約に Google カレンダーの予約ページを" : ""}、文字の表示に Google Fonts を使っています。これらのサービスが、それぞれの方針にもとづいて閲覧の情報を扱うことがあります。`],
     ["確認・削除のご依頼", "お預かりした情報の確認や削除をご希望のときは、お問い合わせフォームまたは Instagram の DM からご連絡ください。"],
     ["改定", "内容を変えるときは、このページでお知らせします。"]
   ];
