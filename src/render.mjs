@@ -70,6 +70,8 @@ export function buildOutputs(files){
   const phStyle = `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}${Object.entries(SBG).map(([id,k])=>`#${id}.sbg::before{background-image:url("${IMG[k]}")}`).join("")}</style>`;
   const ph = k => `ph ph-${k}`;
   const pbg = (k, tone) => `<div class="pbg ${tone}" aria-hidden="true"><i style="background-image:url('${IMG[k]}')"></i></div>`;
+  /* お支払い：体験・月謝・単発で分けて出す（data/profile.json の lesson.payment） */
+  const payLines = sep => (Array.isArray(P.lesson.payment) ? P.lesson.payment : [["", P.lesson.payment]]).map(([k,v]) => `<span class="pay">${k ? `<b>${esc(k)}</b>` : ""}${esc(v)}</span>`).join(sep);
   const chip = (t, cls="") => `<span class="chip ${cls}">${t}</span>`;
 
   function profile(){
@@ -193,7 +195,7 @@ export function buildOutputs(files){
           <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
             <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前月20日を過ぎてからのご予約は 22時から</small></td></tr>
             <tr><th>土・日</th><td>12時から<small>前月20日を過ぎてからのご予約は 21時から</small></td></tr>
-            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${esc(P.lesson.payment)}</td></tr>
+            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${payLines("")}</td></tr>
             <tr><th>キャンセル・振替</th><td>${esc(P.lesson.cancel)}</td></tr></table>
             <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月ぶんをご予約ください。</p></div></details>
         </div>
@@ -214,7 +216,7 @@ export function buildOutputs(files){
           <details><summary>何歳から受けられる？</summary><p>${esc(P.lesson.ages)}</p></details>
           <details><summary>どこでレッスンする？</summary><p>${esc(P.lesson.place)}。オンラインでも受けられます。</p></details>
           <details><summary>スタジオ代はかかる？</summary><p>スタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
-          <details><summary>支払い方法は？</summary><p>${esc(P.lesson.payment)}に対応しています。</p></details>
+          <details><summary>支払い方法は？</summary><p>${payLines("")}</p></details>
           <details><summary>キャンセル・日程の変更はできる？</summary><p>${esc(P.lesson.cancel)}</p></details>
           <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月ぶんをご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
         </div>

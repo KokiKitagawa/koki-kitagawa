@@ -958,3 +958,7 @@ section.s.pb{isolation:isolate;overflow:clip}
 .wflow li{list-style:none;display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(47,184,240,.1);box-shadow:inset 0 0 0 1px rgba(92,200,245,.25);font-size:13px;font-weight:700}
 .wflow li span{font:700 10.5px/1 var(--en);letter-spacing:.08em;color:var(--gr-hi)}
 .wflow li+li::before{content:"→";margin:0 4px 0 -2px;color:var(--faint);font-weight:400}
+
+/* お支払い（体験・月謝・単発を1行ずつ） */
+.pay{display:block}.pay+.pay{margin-top:10px}
+.pay b{display:block;font-size:.86em;color:var(--sub);font-weight:700;letter-spacing:.06em}
