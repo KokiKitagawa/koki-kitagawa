@@ -1,6 +1,6 @@
 # 北川弘喜 公式サイト
 
-ギタリスト・作曲家 北川弘喜の公式サイト（1ページ・静的）。公開先：https://kokikitagawa.github.io/koki-kitagawa/
+ギタリスト・作曲家 北川弘喜の公式サイト（1ページ・静的）。公開先：https://kokikitagawa.com/
 依存パッケージはゼロ。`data/` の JSON を直して `node build.mjs` を実行すると `index.html` ができる。
 
 ```
