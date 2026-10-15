@@ -26,6 +26,14 @@ export function buildOutputs(files){
 
   const P = D.profile, C = D.credits;
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  /* 仕事の依頼「できること」のアイコン（線だけの絵。色はカードごとに CSS で） */
+  const WI = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const WICON = {
+    pen: WI('<path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20z"/><path d="M14 7l3 3"/>'),
+    mix: WI('<path d="M6 4v16M12 4v16M18 4v16"/><rect x="4" y="13" width="4" height="3" rx="1"/><rect x="10" y="7" width="4" height="3" rx="1"/><rect x="16" y="15" width="4" height="3" rx="1"/>'),
+    rec: WI('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
+    stage: WI('<path d="M12 3l-7 15M12 3l7 15"/><path d="M3 21h18"/><circle cx="12" cy="3" r="1.2"/>')
+  };
   const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[k]}"/></svg>`;
   const SNS = [["instagram","ig","Instagram"],["tiktok","tt","TikTok"],["x","x","X"],["youtube","yt","YouTube"],["spotify","sp","Spotify"]];
   const snsHTML = (label=false) => SNS.map(([k,i,n]) => `<a class="c-${i}" href="${P.links[k]}" target="_blank" rel="noopener" aria-label="${n}">${svg(i)}${label?`<span>${n}</span>`:""}</a>`).join("");
@@ -117,7 +125,7 @@ export function buildOutputs(files){
     const W = P.work, nMusic = comp.length+gtr.length+kara.length;
     return `<section class="s sbg" id="works"><div class="wrap">
       ${sh("03","Works","作品・ライブ・出演")}
-      <div class="works-top"><p class="lede">作れて、弾ける。曲づくりから演奏まで、一人で通せるのが強みです。</p>
+      <div class="works-top">
         <div class="seg" role="tablist" aria-label="作品の種類">
           <button type="button" role="tab" id="t-music" aria-controls="p-music" aria-selected="true" data-tab="music">楽曲<em>${nMusic}</em></button>
           <button type="button" role="tab" id="t-stage" aria-controls="p-stage" aria-selected="false" data-tab="stage">ライブ・TV<em>${items.length}</em></button></div></div>
@@ -156,11 +164,13 @@ export function buildOutputs(files){
         <a class="ol yt" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}<span><b>YouTube</b><small>演奏を見る</small></span></a>
       </div>
       <div class="workcta">
-        <div><h3>仕事を依頼する</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p>
-          <ul class="serv">${W.services.map(s=>`<li class="card"><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</li>`).join("")}</ul>
-          <ol class="wflow">${W.flow.map((s,i)=>`<li><span>${String(i+1).padStart(2,"0")}</span>${esc(s)}</li>`).join("")}</ol>
-          <p class="small" style="margin-top:14px">${esc(W.style)}　｜　料金：${esc(W.price)}　｜　${esc(W.revisionNote)}</p></div>
-        <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
+        <div class="wc-head"><span class="wc-en">FOR CLIENTS</span><h3>お仕事のご依頼</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p></div>
+        <h4 class="wc-sub">できること</h4>
+        <ul class="cando">${W.services.map((s,i)=>`<li class="c${i%4}"><i class="ic" aria-hidden="true">${WICON[(W.serviceIcons||[])[i]]||""}</i><span><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</span></li>`).join("")}</ul>
+        <h4 class="wc-sub">進め方</h4>
+        <ol class="steps">${W.flow.map((s,i)=>{ const t = typeof s==="string" ? {t:s,d:""} : s; return `<li><span class="n">${String(i+1).padStart(2,"0")}</span><span class="tx"><b>${esc(t.t)}</b>${t.d?`<small>${esc(t.d)}</small>`:""}</span></li>`; }).join("")}</ol>
+        <ul class="wc-note"><li>${esc(W.style)}</li><li>料金：${esc(W.price)}</li><li>${esc(W.revisionNote)}</li></ul>
+        <button class="btn gr" type="button" data-open="お仕事">フォームで相談する</button>
       </div>
     </div></section>`;
   }
@@ -197,7 +207,7 @@ export function buildOutputs(files){
             <tr><th>土・日</th><td>12時から<small>前月20日を過ぎてからのご予約は 21時から</small></td></tr>
             <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${payLines("")}</td></tr>
             <tr><th>キャンセル・振替</th><td>${esc(P.lesson.cancel)}</td></tr></table>
-            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月ぶんをご予約ください。</p></div></details>
+            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
         </div>
       </div>
       <div class="les-extra">
@@ -218,7 +228,7 @@ export function buildOutputs(files){
           <details><summary>スタジオ代はかかる？</summary><p>スタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
           <details><summary>支払い方法は？</summary><p>${payLines("")}</p></details>
           <details><summary>キャンセル・日程の変更はできる？</summary><p>${esc(P.lesson.cancel)}</p></details>
-          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月ぶんをご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
+          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
         </div>
       </div>${voices()}
     </div></section>`;
@@ -239,7 +249,8 @@ export function buildOutputs(files){
         <div class="side">
           <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
           <div class="quick">
-            <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>お仕事のご依頼は、こちらのフォームからお願いします</small></span></a>
+            <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>気軽にメッセージください</small></span></a>
+            <button class="dm wk" type="button" data-open="お仕事"><i class="arw" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></i><span><b>お仕事のご依頼は、フォームから</b><small class="sp-only">下のフォームで「お仕事」を選んでください</small><small class="pc-only">右のフォームで「お仕事」を選んでください</small></span></button>
           </div>
         </div>
         <form class="f" id="form" novalidate>

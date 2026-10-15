@@ -66,6 +66,8 @@ function start(b){
   if(!ctrl){ wantPlay = true; loadApi(); setTimeout(() => { if(!ctrl && cur===b) setUI(b, false); }, 6000); return; }
   ctrl.loadUri("spotify:track:"+b.dataset.track); ctrl.play(); lastPlay = Date.now(); wantPlay = true;
   /* 少し待っても鳴らないとき（ブラウザが自動再生を止めた等）は、プレイヤーを下に出して押してもらう */
+  /* スマホは、Spotify の決まりで「プレイヤーの再生ボタン」を押さないと鳴らないことが多いので、すぐにプレイヤーを出す */
+  if(matchMedia("(hover:none)").matches){ host.classList.add("show"); return; }
   setTimeout(() => { if(wantPlay && cur===b && Date.now()-lastPlay >= 2400) host.classList.add("show"); }, 2500);
 }
 arts.forEach(b => b.addEventListener("click", () => {
