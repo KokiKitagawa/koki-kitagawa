@@ -93,7 +93,7 @@ export function buildOutputs(files){
           <p class="lede hl">${esc(P.bio[0])}</p>
           <div class="body bio">${P.bio.slice(1).map(x=>`<p>${esc(x)}</p>`).join("")}</div>
           <ul class="skills hs" id="skills">${SK.map(s=>`<li class="card skill">${pic(s[3],s[4])}<span class="k">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>${swipe(SK.length)}
-          <div class="sns color pills">${snsHTML(true)}</div>
+          <div class="sns color squares">${snsHTML()}</div>
           <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
             <div class="in"><ul class="gcards">${g}</ul></div></details>
         </div>
@@ -133,9 +133,9 @@ export function buildOutputs(files){
       <div class="tabp on" id="p-music" role="tabpanel" aria-labelledby="t-music">
         <div class="feat hs" id="feat">${feat.map((c,i) => {
           const id = (c.spotify||"").split("/track/")[1];
-          return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)}（${esc(c.artist)}）を再生" aria-pressed="false" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">0${i+1}</span><span class="pp" aria-hidden="true"><i class="tri"></i><i class="bars"></i></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="bar" aria-hidden="true"><i></i></span></button>
+          return `<article class="song"><button class="art" type="button" data-track="${id}" aria-label="${esc(c.title)}（${esc(c.artist)}）を再生" aria-pressed="false" style="background-image:url('https://i.scdn.co/image/${c.jacket}')"><span class="no">${String(i+1).padStart(2,"0")}</span><span class="pp" aria-hidden="true"><i class="tri"></i><i class="bars"></i></span><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span class="bar" aria-hidden="true"><i></i></span></button>
           <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div></article>`;}).join("")}</div>
-        <div class="swipe" aria-hidden="true"><span>横にスワイプ</span><span class="dots">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>
+        <div class="swipe feat-sw"><span aria-hidden="true">横にスワイプ</span><span class="dots" aria-hidden="true">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span><span class="rail-btns"><button type="button" class="rb" data-rail="-1" aria-label="前の曲へ">‹</button><button type="button" class="rb" data-rail="1" aria-label="次の曲へ">›</button></span></div>
         <div class="sp-host" id="spHost" aria-hidden="true"><div id="spEmbed"></div></div>
         <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${nMusic} CREDITS</span></summary>
           <div class="in">

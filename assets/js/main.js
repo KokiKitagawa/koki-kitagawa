@@ -188,3 +188,10 @@ document.getElementById("form").addEventListener("submit", e => {
     .catch(() => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; });
 });
 })();
+
+/* 曲の横並び：PC の矢印ボタンで1曲ずつ送る */
+document.querySelectorAll("[data-rail]").forEach(b => b.addEventListener("click", () => {
+  const el = document.getElementById("feat"); if(!el) return;
+  const card = el.querySelector(".song"); const step = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(el).columnGap||0) : el.clientWidth*.8;
+  el.scrollBy({left: step * Number(b.dataset.rail), behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth"});
+}));
