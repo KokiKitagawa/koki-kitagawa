@@ -44,6 +44,7 @@ im=src(ADD,"IMG_7351.JPG"); out(im.crop((0,500,4000,3500)),"guitars",900,gamma=1
 # 現場・部屋（LINEで届いた写真）
 im=src(LINE,"IMG_3336.JPG"); out(im,"stage",1000,sat=.95,vig=.1,q=74)        # ステージに立てたギター
 im=src(LINE,"IMG_9593.JPG"); out(im,"pedal",1200,sat=.95,vig=.1)        # ステージのエフェクターボード
+out(im,"pedal",1800,sat=.95,vig=.1,q=78)   # 2026-10-16 ライブ・TVの1枚ドカンと出す写真（ボード＋ゴールドトップ＋アンプ）
 im=src(LINE,"IMG_9717.JPG"); out(im,"venue",1200,sat=.95,vig=.1,q=74)        # 本番前のホール
 im=src(LINE,"IMG_6212.JPG"); out(im,"studio",1000,sat=.9,vig=.12,q=74)       # 作曲部屋（ギターと机）
 im=src(LINE,"IMG_6604.jpeg"); out(im,"desk",900,sat=.9,vig=.12)         # 作曲部屋（モニターと鍵盤）

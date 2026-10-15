@@ -149,11 +149,7 @@ export function buildOutputs(files){
           </div></details>
       </div>
       <div class="tabp" id="p-stage" role="tabpanel" aria-labelledby="t-stage">
-        <div class="strip">
-          <div class="photo reveal">${pic("venue","本番前のホール。ステージに照明が当たっている")}<span class="cap">VENUE</span></div>
-          <div class="photo reveal">${pic("stage","ライブ会場のステージに立てたギターとアンプ")}<span class="cap">STAGE</span></div>
-          <div class="photo reveal">${pic("pedal","青い照明のステージに組んだエフェクターボード")}<span class="cap">GEAR</span></div>
-        </div>
+        <figure class="gearshot reveal">${pic("gearWide","ライブ会場のステージ。手前に大きなエフェクターボード、奥にゴールドトップのギターとアンプ")}<figcaption class="cap">ON STAGE</figcaption></figure>
         <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
         <ul class="grid3" id="gigs">${items.slice(0,6).map(gig).join("")}</ul>
         <details class="acc gigs-more" id="gigsMore"><summary><b>すべて見る（${items.length}）</b><span class="meta">+${items.length-6}</span></summary>
