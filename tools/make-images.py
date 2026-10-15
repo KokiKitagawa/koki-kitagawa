@@ -54,4 +54,9 @@ im=src(LINE,"IMG_1713.jpeg"); out(im,"tubes-amber",1600,sat=1.0,vig=.0,grain=1.0
 # ライブ写真（前のまま）
 out(Image.open(BASE+"/live-720.webp").convert("RGB"),"live",720,warm=.3,vig=.05)
 # SNSで共有したときの画像（1200×630）とアイコンは tools/make-share-images.py（2026-10-15〜。トップの写真を替えたら続けて実行）
+# プロフィールの3枚のカード（人が写っていないAIイラスト。北川くんが ChatGPT で作った3枚組を切り分ける）2026-10-16
+AI=os.path.join(PH,"AI生成_参考")
+im=Image.open(os.path.join(AI,"プロフィール用イラスト_3枚組.png")).convert("RGB"); k=im.width/1122
+for name,box in [("skill-stage",(120,0,680,697)),("skill-compose",(0,702,557,1402)),("skill-lesson",(563,702,1122,1402))]:
+    c=im.crop(tuple(round(v*k) for v in box)); c.save(f"img/{name}-560.webp","WEBP",quality=84,method=6); print(name,c.size)
 print("ok")

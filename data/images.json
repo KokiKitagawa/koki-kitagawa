@@ -18,6 +18,9 @@
     "venue": "img/venue-1200.webp",
     "tubesBlue": "img/tubes-blue-1600.webp",
     "tubesAmber": "img/tubes-amber-1600.webp",
-    "gearWide": "img/pedal-1800.webp"
+    "gearWide": "img/pedal-1800.webp",
+    "skillStage": "img/skill-stage-560.webp",
+    "skillCompose": "img/skill-compose-560.webp",
+    "skillLesson": "img/skill-lesson-560.webp"
   }
 }

@@ -84,7 +84,7 @@ export function buildOutputs(files){
 
   function profile(){
     const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
-    const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","stage","リハーサル中のステージに並ぶギター"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","studio","紫の光に照らされた作曲デスクとギター"],["LESSON","ギターレッスン","初心者からプロ志向まで","hands","ギターの弦を押さえる手元"]];
+    const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","skillStage","スポットライトが当たるステージのギターとエフェクターボード（イラスト）"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","skillCompose","夜の作業部屋のモニター・鍵盤・ギター（イラスト）"],["LESSON","ギターレッスン","初心者からプロ志向まで","skillLesson","向かい合った椅子と2本のギター、譜面台のあるレッスン部屋（イラスト）"]];
     return `<section class="s sbg" id="profile"><div class="wrap">
       ${sh("01","Profile","プロフィール・経歴")}
       <div class="prof">
