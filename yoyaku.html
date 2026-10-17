@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080d">
+<title>体験レッスンのご予約 | 北川弘喜 ギターレッスン（小岩・オンライン）</title>
+<meta name="description" content="北川弘喜のギター体験レッスン（60分 3,500円）のご予約ページ。小岩のスタジオかオンラインを選んで、空いている日時から申し込めます。">
+<link rel="canonical" href="https://kokikitagawa.com/yoyaku.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="体験レッスンのご予約 | 北川弘喜">
+<meta property="og:url" content="https://kokikitagawa.com/yoyaku.html">
+<meta property="og:image" content="https://kokikitagawa.com/img/ogp.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/css/kk-design-system.css?v=69foca">
+<link rel="stylesheet" href="assets/css/site.css?v=15m6xv6">
+</head>
+<body class="doc yk-page">
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="./#lesson">← レッスンの案内</a></div></header>
+<main class="wrap docw ykw">
+  <div class="sh"><span class="no">—</span><h2>Booking</h2><p>体験レッスンのご予約</p></div>
+
+  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥3,500<small>税込</small></div></div>
+  <ol class="yk-steps" aria-hidden="true"><li data-st="1"><span>1</span>受け方</li><li data-st="2"><span>2</span>日時</li><li data-st="3"><span>3</span>お名前など</li></ol>
+
+  <div class="card yk-closed" id="ykClosed" hidden>
+    <b>予約ページは、まもなく使えるようになります</b>
+    <small>いまは、下のどちらかからお申し込みください。</small>
+    <div class="nf-btns"><a class="btn or" href="https://calendar.app.google/2d3tvKbuAZ1rJxL89" target="_blank" rel="noopener">予約カレンダーを開く</a><a class="btn line" href="./#contact">お問い合わせフォーム</a></div>
+  </div>
+
+  <form class="f yk" id="yk" novalidate>
+    <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet<br>その場で予約が決まります</small></span></label>
+      <p class="err" hidden></p>
+    </fieldset>
+
+    <div class="yk-when" id="ykWhen">
+      <div class="yk-lg"><span class="yn">2</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
+      <p class="small" id="ykLoad" hidden>空いている日時を読み込んでいます…</p>
+      <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
+      <div class="yk-times" id="ykTimes"></div>
+      <ol class="yk-picked" id="ykPicked"></ol>
+      <p class="err" id="ykWhenErr" hidden></p>
+    </div>
+
+    <div class="yk-info">
+      <div class="yk-lg"><span class="yn">3</span>お名前など</div>
+      <div class="two">
+        <div><label for="y_name">お名前<i>必須</i></label><input id="y_name" autocomplete="name"><p class="err" hidden></p></div>
+        <div><label for="y_kana">ふりがな</label><input id="y_kana"></div>
+      </div>
+      <div class="two">
+        <div><label for="y_mail">メールアドレス<i>必須</i></label><input id="y_mail" type="email" inputmode="email" autocomplete="email"><p class="err" hidden></p></div>
+        <div><label for="y_tel">電話番号</label><input id="y_tel" type="tel" inputmode="tel" autocomplete="tel"></div>
+      </div>
+      <div class="two">
+        <div><label for="y_age">レッスンを受ける方</label><select id="y_age"><option value="">選んでください</option><option>大人</option><option>高校生</option><option>中学生</option><option>小学生</option><option>小学生より小さいお子さん</option></select></div>
+        <div><label for="y_level">ギター歴</label><select id="y_level"><option value="">選んでください</option><option>はじめて</option><option>1年未満</option><option>1〜3年</option><option>3年以上</option></select></div>
+      </div>
+      <fieldset class="opts"><legend>ギター</legend><label class="opt"><input type="radio" name="guitar" value="アコースティック"><span>アコースティック</span></label><label class="opt"><input type="radio" name="guitar" value="エレキ"><span>エレキ</span></label><label class="opt"><input type="radio" name="guitar" value="クラシック"><span>クラシック</span></label><label class="opt"><input type="radio" name="guitar" value="持っていない"><span>持っていない</span></label></fieldset>
+      <fieldset class="opts"><legend>どうなりたいですか<i>いくつでもOK</i></legend><label class="opt"><input type="checkbox" name="goals" value="好きな曲を弾けるようになりたい"><span>好きな曲を弾けるようになりたい</span></label><label class="opt"><input type="checkbox" name="goals" value="基礎からしっかり"><span>基礎からしっかり</span></label><label class="opt"><input type="checkbox" name="goals" value="弾き語りがしたい"><span>弾き語りがしたい</span></label><label class="opt"><input type="checkbox" name="goals" value="バンドで弾きたい"><span>バンドで弾きたい</span></label><label class="opt"><input type="checkbox" name="goals" value="作曲・アレンジも学びたい"><span>作曲・アレンジも学びたい</span></label><label class="opt"><input type="checkbox" name="goals" value="プロを目指したい"><span>プロを目指したい</span></label><label class="opt"><input type="checkbox" name="goals" value="趣味で楽しく"><span>趣味で楽しく</span></label></fieldset>
+      <div><label for="y_song">弾きたい曲・好きなアーティスト</label><input id="y_song" placeholder="例：〇〇の「△△」"></div>
+      <div><label for="y_q">ご質問・ご要望</label><textarea id="y_q" class="sm" placeholder="気になることがあれば、なんでも"></textarea></div>
+      <div><label for="y_from">このページを何で知りましたか</label><select id="y_from"><option value="">選んでください</option><option>Instagram</option><option>TikTok</option><option>YouTube</option><option>X</option><option>Google検索</option><option>Googleマップ</option><option>知り合いの紹介</option><option>その他</option></select></div>
+    </div>
+    <input type="text" name="website" id="y_web" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
+
+    <div class="yk-sum" id="ykSum" hidden></div>
+    <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
+    <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
+    <p class="err" id="ykErr" hidden></p>
+  </form>
+
+  <div class="card yk-done" id="ykDone" hidden role="status" tabindex="-1"></div>
+
+  <section class="yk-notes">
+    <h3>ご案内</h3>
+    <table class="hours">
+      <tr><th>料金</th><td>体験レッスン 60分 ¥3,500（税込・初回のみ）</td></tr>
+      <tr><th>場所</th><td>サウンドスタジオM小岩店（JR小岩駅から歩いて約4分）／オンライン<small><a href="https://www.google.com/maps/search/?api=1&amp;query=%E3%82%B5%E3%82%A6%E3%83%B3%E3%83%89%E3%82%B9%E3%82%BF%E3%82%B8%E3%82%AAM%E5%B0%8F%E5%B2%A9%E5%BA%97" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>
+      <tr><th>スタジオ代</th><td>スタジオで受ける場合、レッスン料金とは別にかかります。当日スタジオでお支払いください。</td></tr>
+      <tr><th>お支払い</th><td>現金・PayPay（当日レッスンの前に）</td></tr>
+      <tr><th>ギター</th><td>スタジオでギターを借りられるので、持っていなくても大丈夫です。</td></tr>
+      <tr><th>お子さん</th><td>3歳から受けられます。小さいお子さんは、保護者の方の同伴も大丈夫です。</td></tr>
+      <tr><th>キャンセル</th><td>レッスン日の3日前 23:59 まで、予約のときに届くメールのURLから、ご自分でキャンセルできます。</td></tr>
+      <tr><th>そのあと</th><td>しつこい勧誘はしません。体験のあと、目標に合ったプランをご提案することはありますが、生徒さんのお気持ちを大切にします。続けるかどうかは、ゆっくり決めてください。</td></tr>
+    </table>
+  </section>
+</main>
+<footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
+<script type="application/json" id="ykcfg">{"api":"","fallback":"https://calendar.app.google/2d3tvKbuAZ1rJxL89"}</script>
+<script src="assets/js/yoyaku.js?v=cnm2bc" defer></script>
+</body>
+</html>

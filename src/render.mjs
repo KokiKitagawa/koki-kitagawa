@@ -4,7 +4,7 @@
    ページの文章・カードはすべてここで組み立てて、静的な HTML として書き出す。
    ボタンの動き（絞り込み・メニュー・フォーム送信など）は assets/js/main.js。
    ============================================================ */
-export const ROOT_FILES = ["src/template.html","data/voices.json","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
+export const ROOT_FILES = ["src/template.html","data/voices.json","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js","assets/js/yoyaku.js"];
 const ASSETS = ["assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
 /* 中身から短い印をつくる（CSS・JSを直したら、見る人のブラウザに古いものが残らないよう ?v= を変える） */
 const stamp = t => { let h = 5381; for(let i=0;i<t.length;i++) h = ((h<<5) + h + t.charCodeAt(i)) >>> 0; return h.toString(36); };
@@ -19,7 +19,7 @@ export function buildOutputs(files){
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
-    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
+    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, yoyaku: !!(site.booking||{}).api, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
   };
   const IMG = images.paths, ICON = site.icons;
   const warnings = [];
@@ -193,7 +193,7 @@ export function buildOutputs(files){
           <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>3歳から大人まで</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
-            ${D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>
+            ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
             <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>${swipe(L.monthly.length+1)}
@@ -209,7 +209,8 @@ export function buildOutputs(files){
       <div class="les-extra">
         <div><h3><span>STEP</span>はじめるまで</h3>
           <ol class="flow hs" id="flow">
-            ${D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
+            ${D.yoyaku ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>スタジオは候補を2つまで、オンラインはその場で予約</small></li>
+            <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>スタジオは24時間以内に、日程確定のご連絡</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
             <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>場所と当日の流れをお送りします</small></li>` : `<li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
@@ -292,7 +293,7 @@ export function buildOutputs(files){
   /* 流れる文字の帯：6本の弦の上を、細い文字がゆっくり流れる（フレットの印でつなぐ） */
   const band = (words, rev) => { const one = words.map(w=>`<span>${w}</span><i></i>`).join(""); return `<div class="band ${rev?"rev":""}" aria-hidden="true"><div class="tr">${one}${one}${one}${one}</div></div>`; };
 
-  const bookModal = D.booking ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
+  const bookModal = D.booking && !D.yoyaku ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
   const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact()+bookModal;
 
   const url = p.siteUrl;
@@ -315,12 +316,13 @@ export function buildOutputs(files){
   put("<!--@phstyle-->", phStyle);
   put("<!--@main-->", main);
   /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */
-  if(D.booking) html = html.split('data-open="レッスン">レッスンを申し込む').join('data-book>体験レッスンを予約');
+  if(D.yoyaku) html = html.split('<button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>').join('<a class="btn or" href="yoyaku.html">体験レッスンを予約</a>');
+  else if(D.booking) html = html.split('data-open="レッスン">レッスンを申し込む').join('data-book>体験レッスンを予約');
   put("<!--@sns-->", snsHTML());
   put("<!--@config-->", cfg);
   for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
   if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
-  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking}), "404.html": notFoundPage(files, url, !!D.booking)}, warnings };
+  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url)}, warnings };
 }
 
 /* プライバシーポリシー（privacy.html）。トップと同じCSSを使う */
@@ -328,11 +330,11 @@ function privacyPage(files, p, url, ext = {}){
   const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${f}?v=${stamp(files[f])}">`).join("\n");
   const S = [
     ["運営者", `このサイト（${url}）は、ギタリスト・作曲家の ${p.name}（${p.nameEn}）が個人で運営しています。`],
-    ["お預かりする情報", "お問い合わせフォームに入力いただいた、お名前・メールアドレス・ご用件・メッセージなどの内容です。"],
+    ["お預かりする情報", ext.yoyaku ? "お問い合わせフォームと体験レッスンの予約ページに入力いただいた、お名前・メールアドレス・電話番号・ご用件・メッセージなどの内容です。" : "お問い合わせフォームに入力いただいた、お名前・メールアドレス・ご用件・メッセージなどの内容です。"],
     ["使い道", "お問い合わせへの返信と、レッスン・お仕事のご連絡のためだけに使います。それ以外の目的には使いません。"],
-    ["保管のしかた", "フォームの内容は Google フォーム（Google LLC のサービス）を通じて受け取り、Google のスプレッドシートに保存します。"],
+    ["保管のしかた", "フォームの内容は Google フォーム（Google LLC のサービス）を通じて受け取り、Google のスプレッドシートに保存します。" + (ext.yoyaku ? "予約ページの内容は、Google のサービス（Apps Script・カレンダー・スプレッドシート）で受け取り、保存します。" : "")],
     ["第三者への提供", "法令にもとづく場合を除き、ご本人の同意なく第三者に渡すことはありません。"],
-    ["外部のサービス", `楽曲の再生に Spotify の埋め込みプレーヤーを${ext.video ? "、動画の再生に YouTube を" : ""}${ext.booking ? "、レッスンの予約に Google カレンダーの予約ページを" : ""}、文字の表示に Google Fonts を使っています。これらのサービスが、それぞれの方針にもとづいて閲覧の情報を扱うことがあります。`],
+    ["外部のサービス", `楽曲の再生に Spotify の埋め込みプレーヤーを${ext.video ? "、動画の再生に YouTube を" : ""}${ext.yoyaku ? "" : ext.booking ? "、レッスンの予約に Google カレンダーの予約ページを" : ""}、文字の表示に Google Fonts を使っています。これらのサービスが、それぞれの方針にもとづいて閲覧の情報を扱うことがあります。`],
     ["確認・削除のご依頼", "お預かりした情報の確認や削除をご希望のときは、お問い合わせフォームまたは Instagram の DM からご連絡ください。"],
     ["改定", "内容を変えるときは、このページでお知らせします。"]
   ];
@@ -400,6 +402,119 @@ ${css}
     <a class="btn gr" href="${url}#contact">お問い合わせ</a>
   </div>
 </main>
+</body>
+</html>
+`;
+}
+
+/* 体験レッスンの予約ページ（yoyaku.html）。見た目はトップと同じCSS、空き枠と予約は Googleカレンダー（Apps Script）とつなぐ。
+   data/site.json の booking.api に Apps Script の URL が入るまでは「準備中」と出る（?demo=1 を付けると見本の空き枠で動きを見られる） */
+export function yoyakuPage(files, p, site, url){
+  const L = p.lesson, B = site.booking || {};
+  const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${f}?v=${stamp(files[f])}">`).join("\n");
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const yen = n => Number(n).toLocaleString("ja-JP");
+  const pay = (L.payment||[]).find(x => x[0] === "体験");
+  const cfg = JSON.stringify({api: B.api || "", fallback: B.url || ""}).replace(/</g,"\\u003c");
+  const opt = (name, type, list) => list.map(x => `<label class="opt"><input type="${type}" name="${name}" value="${esc(x)}"><span>${esc(x)}</span></label>`).join("");
+  const sel = list => `<option value="">選んでください</option>` + list.map(x => `<option>${esc(x)}</option>`).join("");
+  return `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080d">
+<title>体験レッスンのご予約 | 北川弘喜 ギターレッスン（小岩・オンライン）</title>
+<meta name="description" content="北川弘喜のギター体験レッスン（60分 ${yen(site.lessonPlans.trial.price)}円）のご予約ページ。小岩のスタジオかオンラインを選んで、空いている日時から申し込めます。">
+<link rel="canonical" href="${url}yoyaku.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="体験レッスンのご予約 | 北川弘喜">
+<meta property="og:url" content="${url}yoyaku.html">
+<meta property="og:image" content="${url}${JSON.parse(files["data/images.json"]).paths.ogp}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+${HEAD_ICONS("")}
+${css}
+</head>
+<body class="doc yk-page">
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="./#lesson">← レッスンの案内</a></div></header>
+<main class="wrap docw ykw">
+  <div class="sh"><span class="no">—</span><h2>Booking</h2><p>体験レッスンのご予約</p></div>
+
+  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
+  <ol class="yk-steps" aria-hidden="true"><li data-st="1"><span>1</span>受け方</li><li data-st="2"><span>2</span>日時</li><li data-st="3"><span>3</span>お名前など</li></ol>
+
+  <div class="card yk-closed" id="ykClosed" hidden>
+    <b>予約ページは、まもなく使えるようになります</b>
+    <small>いまは、下のどちらかからお申し込みください。</small>
+    <div class="nf-btns">${B.url ? `<a class="btn or" href="${esc(B.url)}" target="_blank" rel="noopener">予約カレンダーを開く</a>` : ""}<a class="btn line" href="./#contact">お問い合わせフォーム</a></div>
+  </div>
+
+  <form class="f yk" id="yk" novalidate>
+    <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet<br>その場で予約が決まります</small></span></label>
+      <p class="err" hidden></p>
+    </fieldset>
+
+    <div class="yk-when" id="ykWhen">
+      <div class="yk-lg"><span class="yn">2</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
+      <p class="small" id="ykLoad" hidden>空いている日時を読み込んでいます…</p>
+      <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
+      <div class="yk-times" id="ykTimes"></div>
+      <ol class="yk-picked" id="ykPicked"></ol>
+      <p class="err" id="ykWhenErr" hidden></p>
+    </div>
+
+    <div class="yk-info">
+      <div class="yk-lg"><span class="yn">3</span>お名前など</div>
+      <div class="two">
+        <div><label for="y_name">お名前<i>必須</i></label><input id="y_name" autocomplete="name"><p class="err" hidden></p></div>
+        <div><label for="y_kana">ふりがな</label><input id="y_kana"></div>
+      </div>
+      <div class="two">
+        <div><label for="y_mail">メールアドレス<i>必須</i></label><input id="y_mail" type="email" inputmode="email" autocomplete="email"><p class="err" hidden></p></div>
+        <div><label for="y_tel">電話番号</label><input id="y_tel" type="tel" inputmode="tel" autocomplete="tel"></div>
+      </div>
+      <div class="two">
+        <div><label for="y_age">レッスンを受ける方</label><select id="y_age">${sel(["大人","高校生","中学生","小学生","小学生より小さいお子さん"])}</select></div>
+        <div><label for="y_level">ギター歴</label><select id="y_level">${sel(["はじめて","1年未満","1〜3年","3年以上"])}</select></div>
+      </div>
+      <fieldset class="opts"><legend>ギター</legend>${opt("guitar","radio",["アコースティック","エレキ","クラシック","持っていない"])}</fieldset>
+      <fieldset class="opts"><legend>どうなりたいですか<i>いくつでもOK</i></legend>${opt("goals","checkbox",["好きな曲を弾けるようになりたい","基礎からしっかり","弾き語りがしたい","バンドで弾きたい","作曲・アレンジも学びたい","プロを目指したい","趣味で楽しく"])}</fieldset>
+      <div><label for="y_song">弾きたい曲・好きなアーティスト</label><input id="y_song" placeholder="例：〇〇の「△△」"></div>
+      <div><label for="y_q">ご質問・ご要望</label><textarea id="y_q" class="sm" placeholder="気になることがあれば、なんでも"></textarea></div>
+      <div><label for="y_from">このページを何で知りましたか</label><select id="y_from">${sel(["Instagram","TikTok","YouTube","X","Google検索","Googleマップ","知り合いの紹介","その他"])}</select></div>
+    </div>
+    <input type="text" name="website" id="y_web" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
+
+    <div class="yk-sum" id="ykSum" hidden></div>
+    <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
+    <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
+    <p class="err" id="ykErr" hidden></p>
+  </form>
+
+  <div class="card yk-done" id="ykDone" hidden role="status" tabindex="-1"></div>
+
+  <section class="yk-notes">
+    <h3>ご案内</h3>
+    <table class="hours">
+      <tr><th>料金</th><td>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込・初回のみ）</td></tr>
+      <tr><th>場所</th><td>${esc(L.place)}<small><a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent("サウンドスタジオM小岩店")}" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>
+      <tr><th>スタジオ代</th><td>スタジオで受ける場合、レッスン料金とは別にかかります。当日スタジオでお支払いください。</td></tr>
+      <tr><th>お支払い</th><td>${pay ? esc(pay[1]) : ""}</td></tr>
+      <tr><th>ギター</th><td>${esc(L.guitarRental)}</td></tr>
+      <tr><th>お子さん</th><td>${esc(L.ages)}</td></tr>
+      <tr><th>キャンセル</th><td>レッスン日の3日前 23:59 まで、予約のときに届くメールのURLから、ご自分でキャンセルできます。</td></tr>
+      <tr><th>そのあと</th><td>${esc(L.noPush)}</td></tr>
+    </table>
+  </section>
+</main>
+<footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
+<script type="application/json" id="ykcfg">${cfg}</script>
+<script src="assets/js/yoyaku.js?v=${stamp(files["assets/js/yoyaku.js"])}" defer></script>
 </body>
 </html>
 `;
