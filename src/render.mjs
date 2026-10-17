@@ -75,7 +75,7 @@ export function buildOutputs(files){
   const yearOf = t => { const m = D.liveYears.find(([p]) => t.startsWith(p)); return m ? m[1] : null; };
   const PH = ["guitar","studio","lesson","stage","live","pedal","play","desk","hands","guitars"];
   const SBG = {profile:"profile", works:"studio", lesson:"lesson"};   // career と contact は真空管の写真をスクロールで動かす（pbg）   // セクションの背景に大きくぼかして敷く写真
-  const phStyle = `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}${Object.entries(SBG).map(([id,k])=>`#${id}.sbg::before{background-image:url("${IMG[k]}")}`).join("")}</style>`;
+  const phStyle = `<style>${PH.filter(k=>IMG[k]).map(k=>`.ph-${k}::before{background-image:url("${IMG[k]}")}`).join("")}${Object.entries(SBG).map(([id,k])=>`#${id}.sbg::before${id==="profile"?",#profile .sbg-low":""}{background-image:url("${IMG[k]}")}`).join("")}</style>`;
   const ph = k => `ph ph-${k}`;
   const pbg = (k, tone) => `<div class="pbg ${tone}" aria-hidden="true"><i style="background-image:url('${IMG[k]}')"></i></div>`;
   /* お支払い：体験・月謝・単発で分けて出す（data/profile.json の lesson.payment） */
@@ -84,18 +84,14 @@ export function buildOutputs(files){
 
   function profile(){
     const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
-    /* 3枚のカード（JAMの型：イラスト → 番号と見出し → 2行の説明 → 詳しく＞）。イラストは src/ill/*.svg（触ると少し動く） */
-    const SK = [["01","GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏。メジャー作品の現場経験あり","guitar",'href="#works" data-tab-go="stage"'],
-      ["02","COMPOSE","作詞・作曲・編曲","作曲・編曲・打ち込みからボーカルの録音・ディレクションまで","compose",'href="#works" data-tab-go="music"'],
-      ["03","LESSON","ギターレッスン","未就学児からシニアまで。1,000回以上のレッスン実績","lesson",'href="#lesson"']];
-    return `<section class="s sbg" id="profile"><div class="wrap">
+    return `<section class="s sbg" id="profile"><i class="sbg-low" aria-hidden="true"></i><div class="wrap">
       ${sh("01","Profile","プロフィール・経歴")}
       <div class="prof">
         <div class="pw"><div class="photo reveal">${pic("profile","椅子に座ってギターを弾く北川弘喜")}</div><span class="bigword" aria-hidden="true">Guitarist</span></div>
         <div>
           <p class="lede hl">${esc(P.bio[0])}</p>
           <div class="body bio">${P.bio.slice(1).map(x=>`<p>${esc(x)}</p>`).join("")}</div>
-          <ul class="skills3" id="skills">${SK.map(s=>`<li class="card sk3 sk-${s[4]}">${files["src/ill/"+s[4]+".svg"].trim()}<div class="sk3-tx"><div class="num"><i>${s[0]}</i><span>${s[1]}</span></div><b>${s[2]}</b><p>${s[3]}</p><a class="more" ${s[5]}>詳しく<span class="sr">（${s[2]}）</span></a></div></li>`).join("")}</ul>${canDo()}
+          ${canDo()}
           <div class="sns color squares">${snsHTML()}</div>
           <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
             <div class="in"><ul class="gcards">${g}</ul></div></details>
@@ -104,12 +100,15 @@ export function buildOutputs(files){
     </div></section>`;
   }
 
-  /* できること一覧（演奏する／つくる／教える）。data/profile.json の canDo */
+  /* できること：3枚のカード（イラスト → 番号と見出し → 項目のタグ → 詳しく＞）。data/profile.json の canDo、イラストは src/ill/*.svg（触ると少し動く） */
   function canDo(){
     const K = P.canDo; if(!K || !(K.groups||[]).length) return "";
-    const CL = {PLAY:"c-play", CREATE:"c-create", TEACH:"c-teach"};
-    return `<div class="cdl" id="cando-list"><h3 class="cdl-h"><span>SKILLS</span>できること</h3>
-            <div class="cdl-gs">${K.groups.map(g=>`<section class="cdl-g ${CL[g.en]||""}"><h4><i>${esc(g.en)}</i>${esc(g.name)}</h4><ul>${g.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${g.en==="CREATE"&&K.note?`<p class="cdl-note">${esc(K.note)}</p>`:""}</section>`).join("")}</div></div>`;
+    const LINK = {stage:'href="#works" data-tab-go="stage"', music:'href="#works" data-tab-go="music"', lesson:'href="#lesson"'};
+    let ci = 0; const chips = items => `<ul class="tags">${items.map(x=>`<li${x.major?' class="mj"':""} style="--i:${ci++}">${esc(x.t)}${x.major?'<i>MAJOR</i>':""}</li>`).join("")}</ul>`;
+    const sub = u => !u.label ? chips(u.items) : `<h5>${esc(u.label)}</h5>${chips(u.items)}`;
+    return `<ul class="skills3 hs" id="skills" aria-label="できること">${K.groups.map(g=>(ci=0,`<li class="card sk3 sk-${g.ill}">${(files["src/ill/"+g.ill+".svg"]||"").trim()}<div class="sk3-tx"><div class="num"><i>${esc(g.no)}</i><span>${esc(g.en)}</span></div><b>${esc(g.name)}</b></div>
+            <div class="sk3-tags">${g.subs.map(sub).join("")}</div><a class="more" ${LINK[g.link]||""}>詳しく<span class="sr">（${esc(g.name)}）</span></a></li>`)).join("")}</ul>${swipe(K.groups.length)}
+          <p class="sk3-note">${esc(K.note)}</p><p class="sk3-legend"><i>MAJOR</i>${esc(K.majorNote.replace(/^MAJOR＝/,"＝"))}</p>`;
   }
 
   function career(){
@@ -174,6 +173,7 @@ export function buildOutputs(files){
         <div class="wc-head"><span class="wc-en">FOR CLIENTS</span><h3>お仕事のご依頼</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p></div>
         <h4 class="wc-sub">できること</h4>
         <ul class="cando">${W.services.map((s,i)=>`<li class="c${i%4}"><i class="ic" aria-hidden="true">${WICON[(W.serviceIcons||[])[i]]||""}</i><span><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</span></li>`).join("")}</ul>
+        <a class="tolist" href="#skills">できること一覧を見る</a>
         <h4 class="wc-sub">進め方</h4>
         <ol class="steps">${W.flow.map((s,i)=>{ const t = typeof s==="string" ? {t:s,d:""} : s; return `<li><span class="n">${String(i+1).padStart(2,"0")}</span><span class="tx"><b>${esc(t.t)}</b>${t.d?`<small>${esc(t.d)}</small>`:""}</span></li>`; }).join("")}</ol>
         <ul class="wc-note"><li>${esc(W.style)}</li><li>料金：${esc(W.price)}</li><li>${esc(W.revisionNote)}</li></ul>
@@ -306,7 +306,11 @@ export function buildOutputs(files){
   }
 
   /* 流れる文字の帯：6本の弦の上を、細い文字がゆっくり流れる（フレットの印でつなぐ） */
-  const band = (words, rev) => { const one = words.map(w=>`<span>${w}</span><i></i>`).join(""); return `<div class="band ${rev?"rev":""}" aria-hidden="true"><div class="tr">${one}${one}${one}${one}</div></div>`; };
+  /* 五線譜リボン（2026-10-17）：少し斜めの黒いリボンに五線を引き、言葉と音符が流れる。触ると五線が揺れる */
+  const NOTE = `<svg viewBox="0 0 20 28"><path d="M13 3v17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M13 3c3 1.5 5.5 3.5 4.5 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="9" cy="21" rx="4.6" ry="3.5" transform="rotate(-20 9 21)" fill="currentColor"/></svg>`;
+  const WAVE = Array.from({length:5},(_,k)=>{ const y = 10 + k*20; let d = `M0 ${y}`; for(let x=0;x<1200;x+=100) d += ` q25 ${k%2?-14:14} 50 0 t50 0`; return `<path d="${d}"/>`; }).join("");
+  const band = (words, rev) => { const one = words.map((w,i)=>`<span>${w}</span><i class="nt n${i%4}">${NOTE}</i>`).join("");
+    return `<div class="ribbon ${rev?"rev":""}" aria-hidden="true"><div class="band staff"><svg class="lines" viewBox="0 0 1200 100" preserveAspectRatio="none">${WAVE}</svg><div class="tr">${one}${one}${one}${one}</div></div></div>`; };
 
   const bookModal = D.booking && !D.yoyaku ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
   const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact()+bookModal;

@@ -137,6 +137,12 @@ document.querySelectorAll(".sk3").forEach(c => {
   c.addEventListener("pointerenter", play); c.addEventListener("touchstart", play, {passive:true});
 });
 
+/* 五線譜リボン：触ると五線が揺れる */
+document.querySelectorAll(".band.staff").forEach(b => {
+  const wig = () => { if(reduce.matches || b.classList.contains("wig")) return; b.classList.add("wig"); setTimeout(() => b.classList.remove("wig"), 1500); };
+  b.addEventListener("pointerenter", wig); b.addEventListener("touchstart", wig, {passive:true}); b.addEventListener("click", wig);
+});
+
 /* 背景の真空管：スクロールに合わせて少しだけずらす（奥行き） */
 const pbgs = [...document.querySelectorAll(".pbg i")];
 /* スマホ（指で触る画面）は CSS だけで動かす（JS で毎回ずらすと iPhone でカクつくため） */
