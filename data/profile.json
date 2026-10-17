@@ -248,6 +248,7 @@
         "no": "01",
         "en": "GUITAR",
         "name": "演奏する",
+        "desc": "サポートギター",
         "ill": "guitar",
         "link": "stage",
         "subs": [
@@ -270,6 +271,7 @@
         "no": "02",
         "en": "COMPOSE",
         "name": "つくる",
+        "desc": "作詞・作曲・編曲",
         "ill": "compose",
         "link": "music",
         "subs": [
@@ -324,6 +326,7 @@
         "no": "03",
         "en": "LESSON",
         "name": "教える",
+        "desc": "ギターレッスン",
         "ill": "lesson",
         "link": "lesson",
         "subs": [
@@ -331,7 +334,8 @@
             "label": "",
             "items": [
               {
-                "t": "ギターレッスン（未就学児〜シニア）"
+                "t": "ギターレッスン（未就学児〜シニア）",
+                "href": "#lesson"
               },
               {
                 "t": "DTM講師"

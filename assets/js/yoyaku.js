@@ -15,6 +15,9 @@
   const full = t => { const d = new Date(t + 9 * 3600e3); return `${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${wd(t)}）${hm(t)}〜`; };
 
   let slots = null, mode = "", day = "", pick = [];
+  /* スタジオ：いまどちらを選んでいるか（0＝第1希望、1＝第2希望、-1＝選び終わり）。skip2＝第2希望なしで進む */
+  let active = 0, skip2 = false;
+  const nowEl = $("ykNow");
 
   /* トップの「体験から始める」で来たとき：気になるプランを出して、申し込みの内容にも入れる */
   const plan = (new URLSearchParams(location.search).get("plan") || "").trim();
@@ -45,8 +48,8 @@
 
   /* 受け方 */
   form.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => {
-    mode = r.value; pick = []; hideErr(form.querySelector(".yk-mode .err"));
-    hint.textContent = mode === "studio" ? "候補を2つまで選べます（2つあると決まりやすいです）" : "1つ選んでください。その場で予約が決まります";
+    mode = r.value; pick = []; active = 0; skip2 = false; hideErr(form.querySelector(".yk-mode .err"));
+    hint.textContent = mode === "studio" ? "第1希望を選んでください。第2希望は選ばなくても大丈夫です" : "1つ選んでください。その場で予約が決まります";
     $("ykSend").textContent = mode === "studio" ? "この内容で申し込む" : "この日時で予約する";
     loading.then(drawDays); mark();
   }));
@@ -58,28 +61,58 @@
     const keys = Object.keys(by).sort();
     if (!keys.includes(day)) day = keys[0] || "";
     days.innerHTML = keys.map(k => { const t = by[k][0].s, n = by[k].filter(s => pick.includes(s.s)).length;
-      return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${new Date(t + 9 * 3600e3).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ 選択中" : by[k].length + "枠"}</i></button>`; }).join("");
+      return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${new Date(t + 9 * 3600e3).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ " + (mode === "studio" ? by[k].filter(s => pick.includes(s.s)).map(s => pick.indexOf(s.s) + 1).sort().map(n => "第" + n).join("・") : "選択中") : by[k].length + "枠"}</i></button>`; }).join("");
     if (slots && !keys.length) times.innerHTML = `<p class="small yk-none">いま予約できる日時がありません。${mode === "studio" ? "オンラインを選ぶか、" : ""}<a href="./#contact">お問い合わせフォーム</a>からご相談ください。</p>`;
     else drawTimes(by[day] || []);
     drawPicked();
   }
   function drawTimes(list){
-    times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+〜$/, "")}</p><div class="opts">` + list.map(s => `<label class="opt"><input type="checkbox" value="${s.s}" ${pick.includes(s.s) ? "checked" : ""}><span>${hm(s.s)}</span></label>`).join("") + "</div>" : "";
+    times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+〜$/, "")}</p><div class="opts">` + list.map(s => { const i = pick.indexOf(s.s), tag = i < 0 ? "" : mode === "studio" ? `<em class="yk-tag t${i + 1}">第${i + 1}希望</em>` : `<em class="yk-tag">予約</em>`;
+      return `<label class="opt${i >= 0 ? " t" + (i + 1) : ""}"><input type="checkbox" value="${s.s}" ${i >= 0 ? "checked" : ""}><span>${hm(s.s)}${tag}</span></label>`; }).join("") + "</div>" : "";
   }
   days.addEventListener("click", e => { const b = e.target.closest("[data-day]"); if (!b) return; day = b.dataset.day; drawDays(); });
+  /* 時間を押したとき。スタジオは「いま選んでいる方（第1／第2希望）」に入る。選んである時間をもう一度押すと外れる */
+  const next = () => { active = !pick[0] ? 0 : (!pick[1] && !skip2) ? 1 : -1; };
   times.addEventListener("change", e => {
     const t = Number(e.target.value);
-    if (e.target.checked) {
-      if (mode === "online") pick = [t];
-      else if (pick.length >= 2) { e.target.checked = false; showErr($("ykWhenErr"), "候補は2つまでです。変えるときは、下の × で外してください。"); return; }
-      else pick.push(t);
-    } else pick = pick.filter(x => x !== t);
+    hideErr($("ykWhenErr"));
+    if (mode === "online") pick = e.target.checked ? [t] : [];
+    else if (pick.includes(t)) { pick = pick.filter(x => x !== t); next(); }
+    else if (active < 0) { e.target.checked = false; showErr($("ykWhenErr"), "第1・第2希望とも選んであります。変えるときは、下の「変える」を押してください。"); return; }
+    else { pick[active] = t; pick = pick.filter(Boolean); if (active === 1) skip2 = false; next(); }
+    drawDays(); mark();
+  });
+  function row(i, t){
+    const lab = "第" + (i + 1) + "希望";
+    return `<li class="yk-slot${active === i ? " now" : ""}"><span class="chip or">${lab}</span><b>${full(t)}</b><span class="yk-acts"><button type="button" class="yk-chg" data-chg="${i}">変える</button><button type="button" class="yk-x" data-rm="${t}" aria-label="${lab}を取り消す">×</button></span></li>`;
+  }
+  function drawPicked(){
+    if (mode !== "studio") {
+      picked.innerHTML = pick.map(t => `<li><span class="chip gr">予約する日時</span><b>${full(t)}</b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`).join("");
+      nowEl.hidden = true; return;
+    }
+    let h = "";
+    if (pick[0]) h += row(0, pick[0]);
+    else if (active === 0 && pick.length === 0) h += "";
+    if (pick[1]) h += row(1, pick[1]);
+    else if (pick[0]) h += skip2
+      ? `<li class="yk-slot yk-opt off"><span class="chip">第2希望</span><span class="yk-o"><b>なし</b><small>第1希望だけで申し込みます</small></span><span class="yk-acts"><button type="button" class="yk-chg" data-pick2>やっぱり選ぶ</button></span></li>`
+      : `<li class="yk-slot yk-opt${active === 1 ? " now" : ""}"><span class="chip">第2希望</span><span class="yk-o"><b>第2希望も選ぶ（任意）</b><small>上の日時から、もう1つ選べます。2つあると日程が決まりやすくなります。選ばなくても申し込めます</small></span><span class="yk-acts"><button type="button" class="yk-chg" data-skip2>第2希望なしで進む</button></span></li>`;
+    picked.innerHTML = h;
+    nowEl.hidden = false;
+    nowEl.innerHTML = active === 0 ? `<span class="chip or">第1希望</span>を選んでいます`
+      : active === 1 ? `<span class="chip">第2希望（任意）</span>を選んでいます`
+      : `選び終わりました。変えるときは、下の「変える」を押してください`;
+  }
+  picked.addEventListener("click", e => {
+    const rm = e.target.closest("[data-rm]"), chg = e.target.closest("[data-chg]");
+    if (rm) { pick = pick.filter(x => x !== Number(rm.dataset.rm)); if (mode === "studio") next(); }
+    else if (chg) { active = Number(chg.dataset.chg); times.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    else if (e.target.closest("[data-skip2]")) { skip2 = true; next(); drawDays(); mark(); document.querySelector(".yk-info").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    else if (e.target.closest("[data-pick2]")) { skip2 = false; next(); times.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    else return;
     hideErr($("ykWhenErr")); drawDays(); mark();
   });
-  function drawPicked(){
-    picked.innerHTML = pick.map((t, i) => `<li><span class="chip ${mode === "studio" ? "or" : "gr"}">${mode === "studio" ? "第" + (i + 1) + "希望" : "予約する日時"}</span><b>${full(t)}</b><button type="button" class="yk-x" data-rm="${t}" aria-label="外す">×</button></li>`).join("");
-  }
-  picked.addEventListener("click", e => { const b = e.target.closest("[data-rm]"); if (!b) return; pick = pick.filter(x => x !== Number(b.dataset.rm)); drawDays(); mark(); });
 
   /* 上の 1・2・3 の印 */
   function mark(){

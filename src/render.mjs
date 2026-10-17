@@ -19,7 +19,7 @@ export function buildOutputs(files){
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
-    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, yoyaku: !!(site.booking||{}).api, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
+    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, yoyaku: !!(site.booking||{}).api, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, trialProof: (site.trialProof||{}).text||"", news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
   };
   const IMG = images.paths, ICON = site.icons;
   const warnings = [];
@@ -60,9 +60,9 @@ export function buildOutputs(files){
           <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
           <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
         </div>
-        <ul class="marks" aria-label="主な実績">
-          <li><i>FESTIVAL</i><b>SUMMER SONIC</b><span>2023 出演・サポートギター</span></li>
-          <li><i>FESTIVAL</i><b><span class="ib">イナズマロック</span><span class="ib">フェス</span></b><span>2023 出演・サポートギター</span></li>
+        <ul class="marks v-a" aria-label="主な実績">
+          <li><i>FESTIVAL<em>2023</em></i><b>SUMMER SONIC</b><span>サポートギター</span></li>
+          <li><i>FESTIVAL<em>2023</em></i><b>INAZUMA ROCK FES</b><span>サポートギター</span></li>
           <li><i>TV</i><b>CDTV</b><span>地上波出演</span></li>
           <li><i>SONGWRITING</i><b>B-PROJECT</b><span>楽曲提供（作詞・作曲・編曲）</span></li>
         </ul>${D.news.length ? `
@@ -91,7 +91,6 @@ export function buildOutputs(files){
         <div>
           <p class="lede hl">${esc(P.bio[0])}</p>
           <div class="body bio">${P.bio.slice(1).map(x=>`<p>${esc(x)}</p>`).join("")}</div>
-          ${canDo()}
           <div class="sns color squares">${snsHTML()}</div>
           <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
             <div class="in"><ul class="gcards">${g}</ul></div></details>
@@ -100,14 +99,16 @@ export function buildOutputs(files){
     </div></section>`;
   }
 
-  /* できること：3枚のカード（イラスト → 番号と見出し → 項目のタグ → 詳しく＞）。data/profile.json の canDo、イラストは src/ill/*.svg（触ると少し動く） */
+  /* できること：3枚のカード（イラスト → 番号と英字の見出し → 短い説明 → 項目のタグ → 詳しく＞）。data/profile.json の canDo、イラストは src/ill/*.svg（触ると少し動く）
+     2026-10-17：Profile からお仕事のご依頼欄へ移した。スマホも縦に並べ、スクロールで1枚ずつ出す */
   function canDo(){
     const K = P.canDo; if(!K || !(K.groups||[]).length) return "";
     const LINK = {stage:'href="#works" data-tab-go="stage"', music:'href="#works" data-tab-go="music"', lesson:'href="#lesson"'};
-    let ci = 0; const chips = items => `<ul class="tags">${items.map(x=>`<li${x.major?' class="mj"':""} style="--i:${ci++}">${esc(x.t)}${x.major?'<i>MAJOR</i>':""}</li>`).join("")}</ul>`;
+    let ci = 0; const chips = items => `<ul class="tags">${items.map(x=>{ const cls = [x.major?"mj":"", x.href?"go":""].filter(Boolean).join(" "), in_ = `${esc(x.t)}${x.major?'<i>MAJOR</i>':""}`;
+      return `<li${cls?` class="${cls}"`:""} style="--i:${ci++}">${x.href?`<a href="${esc(x.href)}">${in_}<span class="arr" aria-hidden="true">→</span></a>`:in_}</li>`; }).join("")}</ul>`;
     const sub = u => !u.label ? chips(u.items) : `<h5>${esc(u.label)}</h5>${chips(u.items)}`;
-    return `<ul class="skills3 hs" id="skills" aria-label="できること">${K.groups.map(g=>(ci=0,`<li class="card sk3 sk-${g.ill}">${(files["src/ill/"+g.ill+".svg"]||"").trim()}<div class="sk3-tx"><div class="num"><i>${esc(g.no)}</i><span>${esc(g.en)}</span></div><b>${esc(g.name)}</b></div>
-            <div class="sk3-tags">${g.subs.map(sub).join("")}</div><a class="more" ${LINK[g.link]||""}>詳しく<span class="sr">（${esc(g.name)}）</span></a></li>`)).join("")}</ul>${swipe(K.groups.length)}
+    return `<ul class="skills3" id="skills" aria-label="できること">${K.groups.map(g=>(ci=0,`<li class="card sk3 sk-${g.ill}">${(files["src/ill/"+g.ill+".svg"]||"").trim()}<div class="sk3-tx"><div class="num"><i>${esc(g.no)}</i><span>${esc(g.en)}</span></div><b>${esc(g.name)}</b>${g.desc?`<p class="sk3-desc">${esc(g.desc)}</p>`:""}</div>
+            <div class="sk3-tags">${g.subs.map(sub).join("")}</div><a class="more" ${LINK[g.link]||""}>詳しく<span class="sr">（${esc(g.name)}）</span></a></li>`)).join("")}</ul>
           <p class="sk3-note">${esc(K.note)}</p><p class="sk3-legend"><i>MAJOR</i>${esc(K.majorNote.replace(/^MAJOR＝/,"＝"))}</p>`;
   }
 
@@ -172,8 +173,7 @@ export function buildOutputs(files){
       <div class="workcta">
         <div class="wc-head"><span class="wc-en">FOR CLIENTS</span><h3>お仕事のご依頼</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p></div>
         <h4 class="wc-sub">できること</h4>
-        <ul class="cando">${W.services.map((s,i)=>`<li class="c${i%4}"><i class="ic" aria-hidden="true">${WICON[(W.serviceIcons||[])[i]]||""}</i><span><b>${esc(s.name)}</b>${s.note?`<small>${esc(s.note)}</small>`:""}</span></li>`).join("")}</ul>
-        <a class="tolist" href="#skills">できること一覧を見る</a>
+        ${canDo()}
         <h4 class="wc-sub">進め方</h4>
         <ol class="steps">${W.flow.map((s,i)=>{ const t = typeof s==="string" ? {t:s,d:""} : s; return `<li><span class="n">${String(i+1).padStart(2,"0")}</span><span class="tx"><b>${esc(t.t)}</b>${t.d?`<small>${esc(t.d)}</small>`:""}</span></li>`; }).join("")}</ol>
         <ul class="wc-note"><li>${esc(W.style)}</li><li>料金：${esc(W.price)}</li><li>${esc(W.revisionNote)}</li></ul>
@@ -204,20 +204,22 @@ export function buildOutputs(files){
           <p class="lede">現場で培った経験を、あなたのギターへ。</p>
           <ul class="lstats">${D.lessonStats.map(x=>`<li class="card"><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
           <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>未就学児からシニアまで</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
+          ${D.trialProof ? `<p class="trial-proof"><span aria-hidden="true"></span>${esc(D.trialProof)}</p>` : ""}
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
             ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>
+          ${D.yoyaku ? `<p class="plans-lead"><b>月謝・単発も、まずは体験レッスンから。</b>各プランの「体験から始める」から、気になるプランを伝えて体験を予約できます。</p>` : ""}
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
             ${pick("単発")}</li></ul>${swipe(L.monthly.length+1)}
           <p class="small" style="margin:14px 0 0">料金はすべて税込です。スタジオで受ける場合、スタジオ代（1時間 約1,500円）が別にかかります。オンラインはかかりません。</p>
           <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
-            <table class="hours"><tr><th>水・木・金</th><td>16〜23時</td></tr>
-            <tr><th>土・日</th><td>12〜23時</td></tr>
+            <table class="hours"><tr><th>水・木・金</th><td>16〜23時<small>前月20日を過ぎてからのご予約は 22〜23時</small></td></tr>
+            <tr><th>土・日</th><td>12〜23時<small>前月20日を過ぎてからのご予約は 21〜23時</small></td></tr>
             <tr><th>月・火</th><td>お休み</td></tr>
             <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>スタジオ代</th><td>${esc(P.lesson.studioFee)}</td></tr><tr><th>お支払い</th><td>${payLines("")}</td></tr>
             <tr><th>キャンセル・振替</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
-            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。前月20日を過ぎてからのご予約は、平日22時〜・土日21時〜になります。</p></div></details>
+            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
         </div>
       </div>
       <div class="les-extra">
@@ -239,7 +241,7 @@ export function buildOutputs(files){
           <details><summary>スタジオ代はかかる？</summary><p>スタジオで受ける場合は、レッスン料金とは別に、スタジオ代（1時間 約1,500円）を当日スタジオでお支払いください。オンラインはかかりません。</p></details>
           <details><summary>支払い方法は？</summary><p>${payLines("")}</p></details>
           <details><summary>キャンセル・日程の変更はできる？</summary><p>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</p></details>
-          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、平日22時〜・土日21時〜になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
+          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、水・木・金は22〜23時、土・日は21〜23時になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
         </div>
       </div>${voices()}
     </div></section>`;
@@ -250,15 +252,17 @@ export function buildOutputs(files){
     return `<div class="voices"><h3><span>VOICE</span>生徒さんの声</h3><ul class="vgrid hs" id="voices">${D.voices.map(v=>`<li class="card voice"><span class="q" aria-hidden="true">“</span><p>${esc(v.text).split("\n").join("<br>")}</p><div class="who"><b>${esc(v.who||"生徒さん")}</b>${[v.years,v.plan].filter(Boolean).map(x=>`<span class="chip or">${esc(x)}</span>`).join("")}</div></li>`).join("")}</ul>${D.voices.length>1?swipe(D.voices.length):""}</div>`;
   }
 
-  const KINDS = ["レッスン","お仕事","その他"];
-  const KDESC = {"レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
+  /* 2026-10-17：レッスンの申し込みは予約ページに一本化。フォームの「レッスン」は、ご質問だけの短いフォームにした */
+  const KINDS = D.yoyaku ? ["レッスンのご質問","お仕事","その他"] : ["レッスン","お仕事","その他"];
+  const KDESC = {"レッスンのご質問":"予約の前のご質問・生徒さんのご連絡","レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
   function contact(){
     const W = P.work;
     return `<section class="s pb" id="contact">${pbg("tubesAmber","amber")}<div class="wrap">
       ${sh("05","Contact","お問い合わせ")}
+      ${D.yoyaku ? `<a class="ct-book" href="yoyaku.html"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>体験レッスンを予約する</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。空いている日時から、そのまま申し込めます</small></span><i class="cb-arr" aria-hidden="true">→</i></a>` : ""}
       <div class="ct">
         <div class="side">
-          <p>${D.yoyaku ? `体験レッスンのご予約は<a class="ul" href="yoyaku.html">予約ページ</a>へ。レッスンのご質問、制作・演奏・ライブサポート等のお仕事のご依頼は、こちらのフォームからご連絡ください。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
+          <p>${D.yoyaku ? `体験レッスンのご予約は、上の<a class="ul" href="yoyaku.html">予約ページ</a>から。予約の前に聞きたいこと・生徒さんのご連絡、制作・演奏・ライブサポート等のお仕事のご依頼は、こちらのフォームからご連絡ください。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
           <div class="quick">
             <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>気軽にメッセージください</small></span></a>
             <button class="dm wk" type="button" data-open="お仕事"><i class="arw" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></i><span><b>お仕事のご依頼は、フォームから</b><small class="sp-only">下のフォームで「お仕事」を選んでください</small><small class="pc-only">右のフォームで「お仕事」を選んでください</small></span></button>
@@ -266,13 +270,13 @@ export function buildOutputs(files){
         </div>
         <form class="f" id="form" novalidate>
           <fieldset class="kinds"><legend>ご用件を選んでください<i>必須</i></legend>
-            ${KINDS.map((k,i)=>`<label class="kc ${({"レッスン":"or","その他":"bl"})[k]||""}"><input type="radio" name="kind" value="${k}"><span><b>${k}</b><small>${KDESC[k]}</small></span></label>`).join("")}
+            ${KINDS.map((k,i)=>`<label class="kc ${({"レッスン":"or","レッスンのご質問":"or","その他":"bl"})[k]||""}"><input type="radio" name="kind" value="${k}"><span><b>${k}</b><small>${KDESC[k]}</small></span></label>`).join("")}
             <input type="hidden" id="f_kind"><p class="err" hidden></p></fieldset>
           <div class="two">
             <div><label for="f_name">お名前<i>必須</i></label><input id="f_name" name="name" autocomplete="name" required><p class="err" hidden></p></div>
             <div><label for="f_mail">メールアドレス<i>必須</i></label><input id="f_mail" name="email" type="email" inputmode="email" autocomplete="email" required><p class="err" hidden></p></div>
           </div>
-          <div class="xf" data-for="レッスン">
+          ${D.yoyaku ? "" : `          <div class="xf" data-for="レッスン">
             <div class="two">
               <div><label for="f_plan">希望プラン<i>必須</i></label><select id="f_plan"><option value="">選んでください</option>${["体験レッスン",...D.lessonPlans.monthly.map(m=>m.name),"単発","まだ決めていない"].map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
               ${D.yoyaku ? `<div class="trial-go" id="trialGo" hidden><p><b>体験レッスンは、予約ページから</b>空いている日時を選んで、そのまま申し込めます。</p><a class="btn or" href="yoyaku.html">予約ページへ</a></div>` : ""}
@@ -280,7 +284,7 @@ export function buildOutputs(files){
             </div>
             <fieldset class="opts"><legend>受ける場所</legend>${["小岩のスタジオ","オンライン","相談したい"].map(x=>`<label class="opt"><input type="radio" name="f_place" value="${x}"><span>${x}</span></label>`).join("")}</fieldset>
             <div><label for="f_when">希望の曜日・時間</label><input id="f_when" placeholder="例：水曜の夜、土日の昼"></div>
-          </div>
+          </div>`}
           <div class="xf" data-for="お仕事">
             <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["作詞・作曲","編曲・トラック制作","ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
             <div class="two">
@@ -293,7 +297,7 @@ export function buildOutputs(files){
             </div>
             <div><label for="f_ref">参考音源のURL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
           </div>
-          <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：体験レッスンの希望日について"></div>
+          <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：ご相談の内容"></div>
           <div><label for="f_msg">メッセージ<i id="msgReq">必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
           <input type="hidden" name="from" id="f_from">
           <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
@@ -305,12 +309,47 @@ export function buildOutputs(files){
     </div></section>`;
   }
 
-  /* 流れる文字の帯：6本の弦の上を、細い文字がゆっくり流れる（フレットの印でつなぐ） */
-  /* 五線譜リボン（2026-10-17）：少し斜めの黒いリボンに五線を引き、言葉と音符が流れる。触ると五線が揺れる */
-  const NOTE = `<svg viewBox="0 0 20 28"><path d="M13 3v17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M13 3c3 1.5 5.5 3.5 4.5 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="9" cy="21" rx="4.6" ry="3.5" transform="rotate(-20 9 21)" fill="currentColor"/></svg>`;
-  const WAVE = Array.from({length:5},(_,k)=>{ const y = 10 + k*20; let d = `M0 ${y}`; for(let x=0;x<1200;x+=100) d += ` q25 ${k%2?-14:14} 50 0 t50 0`; return `<path d="${d}"/>`; }).join("");
-  const band = (words, rev) => { const one = words.map((w,i)=>`<span>${w}</span><i class="nt n${i%4}">${NOTE}</i>`).join("");
-    return `<div class="ribbon ${rev?"rev":""}" aria-hidden="true"><div class="band staff"><svg class="lines" viewBox="0 0 1200 100" preserveAspectRatio="none">${WAVE}</svg><div class="tr">${one}${one}${one}${one}</div></div></div>`; };
+  /* 五線譜リボン（2026-10-17 作り直し）：大きくうねる五線を2本重ねる（奥＝細く薄い、手前＝太くはっきり）。
+     音符・ト音記号・ヘ音記号が五線に乗ったまま、線に沿って流れる（SVG の animateMotion）。触ると五線が揺れる。
+     色は 五線＝白、音符＝オレンジ2色＋白。素材は使わずオリジナルで描いている */
+  const r1 = n => Math.round(n*10)/10;
+  /* 1本の五線：中心の曲線 y=f(x) から、法線の向きに s ずつずらした5本の線を引く（傾いても線の間がつぶれない） */
+  function staffGeo(f, s, rev, RW){
+    const xs = []; for(let x=-160; x<=RW+160; x+=10) xs.push(x); if(rev) xs.reverse();
+    const pt = (x, d) => { const dy = (f(x+.5)-f(x-.5)), L = Math.hypot(1, dy); return [x - d*dy/L, f(x) + d/L]; };
+    const line = d => "M" + xs.map(x => pt(x,d).map(r1).join(" ")).join(" L");
+    return { center: line(0), lines: [-2,-1,0,1,2].map(k => line(k*s)) };
+  }
+  /* 記号（中心の線＝真ん中の線。y は下向きが＋、1目盛り＝12）*/
+  const G = {
+    q:  `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><path class="sk" d="M5.9 -1.5V-34"/>`,
+    e:  `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><path class="sk" d="M5.9 -1.5V-34"/><path d="M5.9 -34c1.5 6 11 9 9.5 19.5c-1.2-6-4.5-8.5-9.5-10z"/>`,
+    h:  `<ellipse class="hol" rx="6" ry="4.3" transform="rotate(-22)"/><path class="sk" d="M5.9 -1.5V-34"/>`,
+    bm: `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><ellipse cx="24" cy="-6" rx="6.6" ry="4.7" transform="rotate(-22 24 -6)"/><path class="sk" d="M5.9 -1.5V-34M29.9 -7.5V-40"/><path d="M5 -36.5L30.8 -42.5V-36.5L5 -30.5z"/>`,
+    tr: `<path class="sk cl" d="M-1 40c-6 1.5-9-5.5-3.5-7.5c4.5-1.5 7 4.5 2.5 9M-1.5 41L5-34C6-46-4-50-6.5-41C-9-30 11-20 11 0C11 18-15 20-15 5C-15-7 3-10 6 3C7.5 12-3.5 15-5 7"/>`,
+    bs: `<path class="sk cl" d="M-9-8C-9-19 11-19 11-5C11 9-1 18-11 23"/><circle cx="-6.5" cy="-7.5" r="3.6"/><circle cx="16" cy="-6" r="2"/><circle cx="16" cy="6" r="2"/>`,
+    sh: `<path class="sk thin" d="M-3-9V11M3-11V9M-6-2L6-5.5M-6 5L6 1.5"/>`
+  };
+  /* 手前の五線に流す並び：[記号, 高さ（目盛り 6＝線1本ぶんの半分）, 色] */
+  const FRONT = [["tr",0,"w"],["q",-6,"o"],["e",6,"h"],["bm",12,"o"],["h",-12,"w"],["q",0,"h"],["bs",0,"w"],["e",-6,"o"],["sh",0,"h"],["q",6,"o"],["bm",0,"h"],["e",-12,"w"],["q",12,"o"],["h",6,"h"]];
+  const BACK  = [["q",6,"o"],["tr",0,"w"],["e",-6,"h"],["q",0,"w"],["bm",6,"o"],["h",-6,"w"],["bs",0,"h"],["e",12,"o"],["q",-12,"w"]];
+  let rbN = 0;
+  function staffLayer(cls, geo, seq, scale, dur, rev, id){
+    const notes = seq.map(([g,dy,c],i) => `<g class="nt c-${c}"><animateMotion dur="${dur}s" begin="-${r1(dur*i/seq.length)}s" repeatCount="indefinite" rotate="${rev?"auto-reverse":"auto"}"><mpath href="#${id}"/></animateMotion><g transform="scale(${scale}) translate(0 ${dy})">${G[g]}</g></g>`).join("");
+    return `<g class="${cls}"><path id="${id}" class="ctr" d="${geo.center}"/>${geo.lines.map((d,k)=>`<path class="ln l${k}" d="${d}"/>`).join("")}${notes}</g>`;
+  }
+  /* PC 用（横長）とスマホ用（幅をせまくして、うねりを大きく）の2枚を描き、CSS で片方だけ出す */
+  function staffSvg(n, rev, RW, RH, A, cls, nF, durF, durB){
+    const ff = x => RH/2 + (rev?-1:1)*(A*Math.sin(2*Math.PI*x/RW*0.95 + 0.5) + A*.18*Math.sin(2*Math.PI*x/RW*2.1));
+    const fb = x => RH/2 - A*.32 + (rev?-1:1)*(A*.74*Math.sin(2*Math.PI*x/RW*1.25 + 2.4));
+    const front = staffGeo(ff, 12, rev, RW), back = staffGeo(fb, 6.5, rev, RW);
+    return `<svg class="staffs ${cls}" viewBox="0 0 ${RW} ${RH}" preserveAspectRatio="xMidYMid slice" focusable="false">
+      ${staffLayer("st-back", back, BACK.slice(0, Math.ceil(nF*.65)), .54, durB, rev, `rbb${cls}${n}`)}
+      ${staffLayer("st-front", front, FRONT.slice(0, nF), 1, durF, rev, `rbf${cls}${n}`)}
+      <path class="hit" d="${front.center}"/></svg>`;
+  }
+  const band = (words, rev) => { const n = ++rbN;
+    return `<div class="ribbon wave${rev?" rev":""}" aria-hidden="true">${staffSvg(n, rev, 1440, 240, 54, "pc", 14, 48, 78)}${staffSvg(n, rev, 620, 200, 50, "sp", 8, 26, 44)}</div>`; };
 
   const bookModal = D.booking && !D.yoyaku ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
   const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact()+bookModal;
@@ -484,6 +523,7 @@ ${css}
       <div class="yk-lg"><span class="yn">2</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
       <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から選べます。</p>
       <p class="small" id="ykLoad" hidden>空いている日時を読み込んでいます…</p>
+      <p class="yk-now" id="ykNow" hidden aria-live="polite"></p>
       <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
       <div class="yk-times" id="ykTimes"></div>
       <ol class="yk-picked" id="ykPicked"></ol>

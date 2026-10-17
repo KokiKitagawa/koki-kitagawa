@@ -11,23 +11,23 @@ document.addEventListener("keydown", e => { if(e.key==="Escape" && !menu.hidden)
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-open]"); if(!b) return;
   closeMenu(); setKind(b.dataset.open);
-  if(b.dataset.plan){ document.getElementById("f_plan").value = b.dataset.plan; trialGo(); }
+  const fp = document.getElementById("f_plan"); if(b.dataset.plan && fp){ fp.value = b.dataset.plan; trialGo(); }
   document.getElementById("contact").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
   setTimeout(() => document.getElementById("f_name").focus({preventScroll:true}), 600);
 });
 /* 希望プランで「体験レッスン」を選んだら、予約ページへの案内を出す */
-function trialGo(){ const g = document.getElementById("trialGo"); if(g) g.hidden = document.getElementById("f_plan").value !== "体験レッスン"; }
-document.getElementById("f_plan").addEventListener("change", trialGo);
+function trialGo(){ const g = document.getElementById("trialGo"), fp = document.getElementById("f_plan"); if(g && fp) g.hidden = fp.value !== "体験レッスン"; }
+if(document.getElementById("f_plan")) document.getElementById("f_plan").addEventListener("change", trialGo);
 /* ご用件のカード */
 const kindEl = document.getElementById("f_kind");
 /* ご用件で、下の入力欄を切り替える（レッスン／お仕事／その他） */
-const PH = {"レッスン":"ご質問や、レッスンで弾けるようになりたい曲など（なくても大丈夫です）","お仕事":"曲の雰囲気、尺、使い道など（なくても大丈夫です）","その他":"ご用件をお書きください"};
+const PH = {"レッスンのご質問":"体験の前に聞きたいこと、生徒さんのご連絡など","レッスン":"ご質問や、レッスンで弾けるようになりたい曲など（なくても大丈夫です）","お仕事":"曲の雰囲気、尺、使い道など（なくても大丈夫です）","その他":"ご用件をお書きください"};
 function applyKind(v){ kindEl.value = v;
   document.querySelectorAll(".xf").forEach(x => x.classList.toggle("on", x.dataset.for===v));
   document.getElementById("f_msg").placeholder = PH[v] || "ご希望の内容、日程、納期など";
   document.getElementById("msgReq").hidden = v==="レッスン" || v==="お仕事";
-  const sb = document.getElementById("send"); sb.classList.toggle("or", v==="レッスン"); sb.classList.toggle("gr", v!=="レッスン");
-  document.getElementById("f_sub").placeholder = v==="お仕事" ? "例：楽曲制作のご相談" : v==="レッスン" ? "例：体験レッスンの希望日について" : "例：取材のご依頼";
+  const les = /^レッスン/.test(v), sb = document.getElementById("send"); sb.classList.toggle("or", les); sb.classList.toggle("gr", !les);
+  document.getElementById("f_sub").placeholder = v==="お仕事" ? "例：楽曲制作のご相談" : v==="レッスンのご質問" ? "例：オンラインのレッスンについて" : v==="レッスン" ? "例：体験レッスンの希望日について" : "例：取材のご依頼";
 }
 function setKind(v){ document.querySelectorAll('input[name="kind"]').forEach(r => r.checked = r.value===v); applyKind(v); }
 document.querySelectorAll('input[name="kind"]').forEach(r => r.addEventListener("change", () => applyKind(r.value)));
@@ -49,33 +49,50 @@ tabs.forEach(t => { t.addEventListener("click", () => showTab(t.dataset.tab));
   t.addEventListener("keydown", e => { if(e.key!=="ArrowRight" && e.key!=="ArrowLeft") return; const i = (tabs.indexOf(t) + (e.key==="ArrowRight"?1:-1) + tabs.length) % tabs.length; tabs[i].focus(); showTab(tabs[i].dataset.tab); }); });
 document.querySelectorAll("[data-tab-go]").forEach(a => a.addEventListener("click", () => showTab(a.dataset.tabGo)));
 
-/* ジャケットの再生ボタン：1タップで再生、別の曲を押すと前の曲は止まる（Spotify の埋め込みを1つだけ使う） */
+/* ジャケットの再生ボタン：どの曲も1回押せば切り替わる。別の曲を押すと前の曲は止まる（Spotify の埋め込みを1つだけ使う）
+   2026-10-17 直し：前は「曲の読み込み（loadUri）が終わる前に再生の合図（play）を送っていた」ため、合図が空振りして
+   止まったままになり、もう1回押さないと鳴らなかった。いまは読み込みが終わった合図（ready）を待ってから再生する。
+   読み込み中に前の曲の「止まった」知らせが来ても、ボタンの見た目を戻さない（押した曲だけが光る）。
+   押したかどうかは click だけで決める（ホバーの見た目には頼らない）ので、iPhone でも1回のタップで動く。 */
 const arts = [...document.querySelectorAll(".art[data-track]")], host = document.getElementById("spHost");
-let ctrl = null, cur = null, wantPlay = false, apiAsked = false, apiFailed = false, lastPlay = 0;
+let ctrl = null, cur = null, apiAsked = false, apiFailed = false, loading = false, loadedUri = "", playTimer = 0, showTimer = 0;
+const uriOf = b => "spotify:track:" + b.dataset.track;
+const touchUI = matchMedia("(hover:none)");
 const setUI = (b, playing) => { arts.forEach(x => { const on = x===b && playing; x.closest(".song").classList.toggle("playing", on); x.setAttribute("aria-pressed", on); }); };
 function loadApi(){
   if(apiAsked || !arts.length) return; apiAsked = true;
-  window.onSpotifyIframeApiReady = api => api.createController(document.getElementById("spEmbed"), {uri:"spotify:track:"+arts[0].dataset.track, width:"100%", height:80}, c => {
-    ctrl = c;
-    c.addListener("playback_update", e => { const d = e.data; if(!cur) return;
-      if(!d.isPaused){ wantPlay = false; host.classList.remove("show"); }
+  window.onSpotifyIframeApiReady = api => api.createController(document.getElementById("spEmbed"), {uri:uriOf(arts[0]), width:"100%", height:80}, c => {
+    ctrl = c; loadedUri = uriOf(arts[0]);
+    /* 読み込みが終わったら、待っていた曲を鳴らす */
+    c.addListener("ready", () => { if(loading && cur){ loading = false; clearTimeout(playTimer); c.play(); } });
+    c.addListener("playback_update", e => { const d = e.data || {}; if(!cur) return;
+      if(d.playingURI && d.playingURI !== uriOf(cur)) return;   // 前の曲の知らせは無視する
+      if(loading && d.isPaused) return;                         // 読み込み中の「止まった」は無視する
+      if(!d.isPaused){ loading = false; clearTimeout(showTimer); host.classList.remove("show"); }
       setUI(cur, !d.isPaused);
       const bar = cur.querySelector(".bar i"); if(bar && d.duration) bar.style.transform = `scaleX(${Math.min(1, d.position/d.duration)})`; });
-    if(wantPlay && cur) start(cur);
+    if(cur) start(cur);
   });
   const sc = document.createElement("script"); sc.src = "https://open.spotify.com/embed/iframe-api/v1"; sc.async = true; sc.onerror = () => { apiFailed = true; if(cur) setUI(cur, false); }; document.head.appendChild(sc);
 }
 function start(b){
-  if(!ctrl){ wantPlay = true; loadApi(); setTimeout(() => { if(!ctrl && cur===b) setUI(b, false); }, 6000); return; }
-  ctrl.loadUri("spotify:track:"+b.dataset.track); ctrl.play(); lastPlay = Date.now(); wantPlay = true;
-  /* 少し待っても鳴らないとき（ブラウザが自動再生を止めた等）は、プレイヤーを下に出して押してもらう */
+  clearTimeout(playTimer); clearTimeout(showTimer);
+  if(!ctrl){ loadApi(); setTimeout(() => { if(!ctrl && cur===b) setUI(b, false); }, 6000); return; }
+  const uri = uriOf(b);
+  if(uri === loadedUri){ loading = false; ctrl.play(); }        // もう読み込んである曲は、そのまま鳴らす
+  else {
+    loading = true; loadedUri = uri; ctrl.loadUri(uri);
+    /* ready の合図が来ないときの保険：少し待ってから再生の合図を送る */
+    playTimer = setTimeout(() => { if(loading && cur===b){ loading = false; ctrl.play(); } }, 1500);
+  }
   /* スマホは、Spotify の決まりで「プレイヤーの再生ボタン」を押さないと鳴らないことが多いので、すぐにプレイヤーを出す */
-  if(matchMedia("(hover:none)").matches){ host.classList.add("show"); return; }
-  setTimeout(() => { if(wantPlay && cur===b && Date.now()-lastPlay >= 2400) host.classList.add("show"); }, 2500);
+  if(touchUI.matches){ host.classList.add("show"); return; }
+  /* PC：少し待っても鳴らないとき（ブラウザが自動再生を止めた等）は、プレイヤーを下に出して押してもらう */
+  showTimer = setTimeout(() => { if(cur===b && !b.closest(".song").classList.contains("playing")) host.classList.add("show"); }, 3200);
 }
 arts.forEach(b => b.addEventListener("click", () => {
   if(apiFailed){ window.open("https://open.spotify.com/track/"+b.dataset.track, "_blank", "noopener"); return; }   // 埋め込みが読めないときは Spotify を開く
-  if(cur===b && ctrl){ ctrl.togglePlay(); return; }
+  if(cur===b && ctrl && !loading){ ctrl.togglePlay(); return; }   // 同じ曲をもう一度押したら 止める／また鳴らす
   arts.forEach(x => { const bar = x.querySelector(".bar i"); if(bar) bar.style.transform = "scaleX(0)"; });
   cur = b; setUI(b, true); start(b);
 }));
@@ -128,7 +145,9 @@ if("IntersectionObserver" in window){
   const rv = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const t = e.target; t.classList.add("in"); rv.unobserve(t);
     if(t.classList.contains("rv")) setTimeout(() => { t.style.transitionDelay = ""; t.classList.add("settled"); }, 1200); } }), {rootMargin:"0px 0px -8% 0px"});
   document.querySelectorAll(".reveal").forEach(x => rv.observe(x));
-  document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv"); c.style.transitionDelay = `${(i%6)*70}ms`; rv.observe(c); });
+  /* できることのカードは、画面に入った順に1枚ずつ出る（同時に入ったときは少しずつずらす） */
+  document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv");
+    const ms = c.classList.contains("sk3") ? i*180 : (i%6)*70; c.style.transitionDelay = `${ms}ms`; if(c.classList.contains("sk3")) c.style.setProperty("--cd", ms+"ms"); rv.observe(c); });
 } else document.querySelectorAll(".reveal").forEach(x => x.classList.add("in"));
 
 /* Profile の3枚のイラスト：触る（マウスを乗せる・指で触る）と少し動く */
@@ -137,10 +156,15 @@ document.querySelectorAll(".sk3").forEach(c => {
   c.addEventListener("pointerenter", play); c.addEventListener("touchstart", play, {passive:true});
 });
 
-/* 五線譜リボン：触ると五線が揺れる */
-document.querySelectorAll(".band.staff").forEach(b => {
-  const wig = () => { if(reduce.matches || b.classList.contains("wig")) return; b.classList.add("wig"); setTimeout(() => b.classList.remove("wig"), 1500); };
-  b.addEventListener("pointerenter", wig); b.addEventListener("touchstart", wig, {passive:true}); b.addEventListener("click", wig);
+/* 五線譜リボン：触ると五線が揺れる。音符の流れは、画面に見えているときだけ動かす（「視差効果を減らす」の人は止める） */
+document.querySelectorAll(".ribbon.wave").forEach(r => {
+  const svgs = [...r.querySelectorAll("svg")];
+  const wig = () => { if(reduce.matches || r.classList.contains("wig")) return; r.classList.add("wig"); setTimeout(() => r.classList.remove("wig"), 1500); };
+  r.querySelectorAll(".hit").forEach(h => { h.addEventListener("pointerenter", wig); h.addEventListener("touchstart", wig, {passive:true}); h.addEventListener("click", wig); });
+  let seen = false;
+  const sync = () => svgs.forEach(v => { if(!v.pauseAnimations) return; (seen && !reduce.matches && v.getClientRects().length) ? v.unpauseAnimations() : v.pauseAnimations(); });
+  if("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; sync(); }, {rootMargin:"100px 0px"}).observe(r); else seen = true;
+  reduce.addEventListener("change", sync); addEventListener("resize", sync, {passive:true}); sync();
 });
 
 /* 背景の真空管：スクロールに合わせて少しだけずらす（奥行き） */
@@ -199,7 +223,7 @@ document.getElementById("form").addEventListener("submit", e => {
     : kind==="お仕事" ? [["会社名・団体名",v("f_company")],["ご依頼の内容",sel("f_job")],["使い道",v("f_use")],["ご予算",v("f_budget")],["納期",v("f_due")],["参考音源",v("f_ref")]] : [];
   const head = extra.filter(x => x[1]).map(x => `【${x[0]}】${x[1]}`).join("\n");
   const msg = [head, v("f_msg")].filter(Boolean).join("\n\n");
-  const sub = v("f_sub") || (kind==="レッスン" ? `レッスンの申し込み（${v("f_plan")}）` : kind==="お仕事" ? `お仕事のご相談（${sel("f_job")}）` : "");
+  const sub = v("f_sub") || (kind==="レッスンのご質問" ? "レッスンのご質問" : kind==="レッスン" ? `レッスンの申し込み（${v("f_plan")}）` : kind==="お仕事" ? `お仕事のご相談（${sel("f_job")}）` : "");
   const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:sub,[F.message]:msg,[F.from]:v("f_from")});
   btn.disabled = true; btn.textContent = "送信中…"; document.getElementById("sendErr").hidden = true;
   fetch(F.action, {method:"POST", mode:"no-cors", body})
