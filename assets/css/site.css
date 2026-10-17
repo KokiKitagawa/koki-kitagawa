@@ -1396,3 +1396,107 @@ form.f.yk>*{min-width:0}
 .hero .marks.v-a{text-shadow:0 1px 12px rgba(6,8,13,.75)}
 /* 生徒さんの声：4人になったので、PCは2列×2段（1枚だけ余らないように） */
 @media (min-width:821px){ .vgrid:has(> li:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+/* ===== 2026-10-17 見た目編2回目 ===== */
+/* B1：すべての制作実績＝レコード盤。ラベルに 種類・曲名・アーティスト・年・担当 */
+.recs{gap:22px 18px}
+.recs .card.vrec{position:relative;padding:0;background:none!important;box-shadow:none!important;border-radius:0;min-height:0;overflow:visible;aspect-ratio:1}
+.card.vrec::before{content:none}
+.vrec .vinyl{display:block;position:relative;width:100%;aspect-ratio:1;border-radius:50%;
+  background:repeating-radial-gradient(circle,#0b0d12 0 1.6px,#181b23 1.6px 3.2px);box-shadow:0 22px 40px -22px rgba(0,0,0,.95),inset 0 0 0 1px rgba(255,255,255,.08);transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.vrec .vinyl::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(130deg,rgba(255,255,255,.13),transparent 35%,transparent 65%,rgba(255,255,255,.06));pointer-events:none}
+.vrec .dlb{position:absolute;left:19%;top:19%;width:62%;aspect-ratio:1;border-radius:50%;background:var(--or);box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+.vrec .dlb::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#0b0d12}
+.rc-guitar .dlb{background:var(--deep);box-shadow:inset 0 0 0 2px var(--or-hi)}
+.rc-karaoke .dlb{background:var(--ink);box-shadow:inset 0 0 0 2px var(--or)}
+/* 文字はラベルの上に重ねる（真ん中の穴をよけて、上に種類と曲名、下にアーティストと年・担当） */
+.vrec .rtx{position:absolute;left:25%;right:25%;top:24%;height:52%;display:grid;grid-template-rows:auto auto 1fr auto auto;justify-items:center;text-align:center;color:#fff;padding:2% 0 4%}
+.vrec .rtx i{font:700 8.5px/1 var(--jp);font-style:normal;letter-spacing:.08em;opacity:.85}
+.vrec .rtx b{margin-top:5px;max-width:100%;font-size:12.5px;line-height:1.3;font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vrec .rtx span{grid-row:4;font-size:10px;font-weight:700;opacity:.92;line-height:1.3}
+.vrec .rtx small{grid-row:5;margin-top:3px;font:700 9.5px/1.3 var(--en);letter-spacing:.12em;opacity:.95}
+.rc-karaoke .rtx{color:var(--black)}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){ .card.vrec:hover{transform:none} .card.vrec:hover .vinyl{transform:rotate(25deg)} }
+@media (max-width:820px){
+  /* スマホは ラベルの文字が小さくなりすぎるので、レコードの横に文字を置く */
+  .recs{grid-template-columns:minmax(0,1fr)!important;gap:12px}
+  .recs .card.vrec{aspect-ratio:auto;display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:16px;padding:10px 12px 10px 10px;border-radius:16px;background:rgba(255,255,255,.04)!important;box-shadow:inset 0 0 0 1px var(--line)!important}
+  .recs .vrec .rtx{position:static;display:block;text-align:left;justify-items:start;color:var(--ink);padding:0;height:auto}
+  .rc-karaoke .rtx{color:var(--ink)}
+  .vrec .rtx i{display:inline-block;font-size:10px;padding:4px 8px;border-radius:999px;background:var(--or-soft);color:var(--or-hi)}
+  .rc-guitar .rtx i{background:rgba(255,255,255,.08);color:var(--ink)}
+  .rc-karaoke .rtx i{background:rgba(255,255,255,.12);color:var(--ink)}
+  .vrec .rtx b{margin-top:7px;font-size:15px}
+  .vrec .rtx span{display:block;font-size:12.5px;color:var(--sub);margin-top:2px}
+  .vrec .rtx small{display:block;font-size:11px;color:var(--faint);margin-top:4px}
+}
+
+/* B2：ON STAGE＝チケット。左が半券（種類・年）、点線で切り取り線、右が本体（公演名・アーティスト・担当） */
+.card.tk{display:grid;grid-template-columns:104px minmax(0,1fr);padding:0;min-height:0;border-radius:14px;overflow:hidden;background:none!important;box-shadow:none!important;--tc:var(--or);--tt:#fff;
+  -webkit-mask:radial-gradient(circle 9px at 104px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 9px at 104px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+          mask:radial-gradient(circle 9px at 104px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 9px at 104px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
+.card.tk::before{content:none}
+.card.tk.tk-live{--tc:var(--stage)} .card.tk.tk-stage{--tc:var(--gr-hi);--tt:var(--black)} .card.tk.tk-tv{--tc:var(--ink);--tt:var(--black)}
+.tk .stub{position:relative;display:grid;align-content:center;justify-items:center;gap:6px;padding:16px 8px;background:var(--tc);color:var(--tt);text-align:center;
+  border-right:2px dashed rgba(6,8,13,.45)}
+.tk .stub i{font:800 11px/1 var(--en);font-style:normal;letter-spacing:.2em}
+.tk .stub b{font:800 28px/1 var(--en);font-stretch:72%;letter-spacing:.01em}
+.tk .stub .adm-x{font:600 7.5px/1 var(--en);letter-spacing:.2em;opacity:.7;writing-mode:vertical-rl;position:absolute;left:7px;top:50%;transform:translateY(-50%) rotate(180deg)}
+.tk .tb{display:grid;align-content:center;gap:4px;padding:16px 18px 16px 20px;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.04)),var(--t1)}
+.tk .tb .no{font:600 8.5px/1 var(--en);letter-spacing:.22em;color:var(--faint);margin-bottom:4px}
+.tk .tb b{font-size:15.5px;line-height:1.4}
+.tk .tb .ar{font:700 12.5px/1.3 var(--en);letter-spacing:.06em;color:var(--or-hi)}
+.tk-live .tb .ar{color:#9fb7ff} .tk-stage .tb .ar{color:var(--gr-hi)} .tk-tv .tb .ar{color:var(--ink)}
+.tk .tb small{font-size:12px;color:var(--sub);line-height:1.5}
+.grid3 .card.tk{min-height:128px}
+@media (hover:hover) and (prefers-reduced-motion:no-preference){ .card.tk:hover{transform:translateY(-4px) rotate(-.6deg)} }
+@media (max-width:820px){
+  #gigs,#gigs2{grid-template-columns:minmax(0,1fr)}
+  .card.tk{grid-template-columns:84px minmax(0,1fr);
+    -webkit-mask:radial-gradient(circle 8px at 84px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 8px at 84px 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+            mask:radial-gradient(circle 8px at 84px 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 8px at 84px 100%,#0000 98%,#000) bottom/100% 51% no-repeat}
+  .tk .stub b{font-size:24px}
+  .tk .tb{padding:14px 14px 14px 16px}
+  .tk .tb b{font-size:14.5px}
+}
+
+/* B3：セクションの境目。前のセクションの下の余白で、次のセクションの上の色へなめらかにつなぐ
+   （色は 18 の版の背景を、境目のすぐ下で測ったもの。色の変化は減らさない） */
+.seam{position:absolute;left:0;right:0;bottom:0;height:var(--sec);z-index:0;pointer-events:none;background:linear-gradient(180deg,transparent,var(--seam,var(--black)))}
+#profile .seam{--seam:#080b15}
+#career .seam{--seam:#300c45}
+#lesson .seam{--seam:var(--black)}
+
+/* B4：トップの写真が、スクロールに合わせて少しだけ沈む（文字とボタンの位置は変わらない） */
+@supports (animation-timeline:scroll()){
+  @media (prefers-reduced-motion:no-preference){
+    .hero picture{animation:hero-drift linear both;animation-timeline:scroll(root block);animation-range:0 100vh;will-change:transform}
+  }
+}
+@keyframes hero-drift{from{transform:none}to{transform:translate3d(0,9%,0) scale(1.06)}}
+
+/* B5：料金カードを触ると、光がスッと横切る */
+.glint{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:3}
+.glint::before{content:"";position:absolute;top:-30%;bottom:-30%;left:0;width:44%;opacity:0;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.22) 38%,rgba(255,240,224,.72) 50%,rgba(255,255,255,.22) 62%,transparent);mix-blend-mode:screen;transform:translateX(-150%) skewX(-18deg)}
+@media (prefers-reduced-motion:no-preference){ .shine>.glint::before{animation:glint .95s cubic-bezier(.3,.6,.3,1)} }
+@keyframes glint{0%{opacity:0;transform:translateX(-150%) skewX(-18deg)}12%{opacity:1}100%{opacity:0;transform:translateX(330%) skewX(-18deg)}}
+
+/* B6：CAREER 年表。画面の真ん中に来た年の行が、少し大きく・明るくなる（スクロールの位置で反応） */
+@media (prefers-reduced-motion:no-preference){
+  .tl.live .tly{opacity:.5;transition:opacity .45s ease}
+  .tl.live .tly .y{transform-origin:right center;transition:transform .5s cubic-bezier(.2,.7,.2,1),color .4s,text-shadow .4s}
+  .tl.live .tly .evs{transform-origin:left center;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+  .tl.live .tly.now{opacity:1}
+  .tl.live .tly.now .y{transform:scale(1.25);color:var(--ink);text-shadow:0 0 24px rgba(255,154,77,.55)}
+  .tl.live .tly.now .evs{transform:scale(1.04)}
+  .tl.live .tly.now::before{background:var(--or);box-shadow:0 0 0 6px rgba(255,116,23,.22)}
+  @media (max-width:820px){ .tl.live .tly .y{transform-origin:left center} }
+}
+/* PC は CAREER の見出しを左に止めたまま、年表だけが流れる */
+@media (min-width:1081px){
+  #career .wrap{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);column-gap:20px;align-items:start}
+  #career .tl{margin-left:0}
+  #career .sh{position:sticky;top:calc(var(--head) + 48px);margin-bottom:0}
+  #career .wrap>p{grid-column:2}
+}

@@ -96,7 +96,7 @@ export function buildOutputs(files){
             <div class="in"><ul class="gcards">${g}</ul></div></details>
         </div>
       </div>
-    </div></section>`;
+    </div><i class="seam" aria-hidden="true"></i></section>`;
   }
 
   /* できること：3枚のカード（イラスト → 番号と英字の見出し → 短い説明 → 項目のタグ → 詳しく＞）。data/profile.json の canDo、イラストは src/ill/*.svg（触ると少し動く）
@@ -120,20 +120,23 @@ export function buildOutputs(files){
         ? `<div class="ev key"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`
         : `<div class="ev"><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`).join("")}</div></li>`).join("")}</ol>
       <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#works" data-tab-go="stage" style="text-decoration:underline;text-underline-offset:4px">WORKS</a> にまとめています。</p>
-    </div></section>`;
+    </div><i class="seam" aria-hidden="true"></i></section>`;
   }
 
   function works(){
     const kind = t => /SUMMER SONIC|フェス|FESTIVAL|SP-RING/i.test(t) ? "FES" : "LIVE";
     const items = [
-      ...D.live.map(x => ({k:kind(x.title), t:x.title, s:`${x.artist} サポートギター${x.venue?"・"+x.venue:""}`, y:x.year || yearOf(x.title)})),
-      ...stage.map(x => ({k:"STAGE", t:x.title, s:x.role ? "舞台・"+x.role : "舞台", y:x.year})),
-      {k:"TV", t:"CDTV", s:`バック演奏（${tv.length}回出演）`, y:null}];
+      ...D.live.map(x => ({k:kind(x.title), t:x.title, a:x.artist, r:x.role||"サポートギター", v:x.venue||"", y:x.year || yearOf(x.title)})),
+      ...stage.map(x => ({k:"STAGE", t:x.title, a:"舞台", r:x.role||"", v:"", y:x.year})),
+      {k:"TV", t:"CDTV", a:"地上波", r:`バック演奏（${tv.length}回出演）`, v:"", y:tv.map(m=>m.year).filter(Boolean).sort().pop()||null}];
     const BIG = /SUMMER SONIC|イナズマ|CDTV|あんさんぶる/;   // 大きい仕事は最初の6件に必ず入れる
     items.sort((a,b) => (BIG.test(b.t)-BIG.test(a.t)) || (b.y||0)-(a.y||0));
     const F = [["ALL","すべて"],["FES","フェス"],["LIVE","ライブ"],["STAGE","舞台"],["TV","テレビ"]];
-    const gig = x=>`<li class="card gig ${ph(({FES:"stage",LIVE:"live",STAGE:"pedal",TV:"play"})[x.k])}" data-k="${x.k}"><div class="row">${chip(x.k, x.k==="TV"?"tv":"")}${x.y?`<span class="yr2">${x.y}</span>`:""}</div><b>${esc(x.t)}</b><small>${esc(x.s)}</small></li>`;
+    /* ON STAGE はチケット型（2026-10-17）：左の半券に種類と年、本体に公演名・アーティスト・担当。種類ごとに半券の色を変える */
+    const gig = x=>`<li class="card gig tk tk-${x.k.toLowerCase()}" data-k="${x.k}"><div class="stub"><i>${x.k}</i>${x.y?`<b>${x.y}</b>`:""}</div><div class="tb"><span class="no" aria-hidden="true">KOKI KITAGAWA ／ ${x.k==="TV"?"ON AIR":"ON STAGE"}</span><b>${esc(x.t)}</b><span class="ar">${esc(x.a)}</span><small>${esc([x.r,x.v].filter(Boolean).join("・"))}</small></div></li>`;
     const W = P.work, nMusic = comp.length+gtr.length+kara.length;
+    /* すべての制作実績はレコード型（2026-10-17）：盤のラベルに 種類・曲名・アーティスト・年・担当。種類でラベルの色を変える */
+    const rec = (k, kind, t, a, y) => `<li class="card credit vrec rc-${k}" data-k="${k}"><span class="vinyl" aria-hidden="true"><span class="dlb"></span></span><div class="rtx"><i>${esc(kind)}</i><b>${esc(t)}</b><span>${esc(a)}</span><small>${esc(y||"")}</small></div></li>`;
     return `<section class="s sbg" id="works"><div class="wrap">
       ${sh("03","Works","作品・ライブ・出演")}
       <div class="works-top">
@@ -155,8 +158,8 @@ export function buildOutputs(files){
               <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
               <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
               <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
-            <ul class="grid4" id="cgrid">${[...comp,...gtr].map(c=>`<li class="card credit ${ph(c.category==="compose"?"studio":"guitar")}" data-k="${c.category}"><div class="row">${chip(c.category==="compose"?"COMPOSE":"GUITAR", c.category==="compose"?"gr":"")}${c.year?`<span class="yr2">${c.year}</span>`:""}</div><b>${esc(c.title)}</b><small>${esc(c.artist)}</small></li>`).join("")}
-              <li class="card credit ${ph("desk")}" data-k="karaoke"><div class="row">${chip("PRODUCTION","gr")}<span class="yr2">×${kara.length}</span></div><b>有名歌い手のカラオケ音源</b><small>原曲を再現して制作・作品名は非公開</small></li></ul>
+            <ul class="grid4 recs" id="cgrid">${[...comp,...gtr].map(c=>rec(c.category, (c.roles||[]).join("・"), c.title, c.artist, c.year)).join("")}
+              ${rec("karaoke","カラオケ音源制作","有名歌い手のカラオケ音源","作品名は非公開","×"+kara.length)}</ul>
           </div></details>
       </div>
       <div class="tabp" id="p-stage" role="tabpanel" aria-labelledby="t-stage">
@@ -188,12 +191,13 @@ export function buildOutputs(files){
     return `<div class="pv"><button class="pv-frame" type="button" data-yt="${id}" aria-label="${esc(V.title||"動画")}を再生" style="background-image:url('https://i.ytimg.com/vi/${id}/maxresdefault.jpg')"><span class="pp" aria-hidden="true"><i class="tri"></i></span></button>
       <div class="pv-tx"><span class="chip or">ORIGINAL</span><b>${esc(V.title)}</b>${V.sub?`<small>${esc(V.sub)}</small>`:""}</div></div>`;
   }
+  const GL = `<i class="glint" aria-hidden="true"></i>`;   // 料金カードを触るとキラッと光る（B5）
   function lesson(){
     const L = D.lessonPlans, base = L.single.price;
     const plan = p => { const per = Math.round(p.price/p.count), save = base*p.count - p.price;
       return `<li class="card plan ${p.rec?"rec":""} ${ph(({2:"hands",4:"guitar",8:"play"})[p.count])}">${p.rec?'<span class="badge">人気No.1</span>':""}<div class="nm">${esc(p.name)}</div><div class="ct">60分×${p.count}回</div>
         <div class="p">¥${yen(p.price)}<small>/ 月</small></div><div class="per">1回あたり ¥${yen(per)}${save>0?`<em>単発より月¥${yen(save)}おトク</em>`:""}</div>
-        ${pick(p.name)}</li>`; };
+        ${pick(p.name)}${GL}</li>`; };
     /* 月謝・単発のボタン：予約ページがあるときは「体験から始める」（気になるプランを予約ページへ渡す） */
     function pick(n){ return D.yoyaku ? `<a class="pick" href="yoyaku.html?plan=${encodeURIComponent(n)}">体験から始める</a>` : `<button class="pick" type="button" data-open="レッスン" data-plan="${esc(n)}">このプランを選ぶ</button>`; }
     return `<section class="s sbg" id="lesson"><div class="wrap">
@@ -207,11 +211,11 @@ export function buildOutputs(files){
           ${D.trialProof ? `<p class="trial-proof"><span aria-hidden="true"></span>${esc(D.trialProof)}</p>` : ""}
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
-            ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>
+            ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}${GL}</div>
           ${D.yoyaku ? `<p class="plans-lead"><b>月謝・単発も、まずは体験レッスンから。</b>各プランの「体験から始める」から、気になるプランを伝えて体験を予約できます。</p>` : ""}
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
-            ${pick("単発")}</li></ul>${swipe(L.monthly.length+1)}
+            ${pick("単発")}${GL}</li></ul>${swipe(L.monthly.length+1)}
           <p class="small" style="margin:14px 0 0">料金はすべて税込です。スタジオで受ける場合、スタジオ代（1時間 約1,500円）が別にかかります。オンラインはかかりません。</p>
           <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
             <table class="hours"><tr><th>水・木・金</th><td>16〜23時<small>前月20日を過ぎてからのご予約は 22〜23時</small></td></tr>
@@ -244,7 +248,7 @@ export function buildOutputs(files){
           <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、水・木・金は22〜23時、土・日は21〜23時になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
         </div>
       </div>${voices()}
-    </div></section>`;
+    </div><i class="seam" aria-hidden="true"></i></section>`;
   }
   /* 生徒さんの声：data/voices.json に本人からもらった言葉が入ったときだけ出す */
   function voices(){

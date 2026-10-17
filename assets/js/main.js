@@ -167,6 +167,22 @@ document.querySelectorAll(".ribbon.wave").forEach(r => {
   reduce.addEventListener("change", sync); addEventListener("resize", sync, {passive:true}); sync();
 });
 
+/* B5：料金カードを触ると、キラッと光る */
+document.querySelectorAll(".glint").forEach(g => { const c = g.parentElement;
+  const go = () => { if(reduce.matches || c.classList.contains("shine")) return; c.classList.add("shine"); };
+  c.addEventListener("pointerenter", go); c.addEventListener("touchstart", go, {passive:true});
+  g.addEventListener("animationend", () => c.classList.remove("shine"));
+});
+/* B6：年表。画面の真ん中に来た年の行に印をつける（スクロールの位置で反応。PC もスマホも同じ） */
+const tl = document.querySelector(".tl");
+if(tl && "IntersectionObserver" in window){
+  const rows = [...tl.querySelectorAll(".tly")];
+  const setLive = () => tl.classList.toggle("live", !reduce.matches);
+  setLive(); reduce.addEventListener("change", setLive);
+  const io2 = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) rows.forEach(r => r.classList.toggle("now", r===e.target)); }), {rootMargin:"-45% 0px -45% 0px"});
+  rows.forEach(r => io2.observe(r));
+}
+
 /* 背景の真空管：スクロールに合わせて少しだけずらす（奥行き） */
 const pbgs = [...document.querySelectorAll(".pbg i")];
 /* スマホ（指で触る画面）は CSS だけで動かす（JS で毎回ずらすと iPhone でカクつくため） */
