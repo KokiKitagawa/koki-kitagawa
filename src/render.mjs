@@ -4,7 +4,7 @@
    ページの文章・カードはすべてここで組み立てて、静的な HTML として書き出す。
    ボタンの動き（絞り込み・メニュー・フォーム送信など）は assets/js/main.js。
    ============================================================ */
-export const ROOT_FILES = ["src/template.html","data/voices.json","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js","assets/js/yoyaku.js"];
+export const ROOT_FILES = ["src/template.html","data/voices.json","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js","assets/js/yoyaku.js","src/ill/guitar.svg","src/ill/compose.svg","src/ill/lesson.svg"];
 const ASSETS = ["assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
 /* 中身から短い印をつくる（CSS・JSを直したら、見る人のブラウザに古いものが残らないよう ?v= を変える） */
 const stamp = t => { let h = 5381; for(let i=0;i<t.length;i++) h = ((h<<5) + h + t.charCodeAt(i)) >>> 0; return h.toString(36); };
@@ -14,7 +14,7 @@ export function buildOutputs(files){
   const p = J("data/profile.json"), site = J("data/site.json"), images = J("data/images.json");
   const pick = (o, ks) => Object.fromEntries(ks.map(k => [k, o[k] ?? null]));
   const D = {
-    profile: pick(p, ["name","nameEn","bio","career","gear","work","lesson","links"]),
+    profile: pick(p, ["name","nameEn","bio","career","gear","work","lesson","links","canDo"]),
     credits: J("data/credits.json").map(c => { const d = pick(c, ["title","artist","category","roles","year","jacket","spotify","spotifyRank"]);
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
@@ -84,7 +84,10 @@ export function buildOutputs(files){
 
   function profile(){
     const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
-    const SK = [["GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏","skillStage","スポットライトが当たるステージのギターとエフェクターボード（イラスト）"],["COMPOSE","作詞・作曲・編曲","提供曲は作詞からギターまで一人で","skillCompose","夜の作業部屋のモニター・鍵盤・ギター（イラスト）"],["LESSON","ギターレッスン","初心者からプロ志向まで","skillLesson","向かい合った椅子と2本のギター、譜面台のあるレッスン部屋（イラスト）"]];
+    /* 3枚のカード（JAMの型：イラスト → 番号と見出し → 2行の説明 → 詳しく＞）。イラストは src/ill/*.svg（触ると少し動く） */
+    const SK = [["01","GUITAR","サポートギター","フェス・ツアー・舞台・TVで演奏。メジャー作品の現場経験あり","guitar",'href="#works" data-tab-go="stage"'],
+      ["02","COMPOSE","作詞・作曲・編曲","作曲・編曲・打ち込みからボーカルの録音・ディレクションまで","compose",'href="#works" data-tab-go="music"'],
+      ["03","LESSON","ギターレッスン","未就学児からシニアまで。1,000回以上のレッスン実績","lesson",'href="#lesson"']];
     return `<section class="s sbg" id="profile"><div class="wrap">
       ${sh("01","Profile","プロフィール・経歴")}
       <div class="prof">
@@ -92,13 +95,21 @@ export function buildOutputs(files){
         <div>
           <p class="lede hl">${esc(P.bio[0])}</p>
           <div class="body bio">${P.bio.slice(1).map(x=>`<p>${esc(x)}</p>`).join("")}</div>
-          <ul class="skills hs" id="skills">${SK.map(s=>`<li class="card skill">${pic(s[3],s[4])}<span class="k">${s[0]}</span><b>${s[1]}</b><small>${s[2]}</small></li>`).join("")}</ul>${swipe(SK.length)}
+          <ul class="skills3" id="skills">${SK.map(s=>`<li class="card sk3 sk-${s[4]}">${files["src/ill/"+s[4]+".svg"].trim()}<div class="sk3-tx"><div class="num"><i>${s[0]}</i><span>${s[1]}</span></div><b>${s[2]}</b><p>${s[3]}</p><a class="more" ${s[5]}>詳しく<span class="sr">（${s[2]}）</span></a></div></li>`).join("")}</ul>${canDo()}
           <div class="sns color squares">${snsHTML()}</div>
           <details class="acc open-card"><summary><b>使用機材</b><span class="meta">${P.gear.groups.reduce((n,g)=>n+g.items.length,0)} ITEMS</span></summary>
             <div class="in"><ul class="gcards">${g}</ul></div></details>
         </div>
       </div>
     </div></section>`;
+  }
+
+  /* できること一覧（演奏する／つくる／教える）。data/profile.json の canDo */
+  function canDo(){
+    const K = P.canDo; if(!K || !(K.groups||[]).length) return "";
+    const CL = {PLAY:"c-play", CREATE:"c-create", TEACH:"c-teach"};
+    return `<div class="cdl" id="cando-list"><h3 class="cdl-h"><span>SKILLS</span>できること</h3>
+            <div class="cdl-gs">${K.groups.map(g=>`<section class="cdl-g ${CL[g.en]||""}"><h4><i>${esc(g.en)}</i>${esc(g.name)}</h4><ul>${g.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${g.en==="CREATE"&&K.note?`<p class="cdl-note">${esc(K.note)}</p>`:""}</section>`).join("")}</div></div>`;
   }
 
   function career(){
@@ -192,7 +203,7 @@ export function buildOutputs(files){
         <div>
           <p class="lede">現場で培った経験を、あなたのギターへ。</p>
           <ul class="lstats">${D.lessonStats.map(x=>`<li class="card"><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
-          <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>3歳から大人まで</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
+          <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>未就学児からシニアまで</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
             ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>

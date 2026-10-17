@@ -105,8 +105,9 @@ document.querySelectorAll("details").forEach(d => {
     const end = opening ? d.scrollHeight + (d.offsetHeight - d.clientHeight) : s.offsetHeight + (d.offsetHeight - d.clientHeight);
     d.style.overflow = "hidden";
     d._a = d.animate({height:[start+"px", end+"px"]}, {duration:280, easing:"cubic-bezier(.2,.7,.2,1)"});
-    d._a.onfinish = () => { d._a = null; d.style.overflow = ""; if(!opening) d.open = false; };
-    d._a.oncancel = () => { d._a = null; d.style.overflow = ""; };
+    d.classList.toggle("closing", !opening);
+    d._a.onfinish = () => { d._a = null; d.style.overflow = ""; d.classList.remove("closing"); if(!opening) d.open = false; };
+    d._a.oncancel = () => { d._a = null; d.style.overflow = ""; d.classList.remove("closing"); };
   });
 });
 /* PCでは アコーディオンを開いた状態にする（スマホだけ たためる） */
@@ -130,11 +131,20 @@ if("IntersectionObserver" in window){
   document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv"); c.style.transitionDelay = `${(i%6)*70}ms`; rv.observe(c); });
 } else document.querySelectorAll(".reveal").forEach(x => x.classList.add("in"));
 
+/* Profile の3枚のイラスト：触る（マウスを乗せる・指で触る）と少し動く */
+document.querySelectorAll(".sk3").forEach(c => {
+  const play = () => { if(reduce.matches || c.classList.contains("play")) return; c.classList.add("play"); setTimeout(() => c.classList.remove("play"), 1400); };
+  c.addEventListener("pointerenter", play); c.addEventListener("touchstart", play, {passive:true});
+});
+
 /* 背景の真空管：スクロールに合わせて少しだけずらす（奥行き） */
 const pbgs = [...document.querySelectorAll(".pbg i")];
+/* スマホ（指で触る画面）は CSS だけで動かす（JS で毎回ずらすと iPhone でカクつくため） */
+const touchBg = matchMedia("(max-width:820px), (pointer:coarse)");
 if(pbgs.length && !reduce.matches){
   let tick = false;
   const par = () => { tick = false; const vh = innerHeight;
+    if(touchBg.matches){ pbgs.forEach(i => i.style.removeProperty("--py")); return; }
     pbgs.forEach(i => { const r = i.parentElement.getBoundingClientRect(); if(r.bottom < -200 || r.top > vh + 200) return;
       i.style.setProperty("--py", ((r.top + r.height/2 - vh/2) * -0.18).toFixed(1) + "px"); }); };
   addEventListener("scroll", () => { if(!tick){ tick = true; requestAnimationFrame(par); } }, {passive:true}); par();
