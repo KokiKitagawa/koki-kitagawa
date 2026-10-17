@@ -182,7 +182,9 @@ export function buildOutputs(files){
     const plan = p => { const per = Math.round(p.price/p.count), save = base*p.count - p.price;
       return `<li class="card plan ${p.rec?"rec":""} ${ph(({2:"hands",4:"guitar",8:"play"})[p.count])}">${p.rec?'<span class="badge">人気No.1</span>':""}<div class="nm">${esc(p.name)}</div><div class="ct">60分×${p.count}回</div>
         <div class="p">¥${yen(p.price)}<small>/ 月</small></div><div class="per">1回あたり ¥${yen(per)}${save>0?`<em>単発より月¥${yen(save)}おトク</em>`:""}</div>
-        <button class="pick" type="button" data-open="レッスン" data-plan="${esc(p.name)}">このプランを選ぶ</button></li>`; };
+        ${pick(p.name)}</li>`; };
+    /* 月謝・単発のボタン：予約ページがあるときは「体験から始める」（気になるプランを予約ページへ渡す） */
+    function pick(n){ return D.yoyaku ? `<a class="pick" href="yoyaku.html?plan=${encodeURIComponent(n)}">体験から始める</a>` : `<button class="pick" type="button" data-open="レッスン" data-plan="${esc(n)}">このプランを選ぶ</button>`; }
     return `<section class="s sbg" id="lesson"><div class="wrap">
       ${sh("04","Lesson","ギターレッスン")}
       <div class="les">
@@ -196,21 +198,22 @@ export function buildOutputs(files){
             ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}</div>
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
-            <button class="pick" type="button" data-open="レッスン" data-plan="単発">このプランを選ぶ</button></li></ul>${swipe(L.monthly.length+1)}
-          <p class="small" style="margin:14px 0 0">料金はすべて税込です。レンタルスタジオで行う場合、スタジオ代は別にかかります。</p>
+            ${pick("単発")}</li></ul>${swipe(L.monthly.length+1)}
+          <p class="small" style="margin:14px 0 0">料金はすべて税込です。スタジオで受ける場合、スタジオ代（1時間 約1,500円）が別にかかります。オンラインはかかりません。</p>
           <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
-            <table class="hours"><tr><th>水・木・金</th><td>16時から<small>前月20日を過ぎてからのご予約は 22時から</small></td></tr>
-            <tr><th>土・日</th><td>12時から<small>前月20日を過ぎてからのご予約は 21時から</small></td></tr>
-            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>お支払い</th><td>${payLines("")}</td></tr>
-            <tr><th>キャンセル・振替</th><td>${esc(P.lesson.cancel)}</td></tr></table>
-            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
+            <table class="hours"><tr><th>水・木・金</th><td>16〜23時</td></tr>
+            <tr><th>土・日</th><td>12〜23時</td></tr>
+            <tr><th>月・火</th><td>お休み</td></tr>
+            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>スタジオ代</th><td>${esc(P.lesson.studioFee)}</td></tr><tr><th>お支払い</th><td>${payLines("")}</td></tr>
+            <tr><th>キャンセル・振替</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
+            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。前月20日を過ぎてからのご予約は、平日22時〜・土日21時〜になります。</p></div></details>
         </div>
       </div>
       <div class="les-extra">
         <div><h3><span>STEP</span>はじめるまで</h3>
           <ol class="flow hs" id="flow">
             ${D.yoyaku ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>スタジオは候補を2つまで、オンラインはその場で予約</small></li>
-            <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>スタジオは24時間以内に、日程確定のご連絡</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
+            <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>スタジオは24時間以内に日程確定のご連絡（お部屋が取れないときは、別の日をご相談）</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
             <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>場所と当日の流れをお送りします</small></li>` : `<li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
@@ -222,10 +225,10 @@ export function buildOutputs(files){
           <details><summary>体験のあと、しつこく勧誘されない？</summary><p>${esc(P.lesson.noPush)}</p></details>
           <details><summary>何歳から受けられる？</summary><p>${esc(P.lesson.ages)}</p></details>
           <details><summary>どこでレッスンする？</summary><p>${esc(P.lesson.place)}。オンラインでも受けられます。</p></details>
-          <details><summary>スタジオ代はかかる？</summary><p>スタジオで行う場合は、レッスン料金とは別にスタジオ代がかかります。</p></details>
+          <details><summary>スタジオ代はかかる？</summary><p>スタジオで受ける場合は、レッスン料金とは別に、スタジオ代（1時間 約1,500円）を当日スタジオでお支払いください。オンラインはかかりません。</p></details>
           <details><summary>支払い方法は？</summary><p>${payLines("")}</p></details>
-          <details><summary>キャンセル・日程の変更はできる？</summary><p>${esc(P.lesson.cancel)}</p></details>
-          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎると、受付の時間が遅めになります。</p></details>
+          <details><summary>キャンセル・日程の変更はできる？</summary><p>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</p></details>
+          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、平日22時〜・土日21時〜になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
         </div>
       </div>${voices()}
     </div></section>`;
@@ -244,7 +247,7 @@ export function buildOutputs(files){
       ${sh("05","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">
-          <p>レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。2日以内にメールでご返信します。</p>
+          <p>${D.yoyaku ? `体験レッスンのご予約は<a class="ul" href="yoyaku.html">予約ページ</a>へ。レッスンのご質問、制作・演奏・ライブサポート等のお仕事のご依頼は、こちらのフォームからご連絡ください。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
           <div class="quick">
             <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>気軽にメッセージください</small></span></a>
             <button class="dm wk" type="button" data-open="お仕事"><i class="arw" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></i><span><b>お仕事のご依頼は、フォームから</b><small class="sp-only">下のフォームで「お仕事」を選んでください</small><small class="pc-only">右のフォームで「お仕事」を選んでください</small></span></button>
@@ -261,6 +264,7 @@ export function buildOutputs(files){
           <div class="xf" data-for="レッスン">
             <div class="two">
               <div><label for="f_plan">希望プラン<i>必須</i></label><select id="f_plan"><option value="">選んでください</option>${["体験レッスン",...D.lessonPlans.monthly.map(m=>m.name),"単発","まだ決めていない"].map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
+              ${D.yoyaku ? `<div class="trial-go" id="trialGo" hidden><p><b>体験レッスンは、予約ページから</b>空いている日時を選んで、そのまま申し込めます。</p><a class="btn or" href="yoyaku.html">予約ページへ</a></div>` : ""}
               <div><label for="f_level">ギター歴</label><select id="f_level"><option value="">選んでください</option><option>はじめて</option><option>1年未満</option><option>1〜3年</option><option>3年以上</option></select></div>
             </div>
             <fieldset class="opts"><legend>受ける場所</legend>${["小岩のスタジオ","オンライン","相談したい"].map(x=>`<label class="opt"><input type="radio" name="f_place" value="${x}"><span>${x}</span></label>`).join("")}</fieldset>
@@ -414,8 +418,9 @@ export function yoyakuPage(files, p, site, url){
   const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${f}?v=${stamp(files[f])}">`).join("\n");
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const yen = n => Number(n).toLocaleString("ja-JP");
-  const pay = (L.payment||[]).find(x => x[0] === "体験");
-  const cfg = JSON.stringify({api: B.api || "", fallback: B.url || ""}).replace(/</g,"\\u003c");
+  const pay = (L.payment||[]).filter(x => /^体験/.test(x[0]));
+  const planNames = [...site.lessonPlans.monthly.map(m => m.name), "単発"];
+  const cfg = JSON.stringify({api: B.api || "", fallback: B.url || "", plans: planNames}).replace(/</g,"\\u003c");
   const opt = (name, type, list) => list.map(x => `<label class="opt"><input type="${type}" name="${name}" value="${esc(x)}"><span>${esc(x)}</span></label>`).join("");
   const sel = list => `<option value="">選んでください</option>` + list.map(x => `<option>${esc(x)}</option>`).join("");
   return `<!doctype html>
@@ -439,11 +444,12 @@ ${HEAD_ICONS("")}
 ${css}
 </head>
 <body class="doc yk-page">
-<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="./#lesson">← レッスンの案内</a></div></header>
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="./#lesson">← 戻る</a></div></header>
 <main class="wrap docw ykw">
   <div class="sh"><span class="no">—</span><h2>Booking</h2><p>体験レッスンのご予約</p></div>
 
-  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
+  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・スタジオで受ける場合は、ギターを借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
+  <p class="yk-plan" id="ykPlan" hidden></p>
   <ol class="yk-steps" aria-hidden="true"><li data-st="1"><span>1</span>受け方</li><li data-st="2"><span>2</span>日時</li><li data-st="3"><span>3</span>お名前など</li></ol>
 
   <div class="card yk-closed" id="ykClosed" hidden>
@@ -454,13 +460,14 @@ ${css}
 
   <form class="f yk" id="yk" novalidate>
     <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
-      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡</small></span></label>
-      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet<br>その場で予約が決まります</small></span></label>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡<br>お部屋が取れないときは、別の日をご相談します<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし<br>その場で予約が決まります</small></span></label>
       <p class="err" hidden></p>
     </fieldset>
 
     <div class="yk-when" id="ykWhen">
       <div class="yk-lg"><span class="yn">2</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
+      <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から選べます。</p>
       <p class="small" id="ykLoad" hidden>空いている日時を読み込んでいます…</p>
       <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
       <div class="yk-times" id="ykTimes"></div>
@@ -491,6 +498,12 @@ ${css}
     <input type="text" name="website" id="y_web" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
 
     <div class="yk-sum" id="ykSum" hidden></div>
+    <dl class="yk-brief" aria-label="申し込む前に">
+      <dt>料金</dt><dd>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込）</dd>
+      <dt>スタジオ代</dt><dd>スタジオは1時間 約1,500円（当日スタジオで）／オンラインはなし</dd>
+      <dt>お支払い</dt><dd>スタジオ：現金・PayPay（当日レッスンの前）／オンライン：カード（前日まで）</dd>
+      <dt>キャンセル</dt><dd>3日前 23:59 まではURLから無料。それより後もキャンセル料はかかりません</dd>
+    </dl>
     <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
     <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
     <p class="err" id="ykErr" hidden></p>
@@ -503,11 +516,11 @@ ${css}
     <table class="hours">
       <tr><th>料金</th><td>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込・初回のみ）</td></tr>
       <tr><th>場所</th><td>${esc(L.place)}<small><a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent("サウンドスタジオM小岩店")}" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>
-      <tr><th>スタジオ代</th><td>スタジオで受ける場合、レッスン料金とは別にかかります。当日スタジオでお支払いください。</td></tr>
-      <tr><th>お支払い</th><td>${pay ? esc(pay[1]) : ""}</td></tr>
+      <tr><th>スタジオ代</th><td>${esc(L.studioFee)}</td></tr>
+      <tr><th>お支払い</th><td>${pay.map(x => `<span class="pay"><b>${esc(x[0].replace(/^体験/, "").replace(/[（）]/g, ""))}</b>${esc(x[1])}</span>`).join("")}</td></tr>
       <tr><th>ギター</th><td>${esc(L.guitarRental)}</td></tr>
       <tr><th>お子さん</th><td>${esc(L.ages)}</td></tr>
-      <tr><th>キャンセル</th><td>レッスン日の3日前 23:59 まで、予約のときに届くメールのURLから、ご自分でキャンセルできます。</td></tr>
+      <tr><th>キャンセル</th><td>${esc(L.trialCancel)}</td></tr>
       <tr><th>そのあと</th><td>${esc(L.noPush)}</td></tr>
     </table>
   </section>

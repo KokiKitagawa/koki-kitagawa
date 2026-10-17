@@ -16,6 +16,11 @@
 
   let slots = null, mode = "", day = "", pick = [];
 
+  /* トップの「体験から始める」で来たとき：気になるプランを出して、申し込みの内容にも入れる */
+  const plan = (new URLSearchParams(location.search).get("plan") || "").trim();
+  const myPlan = (cfg.plans || []).includes(plan) ? plan : "";
+  if (myPlan) { const el = $("ykPlan"); el.innerHTML = `<span class="chip or">気になるプラン</span><b>${myPlan}</b>（体験のあとで、くわしくご案内します）`; el.hidden = false; }
+
   if (!cfg.api && !demo) { $("ykClosed").hidden = false; form.hidden = true; return; }
 
   /* 空き枠を読む */
@@ -98,7 +103,7 @@
     if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     const val = n => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value);
     const data = { mode, slots: pick, name: $("y_name").value, kana: $("y_kana").value, email: $("y_mail").value.trim(), tel: $("y_tel").value,
-      age: $("y_age").value, level: $("y_level").value, guitar: val("guitar")[0] || "", goals: val("goals"), song: $("y_song").value, q: $("y_q").value,
+      age: $("y_age").value, level: $("y_level").value, guitar: val("guitar")[0] || "", goals: val("goals"), song: $("y_song").value, q: [myPlan ? "【気になるプラン】" + myPlan : "", $("y_q").value].filter(Boolean).join("\n"),
       from: $("y_from").value, website: $("y_web").value };
     const btn = $("ykSend"), err = $("ykErr");
     btn.disabled = true; btn.textContent = "送っています…"; hideErr(err);

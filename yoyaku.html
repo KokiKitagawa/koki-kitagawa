@@ -18,14 +18,15 @@
 <link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/css/kk-design-system.css?v=69foca">
-<link rel="stylesheet" href="assets/css/site.css?v=15m6xv6">
+<link rel="stylesheet" href="assets/css/site.css?v=1rer6rm">
 </head>
 <body class="doc yk-page">
-<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="./#lesson">← レッスンの案内</a></div></header>
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="./#lesson">← 戻る</a></div></header>
 <main class="wrap docw ykw">
   <div class="sh"><span class="no">—</span><h2>Booking</h2><p>体験レッスンのご予約</p></div>
 
-  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥3,500<small>税込</small></div></div>
+  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・スタジオで受ける場合は、ギターを借りられます</small></div><div class="p">¥3,500<small>税込</small></div></div>
+  <p class="yk-plan" id="ykPlan" hidden></p>
   <ol class="yk-steps" aria-hidden="true"><li data-st="1"><span>1</span>受け方</li><li data-st="2"><span>2</span>日時</li><li data-st="3"><span>3</span>お名前など</li></ol>
 
   <div class="card yk-closed" id="ykClosed" hidden>
@@ -36,13 +37,14 @@
 
   <form class="f yk" id="yk" novalidate>
     <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
-      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡</small></span></label>
-      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet<br>その場で予約が決まります</small></span></label>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡<br>お部屋が取れないときは、別の日をご相談します<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし<br>その場で予約が決まります</small></span></label>
       <p class="err" hidden></p>
     </fieldset>
 
     <div class="yk-when" id="ykWhen">
       <div class="yk-lg"><span class="yn">2</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
+      <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から選べます。</p>
       <p class="small" id="ykLoad" hidden>空いている日時を読み込んでいます…</p>
       <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
       <div class="yk-times" id="ykTimes"></div>
@@ -73,6 +75,12 @@
     <input type="text" name="website" id="y_web" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
 
     <div class="yk-sum" id="ykSum" hidden></div>
+    <dl class="yk-brief" aria-label="申し込む前に">
+      <dt>料金</dt><dd>体験レッスン 60分 ¥3,500（税込）</dd>
+      <dt>スタジオ代</dt><dd>スタジオは1時間 約1,500円（当日スタジオで）／オンラインはなし</dd>
+      <dt>お支払い</dt><dd>スタジオ：現金・PayPay（当日レッスンの前）／オンライン：カード（前日まで）</dd>
+      <dt>キャンセル</dt><dd>3日前 23:59 まではURLから無料。それより後もキャンセル料はかかりません</dd>
+    </dl>
     <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
     <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
     <p class="err" id="ykErr" hidden></p>
@@ -85,17 +93,17 @@
     <table class="hours">
       <tr><th>料金</th><td>体験レッスン 60分 ¥3,500（税込・初回のみ）</td></tr>
       <tr><th>場所</th><td>サウンドスタジオM小岩店（JR小岩駅から歩いて約4分）／オンライン<small><a href="https://www.google.com/maps/search/?api=1&amp;query=%E3%82%B5%E3%82%A6%E3%83%B3%E3%83%89%E3%82%B9%E3%82%BF%E3%82%B8%E3%82%AAM%E5%B0%8F%E5%B2%A9%E5%BA%97" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>
-      <tr><th>スタジオ代</th><td>スタジオで受ける場合、レッスン料金とは別にかかります。当日スタジオでお支払いください。</td></tr>
-      <tr><th>お支払い</th><td>現金・PayPay（当日レッスンの前に）</td></tr>
+      <tr><th>スタジオ代</th><td>1時間 約1,500円（当日スタジオでお支払い）。オンラインはかかりません。</td></tr>
+      <tr><th>お支払い</th><td><span class="pay"><b>スタジオ</b>現金・PayPay（当日レッスンの前に）</span><span class="pay"><b>オンライン</b>カード（Square）。お支払いのページをメールでお送りします（レッスンの前日まで）</span></td></tr>
       <tr><th>ギター</th><td>スタジオでギターを借りられるので、持っていなくても大丈夫です。</td></tr>
       <tr><th>お子さん</th><td>3歳から受けられます。小さいお子さんは、保護者の方の同伴も大丈夫です。</td></tr>
-      <tr><th>キャンセル</th><td>レッスン日の3日前 23:59 まで、予約のときに届くメールのURLから、ご自分でキャンセルできます。</td></tr>
+      <tr><th>キャンセル</th><td>レッスン日の3日前 23:59 までなら、予約のメールのURLから無料でキャンセルできます。それより後でもキャンセル料はかかりません（予約のメールに返信してご連絡ください）。</td></tr>
       <tr><th>そのあと</th><td>しつこい勧誘はしません。体験のあと、目標に合ったプランをご提案することはありますが、生徒さんのお気持ちを大切にします。続けるかどうかは、ゆっくり決めてください。</td></tr>
     </table>
   </section>
 </main>
 <footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
-<script type="application/json" id="ykcfg">{"api":"https://script.google.com/macros/s/AKfycby5bDtbLyKAmUYFXvM5kCBlsdzIqFw126P8803WqGTCRkEivEgTSXqw3pechjk9ozQT/exec","fallback":"https://calendar.app.google/2d3tvKbuAZ1rJxL89"}</script>
-<script src="assets/js/yoyaku.js?v=cnm2bc" defer></script>
+<script type="application/json" id="ykcfg">{"api":"https://script.google.com/macros/s/AKfycby5bDtbLyKAmUYFXvM5kCBlsdzIqFw126P8803WqGTCRkEivEgTSXqw3pechjk9ozQT/exec","fallback":"https://calendar.app.google/2d3tvKbuAZ1rJxL89","plans":["月2回","月4回","月8回","単発"]}</script>
+<script src="assets/js/yoyaku.js?v=1wq0mqi" defer></script>
 </body>
 </html>

@@ -11,10 +11,13 @@ document.addEventListener("keydown", e => { if(e.key==="Escape" && !menu.hidden)
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-open]"); if(!b) return;
   closeMenu(); setKind(b.dataset.open);
-  if(b.dataset.plan){ document.getElementById("f_plan").value = b.dataset.plan; }
+  if(b.dataset.plan){ document.getElementById("f_plan").value = b.dataset.plan; trialGo(); }
   document.getElementById("contact").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
   setTimeout(() => document.getElementById("f_name").focus({preventScroll:true}), 600);
 });
+/* 希望プランで「体験レッスン」を選んだら、予約ページへの案内を出す */
+function trialGo(){ const g = document.getElementById("trialGo"); if(g) g.hidden = document.getElementById("f_plan").value !== "体験レッスン"; }
+document.getElementById("f_plan").addEventListener("change", trialGo);
 /* ご用件のカード */
 const kindEl = document.getElementById("f_kind");
 /* ご用件で、下の入力欄を切り替える（レッスン／お仕事／その他） */
