@@ -138,7 +138,7 @@
   },
   "booking": {
     "_note": "api＝体験レッスンの予約ページ（yoyaku.html）の裏側（Apps Script のウェブアプリのURL。作り方は 北川弘喜PF/02_HP/予約の仕組み/設定の手順.md）。api が入ると、トップの予約ボタンが yoyaku.html に変わる。api が空のあいだは、下の url・embed（Googleカレンダーの予約ページ）を使う",
-    "api": "",
+    "api": "https://script.google.com/macros/s/AKfycby5bDtbLyKAmUYFXvM5kCBlsdzIqFw126P8803WqGTCRkEivEgTSXqw3pechjk9ozQT/exec",
     "url": "https://calendar.app.google/2d3tvKbuAZ1rJxL89",
     "embed": "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0zlAY1VSBMXHqqVfY91Iht4JiIEWCTn6wrmNnsVPhyR2GL3v3R7jZozPPGsEDjo3CVHwF6rJ_f?gv=true"
   },
