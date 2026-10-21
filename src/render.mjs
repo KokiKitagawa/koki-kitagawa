@@ -43,7 +43,7 @@ export function buildOutputs(files){
   const yen = n => n.toLocaleString("ja-JP");
 
   const comp = C.filter(c => c.category==="compose"), gtr = C.filter(c => c.category==="guitar"), kara = C.filter(c => c.category==="karaoke");
-  const feat = C.filter(c => c.spotify).sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
+  const feat = C.filter(c => c.spotify && c.category==="compose").sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
   const TAG = {"作曲":"COMPOSE","編曲":"ARRANGE","ギター":"GUITAR","レコーディング":"RECORDING","制作":"PRODUCTION"};
   const tagsOf = c => [...new Set((c.roles||[]).map(r => TAG[r]).filter(Boolean))];
   const tv = D.media.filter(m => m.type==="tv"), stage = D.media.filter(m => m.type==="stage");
@@ -136,7 +136,9 @@ export function buildOutputs(files){
     const gig = x=>`<li class="card gig tk tk-${x.k.toLowerCase()}" data-k="${x.k}"><div class="stub"><i>${x.k}</i>${x.y?`<b>${x.y}</b>`:""}</div><div class="tb"><span class="no" aria-hidden="true">KOKI KITAGAWA ／ ${x.k==="TV"?"ON AIR":"ON STAGE"}</span><b>${esc(x.t)}</b><span class="ar">${esc(x.a)}</span><small>${esc([x.r,x.v].filter(Boolean).join("・"))}</small></div></li>`;
     const W = P.work, nMusic = comp.length+gtr.length+kara.length;
     /* すべての制作実績はレコード型（2026-10-17）：盤のラベルに 種類・曲名・アーティスト・年・担当。種類でラベルの色を変える */
-    const rec = (k, kind, t, a, y) => `<li class="card credit vrec rc-${k}" data-k="${k}"><span class="vinyl" aria-hidden="true"><span class="dlb"></span></span><div class="rtx"><i>${esc(kind)}</i><b>${esc(t)}</b><span>${esc(a)}</span><small>${esc(y||"")}</small></div></li>`;
+    /* 2026-10-21：ジャケットがある曲はラベルにジャケット。押すと上の再生と同じ Spotify で鳴り、鳴っているあいだレコードが回る（ジャケットがない作品は押すと回るだけ） */
+    const rec = (k, kind, t, a, y, c) => { const tid = c && c.spotify ? (c.spotify.split("/track/")[1]||"").split("?")[0] : "", jk = c && c.jacket;
+      return `<li class="card credit vrec rc-${k}${jk?" has-jk":""}" data-k="${k}"><button type="button" class="vinyl"${tid?` data-rtrack="${tid}"`:""} aria-label="${esc(t)}${tid?"を再生":"のレコードを回す"}" aria-pressed="false"><span class="dlb"${jk?` style="background-image:url('https://i.scdn.co/image/${jk}')"`:""}></span><span class="vpp" aria-hidden="true"><i class="tri"></i><i class="bars"></i></span></button><div class="rtx"><i>${esc(kind)}</i><b>${esc(t)}</b><span>${esc(a)}</span><small>${esc(y||"")}</small></div></li>`; };
     return `<section class="s sbg" id="works"><i class="seam-t" aria-hidden="true"></i><div class="wrap">
       ${sh("03","Works","作品・ライブ・出演")}
       <div class="works-top">
@@ -158,7 +160,7 @@ export function buildOutputs(files){
               <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
               <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
               <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
-            <ul class="grid4 recs" id="cgrid">${[...comp,...gtr].map(c=>rec(c.category, (c.roles||[]).join("・"), c.title, c.artist, c.year)).join("")}
+            <ul class="grid4 recs" id="cgrid">${[...comp,...gtr].map(c=>rec(c.category, (c.roles||[]).join("・"), c.title, c.artist, c.year, c)).join("")}
               ${rec("karaoke","カラオケ音源制作","有名歌い手のカラオケ音源","作品名は非公開","×"+kara.length)}</ul>
           </div></details>
       </div>

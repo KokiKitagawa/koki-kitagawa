@@ -58,7 +58,9 @@ const arts = [...document.querySelectorAll(".art[data-track]")], host = document
 let ctrl = null, cur = null, apiAsked = false, apiFailed = false, loading = false, loadedUri = "", playTimer = 0, showTimer = 0;
 const uriOf = b => "spotify:track:" + b.dataset.track;
 const touchUI = matchMedia("(hover:none)");
-const setUI = (b, playing) => { arts.forEach(x => { const on = x===b && playing; x.closest(".song").classList.toggle("playing", on); x.setAttribute("aria-pressed", on); }); };
+const setUI = (b, playing) => { arts.forEach(x => { const on = x===b && playing; x.closest(".song").classList.toggle("playing", on); x.setAttribute("aria-pressed", on); });
+  /* 制作実績のレコード：鳴っている曲のレコードだけ回す */
+  document.querySelectorAll(".vinyl[data-rtrack]").forEach(v => { const on = playing && b && v.dataset.rtrack===b.dataset.track; v.classList.toggle("spin", on); v.setAttribute("aria-pressed", on); }); };
 function loadApi(){
   if(apiAsked || !arts.length) return; apiAsked = true;
   window.onSpotifyIframeApiReady = api => api.createController(document.getElementById("spEmbed"), {uri:uriOf(arts[0]), width:"100%", height:80}, c => {
@@ -88,16 +90,24 @@ function start(b){
   /* スマホは、Spotify の決まりで「プレイヤーの再生ボタン」を押さないと鳴らないことが多いので、すぐにプレイヤーを出す */
   if(touchUI.matches){ host.classList.add("show"); return; }
   /* PC：少し待っても鳴らないとき（ブラウザが自動再生を止めた等）は、プレイヤーを下に出して押してもらう */
-  showTimer = setTimeout(() => { if(cur===b && !b.closest(".song").classList.contains("playing")) host.classList.add("show"); }, 3200);
+  showTimer = setTimeout(() => { if(cur===b && b.getAttribute("aria-pressed")!=="true") host.classList.add("show"); }, 3200);
 }
-arts.forEach(b => b.addEventListener("click", () => {
+/* 押したら鳴らす（上のジャケットと、上に並んでいない曲のレコードの両方で使う） */
+function press(b){
   if(apiFailed){ window.open("https://open.spotify.com/track/"+b.dataset.track, "_blank", "noopener"); return; }   // 埋め込みが読めないときは Spotify を開く
   if(cur===b && ctrl && !loading){ ctrl.togglePlay(); return; }   // 同じ曲をもう一度押したら 止める／また鳴らす
   arts.forEach(x => { const bar = x.querySelector(".bar i"); if(bar) bar.style.transform = "scaleX(0)"; });
   cur = b; setUI(b, true); start(b);
-}));
+}
+arts.forEach(b => b.addEventListener("click", () => press(b)));
 const featEl = document.getElementById("feat");
 if(featEl && "IntersectionObserver" in window){ const o = new IntersectionObserver(es => { if(es.some(e=>e.isIntersecting)){ loadApi(); o.disconnect(); } }, {rootMargin:"600px 0px"}); o.observe(featEl); }
+/* 制作実績のレコード：押すと上の再生ボタンと同じしくみで鳴らす（1回で切り替わる）。ジャケットのない作品は回るだけ */
+document.querySelectorAll(".vinyl").forEach(v => v.addEventListener("click", () => {
+  const id = v.dataset.rtrack;
+  if(id){ const art = arts.find(x => x.dataset.track===id); if(art) art.click(); else { v.dataset.track = id; loadApi(); press(v); } return; }
+  const on = !v.classList.contains("spin"); v.classList.toggle("spin", on); v.setAttribute("aria-pressed", on);
+}));
 /* 横スクロールの点（すぐ後ろの「横にスワイプ」と連動） */
 document.querySelectorAll(".hs").forEach(el => {
   const sw = el.nextElementSibling; if(!sw || !sw.classList.contains("swipe")) return;
