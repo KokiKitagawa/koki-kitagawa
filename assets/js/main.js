@@ -156,7 +156,7 @@ document.querySelectorAll(".hs").forEach(el => {
 });
 /* 料金はスマホでは「人気No.1」（月4回）が見える位置から */
 const plansEl = document.getElementById("plans"), rec = plansEl && plansEl.querySelector(".rec");
-if(rec && matchMedia("(max-width:820px)").matches) plansEl.scrollLeft = rec.offsetLeft - parseFloat(getComputedStyle(plansEl).paddingLeft);
+if(rec && matchMedia("(max-width:820px)").matches) plansEl.scrollLeft = rec.offsetLeft - (plansEl.clientWidth - rec.offsetWidth) / 2;   // 人気No.1 を真ん中に
 
 /* アコーディオンの開閉を、高さがスッと伸び縮みするように */
 const reduce = matchMedia("(prefers-reduced-motion:reduce)");
