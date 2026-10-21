@@ -248,6 +248,10 @@ export function buildOutputs(files){
           <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、水・木・金は22〜23時、土・日は21〜23時になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
         </div>
       </div>${voices()}
+      ${D.yoyaku ? `<div class="les-book">
+        <a class="ct-book" href="yoyaku.html"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>体験レッスンを予約する</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。空いている日時から、そのまま申し込めます</small></span><i class="cb-arr" aria-hidden="true">→</i></a>
+        <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>予約の前に聞きたいことは Instagram の DM へ</b><small>気軽にメッセージください</small></span></a>
+      </div>` : ""}
     </div><i class="seam" aria-hidden="true"></i></section>`;
   }
   /* 生徒さんの声：data/voices.json に本人からもらった言葉が入ったときだけ出す */
@@ -257,18 +261,18 @@ export function buildOutputs(files){
   }
 
   /* 2026-10-17：レッスンの申し込みは予約ページに一本化。フォームの「レッスン」は、ご質問だけの短いフォームにした */
-  const KINDS = D.yoyaku ? ["レッスンのご質問","お仕事","その他"] : ["レッスン","お仕事","その他"];
+  /* 2026-10-21：Contact はお仕事のご依頼とその他のお問い合わせ専用（体験の予約・レッスンのご質問は LESSON の一番下へ） */
+  const KINDS = D.yoyaku ? ["お仕事","その他"] : ["レッスン","お仕事","その他"];
   const KDESC = {"レッスンのご質問":"予約の前のご質問・生徒さんのご連絡","レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
   function contact(){
     const W = P.work;
     return `<section class="s pb" id="contact">${pbg("tubesAmber","amber")}<div class="wrap">
       ${sh("05","Contact","お問い合わせ")}
-      ${D.yoyaku ? `<a class="ct-book" href="yoyaku.html"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>体験レッスンを予約する</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。空いている日時から、そのまま申し込めます</small></span><i class="cb-arr" aria-hidden="true">→</i></a>` : ""}
       <div class="ct">
         <div class="side">
-          <p>${D.yoyaku ? `体験レッスンのご予約は、上の<a class="ul" href="yoyaku.html">予約ページ</a>から。予約の前に聞きたいこと・生徒さんのご連絡、制作・演奏・ライブサポート等のお仕事のご依頼は、こちらのフォームからご連絡ください。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
+          <p>${D.yoyaku ? `制作・演奏・ライブサポート等のお仕事のご依頼、取材などその他のお問い合わせは、こちらのフォームからご連絡ください。体験レッスンのご予約は<a class="ul" href="#lesson">LESSON</a>の一番下から。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
           <div class="quick">
-            <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>気軽にメッセージください</small></span></a>
+            ${D.yoyaku ? "" : `<a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>気軽にメッセージください</small></span></a>`}
             <button class="dm wk" type="button" data-open="お仕事"><i class="arw" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></i><span><b>お仕事のご依頼は、フォームから</b><small class="sp-only">下のフォームで「お仕事」を選んでください</small><small class="pc-only">右のフォームで「お仕事」を選んでください</small></span></button>
           </div>
         </div>

@@ -1500,3 +1500,8 @@ form.f.yk>*{min-width:0}
   #career .sh{position:sticky;top:calc(var(--head) + 48px);margin-bottom:0}
   #career .wrap>p{grid-column:2}
 }
+/* 2026-10-21：体験レッスンの予約ボタンは LESSON の一番下に。お仕事・その他の2択はPCで横に2つ */
+.les-book{display:grid;gap:12px;margin-top:clamp(40px,6vw,64px)}
+.les-book .ct-book{margin:0}
+.les-book .dm{max-width:520px}
+.ct .kinds:has(.kc:nth-child(3):last-of-type){grid-template-columns:repeat(2,minmax(0,1fr))}
