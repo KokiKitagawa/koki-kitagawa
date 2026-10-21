@@ -1613,3 +1613,7 @@ form.f.yk>*{min-width:0}
   100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotate(var(--r))}}
 @media (max-width:820px){ .vnote{width:13px;height:18px;margin:-9px 0 0 -6.5px} }
 @media (prefers-reduced-motion:reduce){ .vnote{display:none} }
+/* 2026-10-21 CAREER→WORKS：真空管の写真の下のはしで暗い帯ができていたので、紫へのつなぎを高い位置からゆっくり始める（文字はつなぎの上に出す） */
+#career .wrap,#works .wrap{position:relative;z-index:1}
+#career .seam{height:calc(var(--sec) * 3);background:linear-gradient(180deg,transparent 0%,rgba(48,12,69,.18) 30%,rgba(48,12,69,.5) 55%,rgba(48,12,69,.82) 78%,#300c45 100%)}
+#works .seam-t{height:calc(var(--sec) * 2);background:linear-gradient(0deg,transparent 0%,rgba(48,12,69,.55) 45%,#300c45 100%)}
