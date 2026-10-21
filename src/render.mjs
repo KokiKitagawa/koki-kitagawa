@@ -206,8 +206,8 @@ export function buildOutputs(files){
         <div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>
         <div>
           <p class="lede">現場で培った経験を、あなたのギターへ。</p>
-          <ul class="lstats">${D.lessonStats.map(x=>`<li class="card"><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
-          <ul class="tg"><li>${esc(P.lesson.area)}・オンライン</li><li>未就学児からシニアまで</li><li>初心者〜経験者まで</li><li>プロ志向の方も</li><li>2021年から指導</li></ul>
+          <p class="lplace"><span class="chip or">小岩のスタジオ／オンライン対応</span></p>
+          <ul class="lstats big">${D.lessonStats.map(x=>`<li class="card">${x.tag?`<i class="ltag">${esc(x.tag)}</i>`:""}<b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
           ${D.trialProof ? `<p class="trial-proof"><span aria-hidden="true"></span>${esc(D.trialProof)}</p>` : ""}
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
@@ -235,7 +235,7 @@ export function buildOutputs(files){
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
           </ol>${swipe(3)}</div>
-        <div class="faq"><h3><span>FAQ</span>よくある質問</h3>
+        <div class="faq reveal"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
           <details><summary>ギターを持っていなくても受けられる？</summary><p>${esc(P.lesson.guitarRental)}</p></details>
           <details><summary>体験レッスンでは何をする？</summary><p>${esc((P.lesson.trialSteps||[]).join("→"))}の流れで、60分です。</p></details>
@@ -248,7 +248,7 @@ export function buildOutputs(files){
           <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、水・木・金は22〜23時、土・日は21〜23時になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
         </div>
       </div>${voices()}
-      ${D.yoyaku ? `<div class="les-book">
+      ${D.yoyaku ? `<div class="les-book reveal">
         <a class="ct-book" href="yoyaku.html"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>体験レッスンを予約する</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。空いている日時から、そのまま申し込めます</small></span><i class="cb-arr" aria-hidden="true">→</i></a>
         <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>予約の前に聞きたいことは Instagram の DM へ</b><small>気軽にメッセージください</small></span></a>
       </div>` : ""}

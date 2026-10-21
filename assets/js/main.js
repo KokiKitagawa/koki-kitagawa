@@ -147,7 +147,7 @@ if("IntersectionObserver" in window){
   document.querySelectorAll(".reveal").forEach(x => rv.observe(x));
   /* できることのカードは、画面に入った順に1枚ずつ出る（同時に入ったときは少しずつずらす） */
   document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv");
-    const ms = c.classList.contains("sk3") ? i*180 : (i%6)*70; c.style.transitionDelay = `${ms}ms`; if(c.classList.contains("sk3")) c.style.setProperty("--cd", ms+"ms"); rv.observe(c); });
+    const ms = c.classList.contains("sk3") ? i*180 : c.closest("#lesson") ? (i%6)*130 : (i%6)*70; c.style.transitionDelay = `${ms}ms`; if(c.classList.contains("sk3")) c.style.setProperty("--cd", ms+"ms"); rv.observe(c); });
 } else document.querySelectorAll(".reveal").forEach(x => x.classList.add("in"));
 
 /* Profile の3枚のイラスト：触る（マウスを乗せる・指で触る）と少し動く */
