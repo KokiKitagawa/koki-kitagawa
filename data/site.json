@@ -160,5 +160,7 @@
         "text": "Pastel closet「視聴覚Fighter」の作詞・作曲・編曲・ギターを担当"
       }
     ]
-  }
+  },
+  "_noindex_note": "true のあいだは限定公開（検索に出さない。URLを知っている人は見られる）。仕上がって検索に出したくなったら false にする",
+  "noindex": true
 }

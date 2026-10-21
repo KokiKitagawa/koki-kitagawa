@@ -382,6 +382,8 @@ export function buildOutputs(files){
   else if(D.booking) html = html.split('data-open="レッスン">レッスンを申し込む').join('data-book>体験レッスンを予約');
   put("<!--@sns-->", snsHTML());
   put("<!--@config-->", cfg);
+  /* 限定公開（2026-10-21）：data/site.json の noindex が true のあいだは、検索に出さない（URLを知っている人は見られる） */
+  if(site.noindex) html = html.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex, nofollow">');
   for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
   if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
   return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url)}, warnings };
@@ -484,7 +486,7 @@ export function yoyakuPage(files, p, site, url){
   return `<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8">${site.noindex ? `\n<meta name="robots" content="noindex, nofollow">` : ""}
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#06080d">
