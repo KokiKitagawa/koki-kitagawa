@@ -167,6 +167,15 @@ document.querySelectorAll(".ribbon.wave").forEach(r => {
   reduce.addEventListener("change", sync); addEventListener("resize", sync, {passive:true}); sync();
 });
 
+/* お仕事のご依頼「進め方」：1つずつ順番に出す（同時に画面に入ったときは 0.18秒ずつずらす） */
+const sts = [...document.querySelectorAll(".steps .st")];
+if(sts.length && "IntersectionObserver" in window && !reduce.matches){
+  let q = 0, t0 = 0;
+  const io3 = new IntersectionObserver(es => es.filter(e => e.isIntersecting).forEach(e => { const now = performance.now(); if(now - t0 > 400) q = 0; t0 = now;
+    const el = e.target; setTimeout(() => el.classList.add("in"), (q++) * 180); io3.unobserve(el); }), {rootMargin:"0px 0px -12% 0px"});
+  sts.forEach(x => io3.observe(x));
+} else sts.forEach(x => x.classList.add("in"));
+
 /* B5：料金カードを触ると、キラッと光る */
 document.querySelectorAll(".glint").forEach(g => { const c = g.parentElement;
   const go = () => { if(reduce.matches || c.classList.contains("shine")) return; c.classList.add("shine"); };

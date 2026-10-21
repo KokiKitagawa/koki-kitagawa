@@ -178,7 +178,7 @@ export function buildOutputs(files){
         <h4 class="wc-sub">できること</h4>
         ${canDo()}
         <h4 class="wc-sub">進め方</h4>
-        <ol class="steps">${W.flow.map((s,i)=>{ const t = typeof s==="string" ? {t:s,d:""} : s; return `<li><span class="n">${String(i+1).padStart(2,"0")}</span><span class="tx"><b>${esc(t.t)}</b>${t.d?`<small>${esc(t.d)}</small>`:""}</span></li>`; }).join("")}</ol>
+        <ol class="steps">${W.flow.map((s,i)=>{ const t = typeof s==="string" ? {t:s,d:""} : s; return `<li class="st" style="--k:${i}"><span class="n">${String(i+1).padStart(2,"0")}</span><span class="tx"><b>${esc(t.t)}</b>${t.d?`<small>${esc(t.d)}</small>`:""}</span></li>`; }).join("")}</ol>
         <ul class="wc-note"><li>${esc(W.style)}</li><li>料金：${esc(W.price)}</li><li>${esc(W.revisionNote)}</li></ul>
         <button class="btn gr" type="button" data-open="お仕事">フォームで相談する</button>
       </div>
