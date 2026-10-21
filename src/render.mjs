@@ -114,7 +114,7 @@ export function buildOutputs(files){
 
   function career(){
     const T = D.timeline;
-    return `<section class="s pb" id="career">${pbg("tubesBlue","blue")}<div class="wrap">
+    return `<section class="s pb" id="career">${pbg("tubesBlue","blue")}<i class="seam-t" aria-hidden="true"></i><div class="wrap">
       ${sh("02","Career","経歴・実績")}
       <ol class="tl">${T.map(y => `<li class="tly${y.items.some(i=>i.key)?" has-key":""}"><div class="y">${y.year}</div><div class="evs">${y.items.map(it => it.key
         ? `<div class="ev key"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`
@@ -137,7 +137,7 @@ export function buildOutputs(files){
     const W = P.work, nMusic = comp.length+gtr.length+kara.length;
     /* すべての制作実績はレコード型（2026-10-17）：盤のラベルに 種類・曲名・アーティスト・年・担当。種類でラベルの色を変える */
     const rec = (k, kind, t, a, y) => `<li class="card credit vrec rc-${k}" data-k="${k}"><span class="vinyl" aria-hidden="true"><span class="dlb"></span></span><div class="rtx"><i>${esc(kind)}</i><b>${esc(t)}</b><span>${esc(a)}</span><small>${esc(y||"")}</small></div></li>`;
-    return `<section class="s sbg" id="works"><div class="wrap">
+    return `<section class="s sbg" id="works"><i class="seam-t" aria-hidden="true"></i><div class="wrap">
       ${sh("03","Works","作品・ライブ・出演")}
       <div class="works-top">
         <div class="seg" role="tablist" aria-label="作品の種類">
@@ -266,7 +266,7 @@ export function buildOutputs(files){
   const KDESC = {"レッスンのご質問":"予約の前のご質問・生徒さんのご連絡","レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
   function contact(){
     const W = P.work;
-    return `<section class="s pb" id="contact">${pbg("tubesAmber","amber")}<div class="wrap">
+    return `<section class="s pb" id="contact">${pbg("tubesAmber","amber")}<i class="seam-t" aria-hidden="true"></i><div class="wrap">
       ${sh("05","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">

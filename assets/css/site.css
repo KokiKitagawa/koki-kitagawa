@@ -1505,3 +1505,28 @@ form.f.yk>*{min-width:0}
 .les-book .ct-book{margin:0}
 .les-book .dm{max-width:520px}
 .ct .kinds:has(.kc:nth-child(3):last-of-type){grid-template-columns:repeat(2,minmax(0,1fr))}
+/* 2026-10-21 微調整 */
+/* 境目：前のセクションの下（.seam）と次のセクションの上（.seam-t）を同じ色にして、境目をはさんで両側からなじませる */
+.seam-t{position:absolute;left:0;right:0;top:0;height:var(--sec);z-index:0;pointer-events:none;background:linear-gradient(0deg,transparent,var(--seam,var(--black)))}
+#career .seam-t{--seam:#080b15}
+#works .seam-t{--seam:#300c45}
+#contact .seam-t{--seam:var(--black)}
+#works .seam-t{height:calc(var(--sec) * 1.4)}
+/* ライブのチケット：角丸を 12px にそろえる */
+#works .card.tk{border-radius:12px!important}
+#works .card.tk .stub{border-radius:12px 0 0 12px} #works .card.tk .tb{border-radius:0 12px 12px 0}
+/* ON STAGE のライブ写真：まわりをぼかして背景になじませる */
+#works .gearshot{background:none!important;box-shadow:none!important;border-radius:0}
+#works .gearshot img{border-radius:0;box-shadow:none;opacity:.92;
+  -webkit-mask-image:radial-gradient(ellipse 72% 68% at 50% 48%,#000 52%,rgba(0,0,0,.6) 70%,transparent 100%);
+          mask-image:radial-gradient(ellipse 72% 68% at 50% 48%,#000 52%,rgba(0,0,0,.6) 70%,transparent 100%)}
+/* CAREER：年表の幅を広げる（PCは見出しの列を細く、年表の列を広く） */
+.tl{max-width:none}
+@media (min-width:1081px){
+  /* 見出しを横に置くと年表がせまくなるので、見出しは上に戻して年表を横幅いっぱいに */
+  #career .wrap{display:block!important}
+  #career .sh{position:static;margin-bottom:clamp(48px,6vw,72px)}
+  .tly{grid-template-columns:110px minmax(0,1fr);gap:0 44px}
+  .tl::before{left:131px} .tly::before{left:127px}
+  .tly .evs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px 36px}
+}

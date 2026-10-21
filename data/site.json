@@ -55,11 +55,29 @@
       ]
     },
     {
+      "year": 2020,
+      "items": [
+        {
+          "t": "UUUM ONE PIECE MUUUSIC COVER ALBUM",
+          "s": "ギター"
+        }
+      ]
+    },
+    {
       "year": 2021,
       "items": [
         {
           "t": "専門学校・音楽教室で指導をはじめる",
           "s": ""
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "items": [
+        {
+          "t": "Dream Shizuka「Startin'」",
+          "s": "ギター"
         }
       ]
     },
@@ -70,6 +88,14 @@
           "t": "SUMMER SONIC 2023・イナズマロックフェス 2023",
           "s": "シユイ サポートギター",
           "key": true
+        },
+        {
+          "t": "シュレック・ザ・ミュージカル",
+          "s": "舞台"
+        },
+        {
+          "t": "Jams Collection「夏ときめいちゃいマッスル」",
+          "s": "作詞・作曲・編曲・ギター"
         }
       ]
     },
@@ -80,6 +106,18 @@
           "t": "B-PROJECT「Memory」",
           "s": "作詞・作曲・編曲・ギター",
           "key": true
+        },
+        {
+          "t": "CDTV",
+          "s": "地上波・バック演奏"
+        },
+        {
+          "t": "SAKAE SP-RING 2024・HUG ROCK FESTIVAL",
+          "s": "シユイ・somei サポートギター"
+        },
+        {
+          "t": "Chico・寿美菜子・シユイ ほか",
+          "s": "ギター"
         }
       ]
     },
@@ -89,6 +127,10 @@
         {
           "t": "Jams Collection「FLAME」ほか",
           "s": "星名美怜・Bunny La Crew・Pastel closet にも楽曲提供"
+        },
+        {
+          "t": "REIRIE Live Tour 2025 ほか",
+          "s": "REIRIE・シユイ サポートギター"
         }
       ]
     },
