@@ -209,7 +209,7 @@
   "links": {
     "spotify": "https://open.spotify.com/playlist/4vF3Pt0G9U2wvwlmTueu7q",
     "youtube": "https://www.youtube.com/@KokiKitagawa",
-    "instagram": "https://www.instagram.com/kitagawa_kouki/",
+    "instagram": "https://www.instagram.com/kitagawa_koki/",
     "x": "https://x.com/Gt_koki_",
     "tiktok": "https://www.tiktok.com/@koki.kitagawa"
   },
@@ -236,7 +236,7 @@
   "contactCta": {
     "label": "お仕事のご依頼",
     "action": "Instagram の DM へ",
-    "url": "https://www.instagram.com/kitagawa_kouki/",
+    "url": "https://www.instagram.com/kitagawa_koki/",
     "note": "Instagram の DM が開きます。曲の尺と納期だけ書いていただければ返信します。（お問い合わせフォームは準備中です）",
     "status": "暫定。フォームURLが来たら url を差し替え、action を「お問い合わせフォームへ」にする"
   },
