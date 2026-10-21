@@ -103,7 +103,46 @@ arts.forEach(b => b.addEventListener("click", () => press(b)));
 const featEl = document.getElementById("feat");
 if(featEl && "IntersectionObserver" in window){ const o = new IntersectionObserver(es => { if(es.some(e=>e.isIntersecting)){ loadApi(); o.disconnect(); } }, {rootMargin:"600px 0px"}); o.observe(featEl); }
 /* 制作実績のレコード：押すと上の再生ボタンと同じしくみで鳴らす（1回で切り替わる）。ジャケットのない作品は回るだけ */
-document.querySelectorAll(".vinyl").forEach(v => v.addEventListener("click", () => {
+/* Step 3：再生中のレコード（と、つかんで回しているレコード）から ♪ がふわっと飛び出す。音は出さない。「視差効果を減らす」の人には出さない */
+const NOTE_SVG = [
+  '<svg viewBox="0 0 20 28"><path d="M13 3v17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13 3c3 1.5 5.5 3.5 4.5 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="9" cy="21" rx="4.6" ry="3.5" transform="rotate(-20 9 21)" fill="currentColor"/></svg>',
+  '<svg viewBox="0 0 30 28"><path d="M9 21V5l16-3v16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M9 5l16-3v4L9 9z" fill="currentColor"/><ellipse cx="5.5" cy="21.5" rx="4.4" ry="3.3" transform="rotate(-20 5.5 21.5)" fill="currentColor"/><ellipse cx="21.5" cy="18.5" rx="4.4" ry="3.3" transform="rotate(-20 21.5 18.5)" fill="currentColor"/></svg>',
+  '<svg viewBox="0 0 20 28"><path d="M13 3v17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="9" cy="21" rx="4.6" ry="3.5" transform="rotate(-20 9 21)" fill="currentColor"/></svg>'
+];
+function popNote(v){
+  if(reduce.matches) return;
+  const li = v.closest(".vrec"); if(!li) return;
+  const n = document.createElement("i"); n.className = "vnote c" + (Math.random()*3|0); n.setAttribute("aria-hidden","true");
+  n.innerHTML = NOTE_SVG[Math.random()*NOTE_SVG.length|0];
+  const w = v.offsetWidth, a = (-150 + Math.random()*120) * Math.PI/180;   // 上半分の、ふちのあたりから出す
+  n.style.left = (v.offsetLeft + w/2 + Math.cos(a)*w*.42) + "px"; n.style.top = (v.offsetTop + w/2 + Math.sin(a)*w*.42) + "px";
+  n.style.setProperty("--dx", (Math.cos(a)*w*.35 + (Math.random()-.5)*20).toFixed(0) + "px");
+  n.style.setProperty("--dy", (-w*.35 - Math.random()*w*.25).toFixed(0) + "px");
+  n.style.setProperty("--r", ((Math.random()-.5)*50).toFixed(0) + "deg");
+  n.style.setProperty("--s", (.75 + Math.random()*.5).toFixed(2));
+  li.appendChild(n); n.addEventListener("animationend", () => n.remove());
+}
+setInterval(() => { if(document.hidden) return; document.querySelectorAll(".vrec .vinyl.spin:not(.grab)").forEach(v => { const r = v.getBoundingClientRect(); if(r.bottom > 0 && r.top < innerHeight) popNote(v); }); }, 650);
+
+/* Step 2：レコードを指やマウスでつかんで回せる（スクラッチ）。少しだけ動かしたときは「押した」として再生、回したときは再生しない。
+   離すと勢いで少し回り続けて止まる。回っている（再生中の）レコードは、つかんでいるあいだ自動の回転を止める */
+document.querySelectorAll(".vrec .vinyl").forEach(v => {
+  const pp = v.querySelector(".vpp"); let rot = 0, last = 0, lastT = 0, vel = 0, drag = null, moved = false, raf = 0;
+  const setRot = d => { rot = d; v.style.rotate = rot + "deg"; if(pp) pp.style.rotate = (-rot) + "deg"; };
+  const ang = e => { const r = v.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2)) * 180 / Math.PI; };
+  v.addEventListener("pointerdown", e => { if(e.button > 0) return; cancelAnimationFrame(raf); drag = e.pointerId; moved = false; last = ang(e); lastT = performance.now(); vel = 0;
+    v.setPointerCapture(e.pointerId); v.classList.add("grab"); });
+  v.addEventListener("pointermove", e => { if(drag !== e.pointerId) return;
+    let a = ang(e), d = a - last; if(d > 180) d -= 360; if(d < -180) d += 360;
+    if(!moved && Math.abs(d) < 4) return; moved = true;
+    const t = performance.now(); vel = d / Math.max(8, t - lastT); last = a; lastT = t; setRot(rot + d);
+    if(t - (v._np||0) > 160 && Math.abs(d) > 3){ v._np = t; popNote(v); } });   // 回しているあいだも ♪ が飛ぶ
+  const end = e => { if(drag !== e.pointerId) return; drag = null; v.classList.remove("grab");
+    if(moved){ v.dataset.dragged = "1"; setTimeout(() => delete v.dataset.dragged, 50);
+      if(!reduce.matches){ let w = vel * 16; const step = () => { w *= .94; if(Math.abs(w) < .2) return; setRot(rot + w); raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); } } };
+  v.addEventListener("pointerup", end); v.addEventListener("pointercancel", end);
+});
+document.querySelectorAll(".vinyl").forEach(v => v.addEventListener("click", e => { if(v.dataset.dragged){ e.preventDefault(); return; }
   const id = v.dataset.rtrack;
   if(id){ const art = arts.find(x => x.dataset.track===id); if(art) art.click(); else { v.dataset.track = id; loadApi(); press(v); } return; }
   const on = !v.classList.contains("spin"); v.classList.toggle("spin", on); v.setAttribute("aria-pressed", on);

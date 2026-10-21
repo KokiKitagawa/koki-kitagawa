@@ -1599,3 +1599,17 @@ form.f.yk>*{min-width:0}
 @media (max-width:820px){ .recs .card.vrec{display:grid;justify-items:stretch} }
 @media (max-width:820px){ .vrec .vpp{width:32px;height:32px;margin:-16px 0 0 -16px} .vrec .vpp .tri{border-left-width:10px;border-top-width:6px;border-bottom-width:6px} .vrec .vpp .bars{width:9px;height:11px;background:linear-gradient(90deg,#fff 0 3px,transparent 3px 6px,#fff 6px 9px)} }
 @media (max-width:820px){ .recs .vrec .rtx{text-align:left;justify-items:start} .recs .vrec .rtx b{margin-top:6px} }
+/* Step 2：レコードをつかんで回す */
+.vrec .vinyl{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.vrec .vinyl.grab{cursor:grabbing}
+.vrec .vinyl.grab,.vrec .vinyl.grab .vpp{animation-play-state:paused!important}
+.vrec .vinyl.grab{box-shadow:0 0 0 2px rgba(255,154,77,.7),0 22px 40px -22px rgba(0,0,0,.95)}
+/* Step 3：レコードから飛び出す ♪ */
+.vnote{position:absolute;z-index:3;width:18px;height:24px;margin:-12px 0 0 -9px;pointer-events:none;color:var(--or-hi);filter:drop-shadow(0 0 6px rgba(255,116,23,.35));
+  animation:vnote 2.2s cubic-bezier(.2,.7,.3,1) forwards}
+.vnote.c1{color:var(--or)} .vnote.c2{color:var(--ink);filter:none}
+.vnote svg{display:block;width:100%;height:100%}
+@keyframes vnote{0%{opacity:0;transform:translate(0,0) scale(calc(var(--s) * .5)) rotate(0)}15%{opacity:1}70%{opacity:.9}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotate(var(--r))}}
+@media (max-width:820px){ .vnote{width:13px;height:18px;margin:-9px 0 0 -6.5px} }
+@media (prefers-reduced-motion:reduce){ .vnote{display:none} }
