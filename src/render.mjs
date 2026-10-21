@@ -326,20 +326,32 @@ export function buildOutputs(files){
   }
   /* 記号（中心の線＝真ん中の線。y は下向きが＋、1目盛り＝12）*/
   const G = {
+    /* 棒が上（真ん中の線より下の音）。頭の右から上へ */
     q:  `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><path class="sk" d="M5.9 -1.5V-34"/>`,
     e:  `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><path class="sk" d="M5.9 -1.5V-34"/><path d="M5.9 -34c1.5 6 11 9 9.5 19.5c-1.2-6-4.5-8.5-9.5-10z"/>`,
     h:  `<ellipse class="hol" rx="6" ry="4.3" transform="rotate(-22)"/><path class="sk" d="M5.9 -1.5V-34"/>`,
     bm: `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><ellipse cx="24" cy="-6" rx="6.6" ry="4.7" transform="rotate(-22 24 -6)"/><path class="sk" d="M5.9 -1.5V-34M29.9 -7.5V-40"/><path d="M5 -36.5L30.8 -42.5V-36.5L5 -30.5z"/>`,
-    tr: `<path class="sk cl" d="M-1 40c-6 1.5-9-5.5-3.5-7.5c4.5-1.5 7 4.5 2.5 9M-1.5 41L5-34C6-46-4-50-6.5-41C-9-30 11-20 11 0C11 18-15 20-15 5C-15-7 3-10 6 3C7.5 12-3.5 15-5 7"/>`,
-    bs: `<path class="sk cl" d="M-9-8C-9-19 11-19 11-5C11 9-1 18-11 23"/><circle cx="-6.5" cy="-7.5" r="3.6"/><circle cx="16" cy="-6" r="2"/><circle cx="16" cy="6" r="2"/>`,
+    /* 棒が下（真ん中の線とそれより上の音）。頭の左から下へ。旗は右向き */
+    qd: `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><path class="sk" d="M-5.9 1.5V34"/>`,
+    ed: `<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><path class="sk" d="M-5.9 1.5V34"/><path d="M-5.9 34c1.5-6 11-9 9.5-19.5c-1.2 6-4.5 8.5-9.5 10z"/>`,
+    hd: `<ellipse class="hol" rx="6" ry="4.3" transform="rotate(-22)"/><path class="sk" d="M-5.9 1.5V34"/>`,
+    bmd:`<ellipse rx="6.6" ry="4.7" transform="rotate(-22)"/><ellipse cx="24" cy="-6" rx="6.6" ry="4.7" transform="rotate(-22 24 -6)"/><path class="sk" d="M-5.9 1.5V36M18.1 -4.5V30"/><path d="M-6.8 31.5L19 25.5V31.5L-6.8 37.5z"/>`,
+    /* ト音記号：うず巻きの真ん中が下から2本目の線（ソ＝+12） */
+    tr: `<path class="sk cl" transform="translate(0 8)" d="M-1 40c-6 1.5-9-5.5-3.5-7.5c4.5-1.5 7 4.5 2.5 9M-1.5 41L5-34C6-48 14-46 11-36C8-26-13-18-13 2C-13 18 13 18 13 4C13-8-5-9-6 2C-6.5 9 3 11 4 6"/>`,
+    /* ヘ音記号：黒い丸が上から2本目の線（ファ＝-12）、2つの点はその線をはさむすき間 */
+    bs: `<path class="sk cl" d="M-9-12.5C-9-23.5 11-23.5 11-9.5C11 4.5-1 13.5-11 18.5"/><circle cx="-6.5" cy="-12" r="3.6"/><circle cx="16" cy="-18" r="2"/><circle cx="16" cy="-6" r="2"/>`,
     sh: `<path class="sk thin" d="M-3-9V11M3-11V9M-6-2L6-5.5M-6 5L6 1.5"/>`
   };
+  /* 楽譜の決まり：真ん中の線とそれより上の音は棒を下に、下の音は棒を上に（2つつながりは2つの高さの平均で決める）。記号は自分の線に固定 */
+  const glyph = (g, dy) => ({q:1,e:1,h:1}[g] ? G[dy <= 0 ? g+"d" : g] : g==="bm" ? G[dy-3 < 0 ? "bmd" : "bm"] : G[g]);
+  const placeY = (g, dy) => (g==="tr" || g==="bs") ? 0 : dy;
+
   /* 手前の五線に流す並び：[記号, 高さ（目盛り 6＝線1本ぶんの半分）, 色] */
   const FRONT = [["tr",0,"w"],["q",-6,"o"],["e",6,"h"],["bm",12,"o"],["h",-12,"w"],["q",0,"h"],["bs",0,"w"],["e",-6,"o"],["sh",0,"h"],["q",6,"o"],["bm",0,"h"],["e",-12,"w"],["q",12,"o"],["h",6,"h"]];
   const BACK  = [["q",6,"o"],["tr",0,"w"],["e",-6,"h"],["q",0,"w"],["bm",6,"o"],["h",-6,"w"],["bs",0,"h"],["e",12,"o"],["q",-12,"w"]];
   let rbN = 0;
   function staffLayer(cls, geo, seq, scale, dur, rev, id){
-    const notes = seq.map(([g,dy,c],i) => `<g class="nt c-${c}"><animateMotion dur="${dur}s" begin="-${r1(dur*i/seq.length)}s" repeatCount="indefinite" rotate="${rev?"auto-reverse":"auto"}"><mpath href="#${id}"/></animateMotion><g transform="scale(${scale}) translate(0 ${dy})">${G[g]}</g></g>`).join("");
+    const notes = seq.map(([g,dy,c],i) => `<g class="nt c-${c}"><animateMotion dur="${dur}s" begin="-${r1(dur*i/seq.length)}s" repeatCount="indefinite" rotate="${rev?"auto-reverse":"auto"}"><mpath href="#${id}"/></animateMotion><g transform="scale(${scale}) translate(0 ${placeY(g,dy)})">${glyph(g,dy)}</g></g>`).join("");
     return `<g class="${cls}"><path id="${id}" class="ctr" d="${geo.center}"/>${geo.lines.map((d,k)=>`<path class="ln l${k}" d="${d}"/>`).join("")}${notes}</g>`;
   }
   /* PC 用（横長）とスマホ用（幅をせまくして、うねりを大きく）の2枚を描き、CSS で片方だけ出す */
