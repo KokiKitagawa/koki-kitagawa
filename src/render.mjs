@@ -15,7 +15,7 @@ export function buildOutputs(files){
   const pick = (o, ks) => Object.fromEntries(ks.map(k => [k, o[k] ?? null]));
   const D = {
     profile: pick(p, ["name","nameEn","bio","career","gear","work","lesson","links","canDo"]),
-    credits: J("data/credits.json").map(c => { const d = pick(c, ["title","artist","category","roles","year","jacket","spotify","spotifyRank"]);
+    credits: J("data/credits.json").map(c => { const d = pick(c, ["title","artist","category","roles","year","jacket","spotify","spotifyRank","album"]);
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
@@ -160,7 +160,7 @@ export function buildOutputs(files){
               <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
               <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
               <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
-            <ul class="grid4 recs" id="cgrid">${[...comp,...gtr].map(c=>rec(c.category, (c.roles||[]).join("・"), c.title, c.artist, c.year, c)).join("")}
+            <ul class="grid4 recs" id="cgrid">${[...comp,...gtr].map(c=>rec(c.category, (c.roles||[]).join("・"), c.title, c.album ? `${c.artist}（${c.album}）` : c.artist, c.year, c)).join("")}
               ${rec("karaoke","カラオケ音源制作","有名歌い手のカラオケ音源","作品名は非公開","×"+kara.length)}</ul>
           </div></details>
       </div>
