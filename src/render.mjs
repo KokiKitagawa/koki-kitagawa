@@ -4,7 +4,7 @@
    ページの文章・カードはすべてここで組み立てて、静的な HTML として書き出す。
    ボタンの動き（絞り込み・メニュー・フォーム送信など）は assets/js/main.js。
    ============================================================ */
-export const ROOT_FILES = ["src/template.html","data/voices.json","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js","assets/js/yoyaku.js","src/ill/guitar.svg","src/ill/compose.svg","src/ill/lesson.svg"];
+export const ROOT_FILES = ["src/template.html","data/voices.json","data/profile.json","data/credits.json","data/live.json","data/media.json","data/site.json","data/images.json","assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js","assets/js/yoyaku.js","assets/js/seito.js","src/ill/guitar.svg","src/ill/compose.svg","src/ill/lesson.svg"];
 const ASSETS = ["assets/css/kk-design-system.css","assets/css/site.css","assets/js/main.js"];
 /* 中身から短い印をつくる（CSS・JSを直したら、見る人のブラウザに古いものが残らないよう ?v= を変える） */
 const stamp = t => { let h = 5381; for(let i=0;i<t.length;i++) h = ((h<<5) + h + t.charCodeAt(i)) >>> 0; return h.toString(36); };
@@ -404,7 +404,7 @@ export function buildOutputs(files){
   if(site.noindex) html = html.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex, nofollow">');
   for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
   if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
-  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url)}, warnings };
+  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)}, warnings };
 }
 
 /* プライバシーポリシー（privacy.html）。トップと同じCSSを使う */
@@ -607,6 +607,113 @@ ${css}
 <footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
 <script type="application/json" id="ykcfg">${cfg}</script>
 <script src="assets/js/yoyaku.js?v=${stamp(files["assets/js/yoyaku.js"])}" defer></script>
+</body>
+</html>
+`;
+}
+
+/* 生徒さん専用の予約ページ（seito.html?k=合言葉）。月謝の回数の分＋追加の単発を、体験と同じ空き枠から予約する。
+   検索には出さない・HPからはリンクしない（URLは北川くんが生徒さんにメールで送る）。?demo=1 で見本の動きを見られる */
+export function seitoPage(files, p, site, url){
+  const L = p.lesson, B = site.booking || {};
+  const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${f}?v=${stamp(files[f])}">`).join("\n");
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const yen = n => Number(n).toLocaleString("ja-JP");
+  const pay = (L.payment||[]).filter(x => /^(月謝|単発)/.test(x[0]));
+  const cfg = JSON.stringify({api: B.api || "", single: site.lessonPlans.single.price}).replace(/</g,"\\u003c");
+  return `<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080d">
+<title>レッスンのご予約（生徒さん専用） | 北川弘喜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+${HEAD_ICONS("")}
+${css}
+</head>
+<body class="doc yk-page sk-page">
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><span class="yk-back">生徒さん専用</span></div></header>
+<main class="wrap docw ykw">
+  <div class="sh"><span class="no">—</span><h2>Lesson</h2><p>レッスンのご予約</p></div>
+
+  <p class="small" id="skLoad">読み込んでいます…</p>
+  <div class="card yk-closed" id="skBad" hidden>
+    <b id="skBadT">このページは、生徒さん専用です</b>
+    <small id="skBadM">北川から届いたメールのURLから開いてください。</small>
+    <div class="nf-btns"><a class="btn line" href="yoyaku.html">体験レッスンの予約はこちら</a></div>
+  </div>
+
+  <div id="skMain" hidden>
+    <div class="card sk-me">
+      <div class="sk-hi"><span class="chip or" id="skPlan"></span><b id="skName"></b></div>
+      <div class="sk-months" id="skMonths"></div>
+      <p class="sk-out" id="skOut" hidden><b>今月の回数は、おしまいです。</b>追加の単発レッスン（60分 ¥${yen(site.lessonPlans.single.price)}）なら、このまま予約できます。<button type="button" class="btn line sm" id="skMore">追加で単発レッスンを予約する</button></p>
+    </div>
+
+    <section class="sk-list" id="skListW" hidden>
+      <div class="yk-lg">予約中のレッスン</div>
+      <ol class="yk-picked sk-lessons" id="skList"></ol>
+    </section>
+
+    <form class="f yk" id="yk" novalidate>
+      <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
+        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
+        <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし<br>その場で予約が決まります</small></span></label>
+        <p class="err" hidden></p>
+      </fieldset>
+
+      <fieldset class="opts sk-hours"><legend><span class="yn">2</span>続けて何時間受けますか<i>1時間＝1回</i></legend><span id="skHours"></span></fieldset>
+
+      <div class="yk-when" id="ykWhen">
+        <div class="yk-lg"><span class="yn">3</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
+        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ時間だけ続けて空いている時間です。</p>
+        <p class="yk-now" id="ykNow" hidden aria-live="polite"></p>
+        <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
+        <div class="yk-times" id="ykTimes"></div>
+        <ol class="yk-picked" id="ykPicked"></ol>
+        <p class="err" id="ykWhenErr" hidden></p>
+      </div>
+
+      <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>
+      <label class="sk-ok" id="skOkW" hidden><input type="checkbox" id="skOk"><span>追加（単発）のレッスンとして申し込みます</span></label>
+      <p class="err" id="skOkErr" hidden></p>
+
+      <div><label for="y_q">練習したい曲・伝えたいこと<i class="opt-i">なくても大丈夫です</i></label><textarea id="y_q" class="sm" placeholder="例：〇〇の「△△」のソロ"></textarea></div>
+
+      <dl class="yk-brief" aria-label="申し込む前に">
+        <dt>キャンセル</dt><dd>3日前 23:59 まではこのページから無料。キャンセルした回は次の月まで使えます。それより後は1回分</dd>
+        <dt>月の回数</dt><dd>その月に予約しなかった回は、その月で終わりです</dd>
+        <dt>追加（単発）</dt><dd>回数を使い切ったあとは、1回 ¥${yen(site.lessonPlans.single.price)}（税込）</dd>
+        <dt>スタジオ代</dt><dd>1時間 約1,500円（当日スタジオで）／オンラインはなし</dd>
+      </dl>
+      <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
+      <p class="err" id="ykErr" hidden></p>
+    </form>
+
+    <div class="card yk-done" id="ykDone" hidden role="status" tabindex="-1"></div>
+
+    <section class="yk-notes">
+      <h3>ご案内</h3>
+      <table class="hours">
+        <tr><th>場所</th><td>${esc(L.place)}<small><a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent("サウンドスタジオM小岩店")}" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>
+        <tr><th>スタジオ代</th><td>${esc(L.studioFee)}</td></tr>
+        <tr><th>お支払い</th><td>${pay.map(x => `<span class="pay"><b>${esc(x[0])}</b>${esc(x[1])}</span>`).join("")}</td></tr>
+        <tr><th>キャンセル</th><td>${esc(L.cancel)}</td></tr>
+        <tr><th>振替</th><td>3日前 23:59 までにキャンセルした回と、スタジオのお部屋が取れなかった回は、次の月まで使えます。その月に予約しなかった回は、その月で終わりです。</td></tr>
+        <tr><th>追加（単発）</th><td>月の回数を使い切ったあとも、1回 ¥${yen(site.lessonPlans.single.price)}（税込・60分）で予約できます。</td></tr>
+      </table>
+    </section>
+  </div>
+</main>
+<footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
+<script type="application/json" id="ykcfg">${cfg}</script>
+<script src="assets/js/seito.js?v=${stamp(files["assets/js/seito.js"])}" defer></script>
 </body>
 </html>
 `;

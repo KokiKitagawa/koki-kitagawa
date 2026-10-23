@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#06080d">
+<title>レッスンのご予約（生徒さん専用） | 北川弘喜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/css/kk-design-system.css?v=69foca">
+<link rel="stylesheet" href="assets/css/site.css?v=1kmdg91">
+</head>
+<body class="doc yk-page sk-page">
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><span class="yk-back">生徒さん専用</span></div></header>
+<main class="wrap docw ykw">
+  <div class="sh"><span class="no">—</span><h2>Lesson</h2><p>レッスンのご予約</p></div>
+
+  <p class="small" id="skLoad">読み込んでいます…</p>
+  <div class="card yk-closed" id="skBad" hidden>
+    <b id="skBadT">このページは、生徒さん専用です</b>
+    <small id="skBadM">北川から届いたメールのURLから開いてください。</small>
+    <div class="nf-btns"><a class="btn line" href="yoyaku.html">体験レッスンの予約はこちら</a></div>
+  </div>
+
+  <div id="skMain" hidden>
+    <div class="card sk-me">
+      <div class="sk-hi"><span class="chip or" id="skPlan"></span><b id="skName"></b></div>
+      <div class="sk-months" id="skMonths"></div>
+      <p class="sk-out" id="skOut" hidden><b>今月の回数は、おしまいです。</b>追加の単発レッスン（60分 ¥9,000）なら、このまま予約できます。<button type="button" class="btn line sm" id="skMore">追加で単発レッスンを予約する</button></p>
+    </div>
+
+    <section class="sk-list" id="skListW" hidden>
+      <div class="yk-lg">予約中のレッスン</div>
+      <ol class="yk-picked sk-lessons" id="skList"></ol>
+    </section>
+
+    <form class="f yk" id="yk" novalidate>
+      <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
+        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
+        <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし<br>その場で予約が決まります</small></span></label>
+        <p class="err" hidden></p>
+      </fieldset>
+
+      <fieldset class="opts sk-hours"><legend><span class="yn">2</span>続けて何時間受けますか<i>1時間＝1回</i></legend><span id="skHours"></span></fieldset>
+
+      <div class="yk-when" id="ykWhen">
+        <div class="yk-lg"><span class="yn">3</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
+        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ時間だけ続けて空いている時間です。</p>
+        <p class="yk-now" id="ykNow" hidden aria-live="polite"></p>
+        <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
+        <div class="yk-times" id="ykTimes"></div>
+        <ol class="yk-picked" id="ykPicked"></ol>
+        <p class="err" id="ykWhenErr" hidden></p>
+      </div>
+
+      <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>
+      <label class="sk-ok" id="skOkW" hidden><input type="checkbox" id="skOk"><span>追加（単発）のレッスンとして申し込みます</span></label>
+      <p class="err" id="skOkErr" hidden></p>
+
+      <div><label for="y_q">練習したい曲・伝えたいこと<i class="opt-i">なくても大丈夫です</i></label><textarea id="y_q" class="sm" placeholder="例：〇〇の「△△」のソロ"></textarea></div>
+
+      <dl class="yk-brief" aria-label="申し込む前に">
+        <dt>キャンセル</dt><dd>3日前 23:59 まではこのページから無料。キャンセルした回は次の月まで使えます。それより後は1回分</dd>
+        <dt>月の回数</dt><dd>その月に予約しなかった回は、その月で終わりです</dd>
+        <dt>追加（単発）</dt><dd>回数を使い切ったあとは、1回 ¥9,000（税込）</dd>
+        <dt>スタジオ代</dt><dd>1時間 約1,500円（当日スタジオで）／オンラインはなし</dd>
+      </dl>
+      <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
+      <p class="err" id="ykErr" hidden></p>
+    </form>
+
+    <div class="card yk-done" id="ykDone" hidden role="status" tabindex="-1"></div>
+
+    <section class="yk-notes">
+      <h3>ご案内</h3>
+      <table class="hours">
+        <tr><th>場所</th><td>サウンドスタジオM小岩店（JR小岩駅から歩いて約4分）／オンライン<small><a href="https://www.google.com/maps/search/?api=1&amp;query=%E3%82%B5%E3%82%A6%E3%83%B3%E3%83%89%E3%82%B9%E3%82%BF%E3%82%B8%E3%82%AAM%E5%B0%8F%E5%B2%A9%E5%BA%97" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>
+        <tr><th>スタジオ代</th><td>1時間 約1,500円（当日スタジオでお支払い）。オンラインはかかりません。</td></tr>
+        <tr><th>お支払い</th><td><span class="pay"><b>月謝</b>カードの自動引き落とし（Square）</span><span class="pay"><b>単発</b>現金・カード（Square）</span></td></tr>
+        <tr><th>キャンセル</th><td>レッスン日の3日前 23:59 までのご連絡で、無料で日程を変更（振替）できます。それより後のキャンセル・変更は、レッスン1回分として扱います。</td></tr>
+        <tr><th>振替</th><td>3日前 23:59 までにキャンセルした回と、スタジオのお部屋が取れなかった回は、次の月まで使えます。その月に予約しなかった回は、その月で終わりです。</td></tr>
+        <tr><th>追加（単発）</th><td>月の回数を使い切ったあとも、1回 ¥9,000（税込・60分）で予約できます。</td></tr>
+      </table>
+    </section>
+  </div>
+</main>
+<footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
+<script type="application/json" id="ykcfg">{"api":"https://script.google.com/macros/s/AKfycby5bDtbLyKAmUYFXvM5kCBlsdzIqFw126P8803WqGTCRkEivEgTSXqw3pechjk9ozQT/exec","single":9000}</script>
+<script src="assets/js/seito.js?v=lj5c3j" defer></script>
+</body>
+</html>
