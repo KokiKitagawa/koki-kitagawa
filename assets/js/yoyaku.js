@@ -1,5 +1,7 @@
 /* yoyaku.js — 体験レッスンの予約ページの動き
-   空き枠は Apps Script（Googleカレンダー）から読む。?demo=1 を付けると、見本の空き枠で動きだけ確かめられる（送信はしない）。 */
+   空き枠は Apps Script（Googleカレンダー）から読む。?demo=1 を付けると、見本の空き枠で動きだけ確かめられる（送信はしない）。
+   2026-10-25：日時は1つだけ選ぶ（スタジオもオンラインも）。申し込むと「予約を確定する」メールが届き、リンクを開くと確定。
+   メールアドレスの打ちまちがい（gmial.com など）は、入れたときに教える。 */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
@@ -13,11 +15,9 @@
   const md = t => { const d = new Date(t + 9 * 3600e3); return (d.getUTCMonth() + 1) + "/" + d.getUTCDate(); };
   const hm = t => part(t, { hour: "numeric", minute: "2-digit" });
   const full = t => { const d = new Date(t + 9 * 3600e3); return `${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${wd(t)}）${hm(t)}〜`; };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
 
-  let slots = null, mode = "", day = "", pick = [];
-  /* スタジオ：いまどちらを選んでいるか（0＝第1希望、1＝第2希望、-1＝選び終わり）。skip2＝第2希望なしで進む */
-  let active = 0, skip2 = false;
-  const nowEl = $("ykNow");
+  let slots = null, mode = "", day = "", pick = [], prev = null;
 
   /* トップの「体験から始める」で来たとき：気になるプランを出して、申し込みの内容にも入れる */
   const plan = (new URLSearchParams(location.search).get("plan") || "").trim();
@@ -48,9 +48,8 @@
 
   /* 受け方 */
   form.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => {
-    mode = r.value; pick = []; active = 0; skip2 = false; hideErr(form.querySelector(".yk-mode .err"));
-    hint.textContent = mode === "studio" ? "第1希望を選んでください。第2希望は選ばなくても大丈夫です" : "1つ選んでください。その場で予約が決まります";
-    $("ykSend").textContent = mode === "studio" ? "この内容で申し込む" : "この日時で予約する";
+    mode = r.value; pick = []; hideErr(form.querySelector(".yk-mode .err"));
+    hint.textContent = "ご都合のよい日時を、1つ選んでください";
     loading.then(drawDays); mark();
   }));
 
@@ -61,57 +60,70 @@
     const keys = Object.keys(by).sort();
     if (!keys.includes(day)) day = keys[0] || "";
     days.innerHTML = keys.map(k => { const t = by[k][0].s, n = by[k].filter(s => pick.includes(s.s)).length;
-      return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${new Date(t + 9 * 3600e3).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ " + (mode === "studio" ? by[k].filter(s => pick.includes(s.s)).map(s => pick.indexOf(s.s) + 1).sort().map(n => "第" + n).join("・") : "選択中") : by[k].length + "枠"}</i></button>`; }).join("");
+      return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${new Date(t + 9 * 3600e3).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ 選択中" : by[k].length + "枠"}</i></button>`; }).join("");
     if (slots && !keys.length) times.innerHTML = `<p class="small yk-none">いま予約できる日時がありません。${mode === "studio" ? "オンラインを選ぶか、" : ""}<a href="./#contact">お問い合わせフォーム</a>からご相談ください。</p>`;
     else drawTimes(by[day] || []);
     drawPicked();
   }
   function drawTimes(list){
-    times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+〜$/, "")}</p><div class="opts">` + list.map(s => { const i = pick.indexOf(s.s), tag = i < 0 ? "" : mode === "studio" ? `<em class="yk-tag t${i + 1}">第${i + 1}希望</em>` : `<em class="yk-tag">予約</em>`;
-      return `<label class="opt${i >= 0 ? " t" + (i + 1) : ""}"><input type="checkbox" value="${s.s}" ${i >= 0 ? "checked" : ""}><span>${hm(s.s)}${tag}</span></label>`; }).join("") + "</div>" : "";
+    times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+〜$/, "")}</p><div class="opts">` + list.map(s => { const on = pick.includes(s.s);
+      return `<label class="opt${on ? " t1" : ""}"><input type="checkbox" value="${s.s}" ${on ? "checked" : ""}><span>${hm(s.s)}${on ? `<em class="yk-tag">予約</em>` : ""}</span></label>`; }).join("") + "</div>" : "";
   }
   days.addEventListener("click", e => { const b = e.target.closest("[data-day]"); if (!b) return; day = b.dataset.day; drawDays(); });
-  /* 時間を押したとき。スタジオは「いま選んでいる方（第1／第2希望）」に入る。選んである時間をもう一度押すと外れる */
-  const next = () => { active = !pick[0] ? 0 : (!pick[1] && !skip2) ? 1 : -1; };
+  /* 時間を押したとき：1つだけ。別の時間を押すと入れかわる */
   times.addEventListener("change", e => {
     const t = Number(e.target.value);
     hideErr($("ykWhenErr"));
-    if (mode === "online") pick = e.target.checked ? [t] : [];
-    else if (pick.includes(t)) { pick = pick.filter(x => x !== t); next(); }
-    else if (active < 0) { e.target.checked = false; showErr($("ykWhenErr"), "第1・第2希望とも選んであります。変えるときは、下の「変える」を押してください。"); return; }
-    else { pick[active] = t; pick = pick.filter(Boolean); if (active === 1) skip2 = false; next(); }
+    pick = e.target.checked ? [t] : [];
     drawDays(); mark();
   });
-  function row(i, t){
-    const lab = "第" + (i + 1) + "希望";
-    return `<li class="yk-slot${active === i ? " now" : ""}"><span class="chip or">${lab}</span><b>${full(t)}</b><span class="yk-acts"><button type="button" class="yk-chg" data-chg="${i}">変える</button><button type="button" class="yk-x" data-rm="${t}" aria-label="${lab}を取り消す">×</button></span></li>`;
-  }
   function drawPicked(){
-    if (mode !== "studio") {
-      picked.innerHTML = pick.map(t => `<li><span class="chip gr">予約する日時</span><b>${full(t)}</b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`).join("");
-      nowEl.hidden = true; return;
-    }
-    let h = "";
-    if (pick[0]) h += row(0, pick[0]);
-    else if (active === 0 && pick.length === 0) h += "";
-    if (pick[1]) h += row(1, pick[1]);
-    else if (pick[0]) h += skip2
-      ? `<li class="yk-slot yk-opt off"><span class="chip">第2希望</span><span class="yk-o"><b>なし</b><small>第1希望だけで申し込みます</small></span><span class="yk-acts"><button type="button" class="yk-chg" data-pick2>やっぱり選ぶ</button></span></li>`
-      : `<li class="yk-slot yk-opt${active === 1 ? " now" : ""}"><span class="chip">第2希望</span><span class="yk-o"><b>第2希望も選ぶ（任意）</b><small>上の日時から、もう1つ選べます。2つあると日程が決まりやすくなります。選ばなくても申し込めます</small></span><span class="yk-acts"><button type="button" class="yk-chg" data-skip2>第2希望なしで進む</button></span></li>`;
-    picked.innerHTML = h;
-    nowEl.hidden = false;
-    nowEl.innerHTML = active === 0 ? `<span class="chip or">第1希望</span>を選んでいます`
-      : active === 1 ? `<span class="chip">第2希望（任意）</span>を選んでいます`
-      : `選び終わりました。変えるときは、下の「変える」を押してください`;
+    picked.innerHTML = pick.map(t => `<li><span class="chip gr">予約する日時</span><b>${full(t)}</b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`).join("");
   }
   picked.addEventListener("click", e => {
-    const rm = e.target.closest("[data-rm]"), chg = e.target.closest("[data-chg]");
-    if (rm) { pick = pick.filter(x => x !== Number(rm.dataset.rm)); if (mode === "studio") next(); }
-    else if (chg) { active = Number(chg.dataset.chg); times.scrollIntoView({ behavior: "smooth", block: "center" }); }
-    else if (e.target.closest("[data-skip2]")) { skip2 = true; next(); drawDays(); mark(); document.querySelector(".yk-info").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
-    else if (e.target.closest("[data-pick2]")) { skip2 = false; next(); times.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    const rm = e.target.closest("[data-rm]"); if (!rm) return;
+    pick = []; hideErr($("ykWhenErr")); drawDays(); mark();
+  });
+
+  /* ---------- メールアドレスの打ちまちがい ---------- */
+  const DOMAINS = ["gmail.com","yahoo.co.jp","icloud.com","me.com","mac.com","outlook.com","outlook.jp","hotmail.com","hotmail.co.jp","live.jp","live.com","msn.com",
+    "docomo.ne.jp","ezweb.ne.jp","au.com","softbank.ne.jp","i.softbank.jp","ymobile.ne.jp","yahoo.ne.jp","ybb.ne.jp","nifty.com","ocn.ne.jp","biglobe.ne.jp","so-net.ne.jp","googlemail.com","yahoo.com"];
+  const CARRIER = ["docomo.ne.jp","ezweb.ne.jp","au.com","softbank.ne.jp","i.softbank.jp","ymobile.ne.jp"];
+  const WRONG = { "gmail.co.jp": "gmail.com", "gmail.jp": "gmail.com", "gmail.ne.jp": "gmail.com", "yahoo.jp": "yahoo.co.jp", "yahoo.co.jo": "yahoo.co.jp", "icloud.co.jp": "icloud.com", "icloud.jp": "icloud.com", "docomo.co.jp": "docomo.ne.jp", "docomo.jp": "docomo.ne.jp", "ezweb.co.jp": "ezweb.ne.jp", "softbank.co.jp": "softbank.ne.jp" };
+  function dist(a, b){
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1), i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1] ? d[i - 2][j - 2] + 1 : 99);
+    return d[a.length][b.length];
+  }
+  function check(v){
+    const m = v.trim().toLowerCase().match(/^([^@\s]+)@([^@\s]+)$/);
+    if (!m) return null;
+    const dom = m[2].replace(/,/g, ".");
+    if (DOMAINS.includes(dom)) return CARRIER.includes(dom) ? { carrier: true } : null;
+    let best = WRONG[dom] || "", bd = best ? 0 : 99;
+    if (!best) DOMAINS.forEach(x => { const d = dist(dom, x); if (d < bd) { bd = d; best = x; } });
+    return best && bd <= (dom.length > 9 ? 2 : 1) ? { fix: m[1] + "@" + best } : null;
+  }
+  const mailEl = $("y_mail"), sug = $("ykSug");
+  let sugFix = "", sugOk = false;
+  function drawSug(){
+    const v = mailEl.value.normalize("NFKC").replace(/\s/g, "");
+    if (v !== mailEl.value) mailEl.value = v;   // 全角の＠や空白を直す
+    const r = check(v);
+    sugFix = r && r.fix && !sugOk ? r.fix : "";
+    if (sugFix) { sug.className = "yk-sug"; sug.innerHTML = `もしかして <b>${esc(sugFix)}</b> ですか？<button type="button" class="yk-chg" data-fix>直す</button><button type="button" class="yk-chg" data-keep>このままでいい</button>`; sug.hidden = false; }
+    else if (r && r.carrier) { sug.className = "yk-sug note"; sug.textContent = "携帯会社のメールは、パソコンからのメールが届かない設定になっていることがあります。「@gmail.com」からのメールを受け取れるようにしておくか、Gmail などのアドレスをお使いください。"; sug.hidden = false; }
+    else sug.hidden = true;
+  }
+  mailEl.addEventListener("blur", drawSug);
+  mailEl.addEventListener("input", () => { sugOk = false; if (!sug.hidden) drawSug(); });
+  sug.addEventListener("click", e => {
+    if (e.target.closest("[data-fix]")) { mailEl.value = sugFix; sugOk = false; }
+    else if (e.target.closest("[data-keep]")) sugOk = true;
     else return;
-    hideErr($("ykWhenErr")); drawDays(); mark();
+    drawSug(); hideErr(mailEl.parentNode.querySelector(".err")); mark();
   });
 
   /* 上の 1・2・3 の印 */
@@ -127,40 +139,51 @@
   /* 送る */
   form.addEventListener("submit", e => {
     e.preventDefault();
+    drawSug();
     let bad = null;
     const need = (ok, el, msg, focus) => { if (!ok) { showErr(el, msg); bad = bad || focus; } else hideErr(el); };
     need(!!mode, form.querySelector(".yk-mode .err"), "スタジオかオンラインを選んでください。", form.querySelector(".yk-mode"));
     need(!mode || pick.length > 0, $("ykWhenErr"), "日時を選んでください。", $("ykWhen"));
     need($("y_name").value.trim(), $("y_name").parentNode.querySelector(".err"), "お名前を入れてください。", $("y_name"));
-    need(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test($("y_mail").value.trim()), $("y_mail").parentNode.querySelector(".err"), "メールアドレスを確かめてください。", $("y_mail"));
+    const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailEl.value.trim());
+    need(mailOk && !sugFix, mailEl.parentNode.querySelector(".err"), mailOk ? "メールアドレスを確かめてください（下の「直す」か「このままでいい」を押してください）。" : "メールアドレスを確かめてください。", mailEl);
     if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     const val = n => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value);
-    const data = { mode, slots: pick, name: $("y_name").value, kana: $("y_kana").value, email: $("y_mail").value.trim(), tel: $("y_tel").value,
+    const data = { mode, slots: pick, name: $("y_name").value, kana: $("y_kana").value, email: mailEl.value.trim(), tel: $("y_tel").value,
       age: $("y_age").value, level: $("y_level").value, guitar: val("guitar")[0] || "", goals: val("goals"), song: $("y_song").value, q: [myPlan ? "【気になるプラン】" + myPlan : "", $("y_q").value].filter(Boolean).join("\n"),
-      from: $("y_from").value, website: $("y_web").value };
+      from: $("y_from").value, website: $("y_web").value, prev };
     const btn = $("ykSend"), err = $("ykErr");
     btn.disabled = true; btn.textContent = "送っています…"; hideErr(err);
-    const send = demo ? new Promise(r => setTimeout(() => r({ ok: true, mode }), 700))
+    const send = demo ? new Promise(r => setTimeout(() => r({ ok: true, pending: true, mode, min: 30, rid: "demo", rk: "demo" }), 700))
       : fetch(cfg.api, { method: "POST", body: JSON.stringify(data) }).then(r => r.json());
     send.then(r => {
       if (!r.ok) {
+        if (r.badMail) { showErr(mailEl.parentNode.querySelector(".err"), r.msg); mailEl.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
         showErr(err, r.msg || "送信できませんでした。");
         if (r.gone) { pick = []; slots = null; fetchSlots().then(drawDays); }
         return;
       }
-      finish(data);
+      prev = r.rid ? { id: r.rid, k: r.rk } : null;
+      finish(data, r);
     }).catch(() => showErr(err, "送信できませんでした。通信の状態を確かめて、もう一度お試しください。うまくいかない場合は、お問い合わせフォームからご連絡ください。"))
-      .finally(() => { btn.disabled = false; btn.textContent = mode === "studio" ? "この内容で申し込む" : "この日時で予約する"; });
+      .finally(() => { btn.disabled = false; btn.textContent = "この内容で申し込む"; });
   });
 
-  function finish(d){
-    const el = $("ykDone"), esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
-    const list = d.slots.map((t, i) => `<li>${d.mode === "studio" ? `<span class="chip or">第${i + 1}希望</span>` : ""}<b>${full(t)}</b></li>`).join("");
-    el.innerHTML = d.mode === "studio"
-      ? `<span class="chip or">RECEIVED</span><h3>お申し込みを受け付けました</h3><p>スタジオのお部屋の空きを確かめて、<b>24時間以内に「日程確定」のメール</b>をお送りします。まだ予約は確定していませんので、メールをお待ちください。</p><ol class="yk-picked">${list}</ol>`
-      : `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました</h3><p>当日の入り口（Google Meet のリンク）を、メールでお送りしました。</p><ol class="yk-picked">${list}</ol>`;
-    el.innerHTML += `<p class="small">確認のメールを <b>${esc(d.email)}</b> にお送りしました。届かないときは、迷惑メールのフォルダもご覧ください。${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p><a class="btn line" href="./">トップへ戻る</a>`;
+  function finish(d, r){
+    const el = $("ykDone"), min = r.min || 30;
+    const list = d.slots.map(t => `<li><span class="chip or">${d.mode === "studio" ? "スタジオ" : "オンライン"}</span><b>${full(t)}</b></li>`).join("");
+    el.innerHTML = `<span class="chip or">あと1つ</span><h3>メールのリンクを開くと、予約が確定します</h3>`
+      + `<p><b>${esc(d.email)}</b> に「予約を確定する」メールをお送りしました。<b>${min}分以内に、メールの中のリンクを開いてください。</b>開くまで、予約はまだ確定していません。</p>`
+      + `<ol class="yk-picked">${list}</ol>`
+      + `<p class="small">数分たってもメールが届かないときは<br>・迷惑メールのフォルダも見てください<br>・メールアドレスがまちがっているかもしれません。下のボタンから、アドレスを直してもう一度お申し込みください<br>・携帯会社のメールは、パソコンからのメールが届かない設定のことがあります${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
+      + `<button type="button" class="btn line" id="ykAgain">アドレスを直して申し込み直す</button>`;
     form.hidden = true; document.querySelector(".yk-steps").hidden = true; el.hidden = false;
     el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
+    $("ykAgain").addEventListener("click", () => {
+      el.hidden = true; form.hidden = false; document.querySelector(".yk-steps").hidden = false; sugOk = false;
+      /* 自分の申し込み中の枠は、ほかの人には出ないので、手もとで足して選んだままにする */
+      slots = null; fetchSlots().then(() => { pick.forEach(t => { if (!slots.some(s => s.s === t)) slots.push({ s: t, st: d.mode === "studio" ? 1 : 0 }); }); slots.sort((a, b) => a.s - b.s); drawDays(); });
+      mailEl.scrollIntoView({ behavior: "smooth", block: "center" }); mailEl.focus({ preventScroll: true });
+    });
   }
 })();

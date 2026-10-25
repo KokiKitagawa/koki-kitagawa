@@ -231,8 +231,8 @@ export function buildOutputs(files){
       <div class="les-extra">
         <div><h3><span>STEP</span>はじめるまで</h3>
           <ol class="flow hs" id="flow">
-            ${D.yoyaku ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>スタジオは候補を2つまで、オンラインはその場で予約</small></li>
-            <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>スタジオは24時間以内に日程確定のご連絡（お部屋が取れないときは、別の日をご相談）</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
+            ${D.yoyaku ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>スタジオもオンラインも、1つ選ぶだけ</small></li>
+            <li class="card"><span class="n">02</span><b>メールのリンクで確定</b><small>届いたメールのリンクを開くと、予約が確定します</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
             <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>場所と当日の流れをお送りします</small></li>` : `<li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
@@ -538,8 +538,8 @@ ${css}
 
   <form class="f yk" id="yk" novalidate>
     <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
-      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡<br>お部屋が取れないときは、別の日をご相談します<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
-      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし<br>その場で予約が決まります</small></span></label>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>お部屋は前の日に北川が予約します（小岩が空いていないときは、亀戸・平井などの近くのスタジオ。どこも取れなければ、オンラインか別の日を選べます）<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし</small></span></label>
       <p class="err" hidden></p>
     </fieldset>
 
@@ -561,7 +561,7 @@ ${css}
         <div><label for="y_kana">ふりがな</label><input id="y_kana"></div>
       </div>
       <div class="two">
-        <div><label for="y_mail">メールアドレス<i>必須</i></label><input id="y_mail" type="email" inputmode="email" autocomplete="email"><p class="err" hidden></p></div>
+        <div><label for="y_mail">メールアドレス<i>必須</i></label><input id="y_mail" type="email" inputmode="email" autocomplete="email"><p class="yk-sug" id="ykSug" hidden aria-live="polite"></p><p class="err" hidden></p></div>
         <div><label for="y_tel">電話番号</label><input id="y_tel" type="tel" inputmode="tel" autocomplete="tel"></div>
       </div>
       <div class="two">
@@ -663,7 +663,7 @@ ${css}
 
     <form class="f yk" id="yk" novalidate>
       <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
-        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店<br>候補を2つまで選ぶ → 24時間以内に確定のご連絡<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
+        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店<br>選んだ日で、その場で予約が決まります<br>お部屋は前の日に北川が予約します（小岩が空いていないときは、亀戸・平井などの近くのスタジオ。どこも取れなければ、オンラインか別の日を選べます。回数は減りません）<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
         <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし<br>その場で予約が決まります</small></span></label>
         <p class="err" hidden></p>
       </fieldset>
@@ -671,8 +671,8 @@ ${css}
       <fieldset class="opts sk-hours"><legend><span class="yn">2</span>続けて何時間受けますか<i>1時間＝1回</i></legend><span id="skHours"></span></fieldset>
 
       <div class="yk-when" id="ykWhen">
-        <div class="yk-lg"><span class="yn">3</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
-        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ時間だけ続けて空いている時間です。</p>
+        <div class="yk-lg"><span class="yn">3</span>日時を選んでください（何日でも）<i id="ykHint">先に、受け方を選んでください</i></div>
+        <p class="small yk-lead">受けたい日を、いくつでも選べます。まとめて1回で予約できます。スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ時間だけ続けて空いている時間です。</p>
         <p class="yk-now" id="ykNow" hidden aria-live="polite"></p>
         <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
         <div class="yk-times" id="ykTimes"></div>
