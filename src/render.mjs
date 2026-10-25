@@ -498,7 +498,7 @@ export function yoyakuPage(files, p, site, url){
   const yen = n => Number(n).toLocaleString("ja-JP");
   const pay = (L.payment||[]).filter(x => /^体験/.test(x[0]));
   const planNames = [...site.lessonPlans.monthly.map(m => m.name), "単発"];
-  const cfg = JSON.stringify({api: B.api || "", fallback: B.url || "", plans: planNames}).replace(/</g,"\\u003c");
+  const cfg = JSON.stringify({api: B.api || "", fallback: B.url || "", plans: planNames, line: B.lineChat || ""}).replace(/</g,"\\u003c");
   const opt = (name, type, list) => list.map(x => `<label class="opt"><input type="${type}" name="${name}" value="${esc(x)}"><span>${esc(x)}</span></label>`).join("");
   const sel = list => `<option value="">選んでください</option>` + list.map(x => `<option>${esc(x)}</option>`).join("");
   return `<!doctype html>
@@ -528,6 +528,7 @@ ${css}
 
   <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・スタジオで受ける場合は、ギターを借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
   <p class="yk-plan" id="ykPlan" hidden></p>
+  <p class="yk-plan" id="ykLine" hidden></p>
   <ol class="yk-steps" aria-hidden="true"><li data-st="1"><span>1</span>受け方</li><li data-st="2"><span>2</span>日時</li><li data-st="3"><span>3</span>お名前など</li></ol>
 
   <div class="card yk-closed" id="ykClosed" hidden>

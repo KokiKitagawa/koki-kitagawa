@@ -232,7 +232,7 @@
     const list = items.map(x => `<li><span class="chip gr">確定</span><b>${span(x.s, hours)}</b></li>`).join("");
     const parts = [r.getsu ? `月謝 ${r.getsu}回分` : "", r.tan ? `追加（単発）${r.tan}回` : ""].filter(Boolean).join("＋");
     el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました（${items.length}日）</h3>`
-      + `<p>${mode === "studio" ? "確定のメールをお送りしました。<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所をメールでお知らせします。" : "当日の入り口（Google Meet のリンク）を、メールでお送りしました。"}</p>`
+      + `<p>${mode === "studio" ? `確定の${r.line ? "お知らせを LINE に" : "メールを"}お送りしました。<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を${r.line ? " LINE " : "メール"}でお知らせします。` : `当日の入り口（Google Meet のリンク）を、${r.line ? "LINE" : "メール"}でお送りしました。`}</p>`
       + `<ol class="yk-picked">${list}</ol><p class="small">${hours}時間ずつ（${parts}）${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p><button type="button" class="btn line" id="skAgain">続けて予約する</button>`;
     form.hidden = true; el.hidden = false;
     el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });

@@ -1,7 +1,8 @@
 /* yoyaku.js — 体験レッスンの予約ページの動き
    空き枠は Apps Script（Googleカレンダー）から読む。?demo=1 を付けると、見本の空き枠で動きだけ確かめられる（送信はしない）。
    2026-10-25：日時は1つだけ選ぶ（スタジオもオンラインも）。申し込むと「予約を確定する」メールが届き、リンクを開くと確定。
-   メールアドレスの打ちまちがい（gmial.com など）は、入れたときに教える。 */
+   メールアドレスの打ちまちがい（gmial.com など）は、入れたときに教える。
+   公式LINE のメニューから開いたとき（?l=合言葉）は、メールの確認なしでその場で確定。メールアドレスはなくてもよく、お知らせは LINE に届く。 */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
@@ -18,6 +19,7 @@
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
 
   let slots = null, mode = "", day = "", pick = [], prev = null;
+  const lkey = (new URLSearchParams(location.search).get("l") || "").trim();
 
   /* トップの「体験から始める」で来たとき：気になるプランを出して、申し込みの内容にも入れる */
   const plan = (new URLSearchParams(location.search).get("plan") || "").trim();
@@ -25,6 +27,14 @@
   if (myPlan) { const el = $("ykPlan"); el.innerHTML = `<span class="chip or">気になるプラン</span><b>${myPlan}</b>（体験のあとで、くわしくご案内します）`; el.hidden = false; }
 
   if (!cfg.api && !demo) { $("ykClosed").hidden = false; form.hidden = true; return; }
+
+  /* LINE から開いたとき */
+  if (lkey) {
+    const el = $("ykLine");
+    el.innerHTML = `<span class="chip gr">LINE</span><b>LINE から開いています。</b>申し込むと、その場で予約が決まります。確定や前の日のお知らせは、LINE に届きます。`;
+    el.hidden = false;
+    document.querySelector('label[for="y_mail"]').innerHTML = `メールアドレス<i class="opt-i">なくても大丈夫です</i>`;
+  }
 
   /* 空き枠を読む */
   function demoSlots(){
@@ -128,7 +138,7 @@
 
   /* 上の 1・2・3 の印 */
   function mark(){
-    const done = [!!mode, pick.length > 0, !!($("y_name").value.trim() && $("y_mail").value.trim())];
+    const done = [!!mode, pick.length > 0, !!($("y_name").value.trim() && (lkey || $("y_mail").value.trim()))];
     steps.forEach((li, i) => li.classList.toggle("ok", done[i]));
   }
   ["y_name","y_mail"].forEach(id => $(id).addEventListener("input", () => { mark(); hideErr($(id).parentNode.querySelector(".err")); }));
@@ -145,16 +155,16 @@
     need(!!mode, form.querySelector(".yk-mode .err"), "スタジオかオンラインを選んでください。", form.querySelector(".yk-mode"));
     need(!mode || pick.length > 0, $("ykWhenErr"), "日時を選んでください。", $("ykWhen"));
     need($("y_name").value.trim(), $("y_name").parentNode.querySelector(".err"), "お名前を入れてください。", $("y_name"));
-    const mailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailEl.value.trim());
+    const mailOk = (lkey && !mailEl.value.trim()) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailEl.value.trim());
     need(mailOk && !sugFix, mailEl.parentNode.querySelector(".err"), mailOk ? "メールアドレスを確かめてください（下の「直す」か「このままでいい」を押してください）。" : "メールアドレスを確かめてください。", mailEl);
     if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     const val = n => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value);
     const data = { mode, slots: pick, name: $("y_name").value, kana: $("y_kana").value, email: mailEl.value.trim(), tel: $("y_tel").value,
       age: $("y_age").value, level: $("y_level").value, guitar: val("guitar")[0] || "", goals: val("goals"), song: $("y_song").value, q: [myPlan ? "【気になるプラン】" + myPlan : "", $("y_q").value].filter(Boolean).join("\n"),
-      from: $("y_from").value, website: $("y_web").value, prev };
+      from: $("y_from").value, website: $("y_web").value, prev, l: lkey };
     const btn = $("ykSend"), err = $("ykErr");
     btn.disabled = true; btn.textContent = "送っています…"; hideErr(err);
-    const send = demo ? new Promise(r => setTimeout(() => r({ ok: true, pending: true, mode, min: 30, rid: "demo", rk: "demo" }), 700))
+    const send = demo ? new Promise(r => setTimeout(() => r(lkey ? { ok: true, line: true, mode } : { ok: true, pending: true, mode, min: 30, rid: "demo", rk: "demo" }), 700))
       : fetch(cfg.api, { method: "POST", body: JSON.stringify(data) }).then(r => r.json());
     send.then(r => {
       if (!r.ok) {
@@ -172,6 +182,16 @@
   function finish(d, r){
     const el = $("ykDone"), min = r.min || 30;
     const list = d.slots.map(t => `<li><span class="chip or">${d.mode === "studio" ? "スタジオ" : "オンライン"}</span><b>${full(t)}</b></li>`).join("");
+    if (r.line) {   // LINE から：その場で確定
+      el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました</h3>`
+        + `<p>LINE に、確定のお知らせを送りました。${d.mode === "studio" ? "<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を LINE でお知らせします。" : "当日の入り口（Google Meet のリンク）も、LINE のお知らせに入っています。"}</p>`
+        + `<ol class="yk-picked">${list}</ol>`
+        + `<p class="small">予約の確認・キャンセルは、LINE のメニューの「予約の確認・キャンセル」からできます。${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
+        + (cfg.line ? `<a class="btn or" href="${esc(cfg.line)}">LINE のトークにもどる</a>` : "");
+      form.hidden = true; document.querySelector(".yk-steps").hidden = true; $("ykLine").hidden = true; el.hidden = false;
+      el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
+      return;
+    }
     el.innerHTML = `<span class="chip or">あと1つ</span><h3>メールのリンクを開くと、予約が確定します</h3>`
       + `<p><b>${esc(d.email)}</b> に「予約を確定する」メールをお送りしました。<b>${min}分以内に、メールの中のリンクを開いてください。</b>開くまで、予約はまだ確定していません。</p>`
       + `<ol class="yk-picked">${list}</ol>`
