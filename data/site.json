@@ -187,7 +187,9 @@
     "url": "https://calendar.app.google/2d3tvKbuAZ1rJxL89",
     "embed": "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0zlAY1VSBMXHqqVfY91Iht4JiIEWCTn6wrmNnsVPhyR2GL3v3R7jZozPPGsEDjo3CVHwF6rJ_f?gv=true",
     "_line_note": "lineChat＝公式LINE「北川弘喜(ギターレッスン)」のトークを開くURL。LINE から予約した人に「LINE のトークにもどる」ボタンを出す（2026-10-25）",
-    "lineChat": "https://line.me/R/oaMessage/@557brylm/"
+    "lineChat": "https://line.me/R/oaMessage/@557brylm/",
+    "_lineAdd_note": "lineAdd＝公式LINE の友だち追加のURL。入っているあいだ、LESSON の一番下と予約ページに「LINE で友だち追加」を出す（PC で開くと QR コードが出る）（2026-10-25）",
+    "lineAdd": "https://line.me/R/ti/p/@557brylm"
   },
   "video": {
     "_note": "オリジナル曲のPVなど、ページに載せる動画1本。YouTubeのURLを入れると WORKS の一番上に出る。空のあいだは出さない",

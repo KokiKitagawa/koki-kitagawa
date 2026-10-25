@@ -33,6 +33,7 @@
     const el = $("ykLine");
     el.innerHTML = `<span class="chip gr">LINE</span><b>LINE から開いています。</b>申し込むと、その場で予約が決まります。確定や前の日のお知らせは、LINE に届きます。`;
     el.hidden = false;
+    const add = $("ykLineAdd"); if (add) add.hidden = true;   // もう LINE から来ている
     document.querySelector('label[for="y_mail"]').innerHTML = `メールアドレス<i class="opt-i">なくても大丈夫です</i>`;
   }
 

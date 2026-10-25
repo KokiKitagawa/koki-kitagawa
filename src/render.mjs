@@ -19,7 +19,7 @@ export function buildOutputs(files){
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
-    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, yoyaku: !!(site.booking||{}).api, booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, trialProof: (site.trialProof||{}).text||"", news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
+    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, yoyaku: !!(site.booking||{}).api, lineAdd: (site.booking||{}).lineAdd||"", booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, trialProof: (site.trialProof||{}).text||"", news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
   };
   const IMG = images.paths, ICON = site.icons;
   const warnings = [];
@@ -251,10 +251,17 @@ export function buildOutputs(files){
         </div>
       </div>${voices()}
       ${D.yoyaku ? `<div class="les-book reveal">
-        <a class="ct-book" href="yoyaku.html"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>体験レッスンを予約する</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。空いている日時から、そのまま申し込めます</small></span><i class="cb-arr" aria-hidden="true">→</i></a>
+        ${D.lineAdd ? `<a class="ct-book ln only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>LINE で体験レッスンを予約</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。友だち追加すると、すぐに予約のボタンが届きます。お知らせも LINE に</small></span><i class="cb-arr cb-ln" aria-hidden="true">${LINE_ICON}</i></a>
+        <a class="les-web only-sp" href="yoyaku.html">LINE を使わない方は、こちらの予約ページから →</a>` : ""}
+        <a class="ct-book${D.lineAdd ? " only-pc" : ""}" href="yoyaku.html"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>体験レッスンを予約する</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。空いている日時から、そのまま申し込めます</small></span><i class="cb-arr" aria-hidden="true">→</i></a>
+        ${D.lineAdd ? lineCard("les") : ""}
         <a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>予約の前に聞きたいことは Instagram の DM へ</b><small>気軽にメッセージください</small></span></a>
       </div>` : ""}
     </div><i class="seam" aria-hidden="true"></i></section>`;
+  }
+  /* 公式LINE の友だち追加（2026-10-25）。体験の予約・質問・予約の確認が LINE でできる */
+  function lineCard(where){
+    return `<a class="dm ln only-pc" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><i>${LINE_ICON}</i><span><b>公式LINE を友だち追加</b><small>体験の予約・ご質問・予約の確認が、LINE でできます</small></span><em class="ln-add">友だち追加</em></a>`;
   }
   /* 生徒さんの声：data/voices.json に本人からもらった言葉が入ったときだけ出す */
   function voices(){
@@ -396,7 +403,9 @@ export function buildOutputs(files){
   put("<!--@phstyle-->", phStyle);
   put("<!--@main-->", main);
   /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */
-  if(D.yoyaku) html = html.split('<button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>').join('<a class="btn or" href="yoyaku.html">体験レッスンを予約</a>');
+  /* 2026-10-25：スマホは公式LINE から予約するのを一番に（友だち追加すると、すぐ予約のボタンが届く）。PC は予約ページのまま */
+  if(D.yoyaku) html = html.split('<button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>').join('<a class="btn or' + (D.lineAdd ? ' only-pc' : '') + '" href="yoyaku.html">体験レッスンを予約</a>'
+    + (D.lineAdd ? `<a class="btn or ln-btn only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener">${LINE_ICON}LINEで体験予約</a>` : ''));
   else if(D.booking) html = html.split('data-open="レッスン">レッスンを申し込む').join('data-book>体験レッスンを予約');
   put("<!--@sns-->", snsHTML());
   put("<!--@config-->", cfg);
@@ -489,6 +498,9 @@ ${css}
 `;
 }
 
+/* 公式LINE のアイコン（白い吹き出し） */
+const LINE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c-5.2 0-9.4 3.4-9.4 7.6 0 3.8 3.4 6.9 7.9 7.5.3.1.7.2.8.5.1.2.1.6 0 .9l-.1.8c0 .2-.2.9.8.5s5.4-3.2 7.4-5.4c1.4-1.5 2-3.1 2-4.8 0-4.2-4.2-7.6-9.4-7.6z" fill="#fff"/><path d="M7 9.2v3.6h2.2M10.6 9.2v3.6M12.6 12.8V9.2l2.6 3.6V9.2M18.6 9.2h-2.1v3.6h2.1M16.5 11h2" fill="none" stroke="#06c755" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
 /* 体験レッスンの予約ページ（yoyaku.html）。見た目はトップと同じCSS、空き枠と予約は Googleカレンダー（Apps Script）とつなぐ。
    data/site.json の booking.api に Apps Script の URL が入るまでは「準備中」と出る（?demo=1 を付けると見本の空き枠で動きを見られる） */
 export function yoyakuPage(files, p, site, url){
@@ -529,6 +541,7 @@ ${css}
   <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・スタジオで受ける場合は、ギターを借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
   <p class="yk-plan" id="ykPlan" hidden></p>
   <p class="yk-plan" id="ykLine" hidden></p>
+  ${B.lineAdd ? `<a class="dm ln yk-ln" id="ykLineAdd" href="${esc(B.lineAdd)}" target="_blank" rel="noopener"><i>${LINE_ICON}</i><span><b>LINE からも予約できます</b><small>公式LINE を友だち追加して、メニューの「体験レッスンを予約」から。メールの確認なしで決まり、お知らせも LINE に届きます</small></span><em class="ln-add">友だち追加</em></a>` : ""}
   <ol class="yk-steps" aria-hidden="true"><li data-st="1"><span>1</span>受け方</li><li data-st="2"><span>2</span>日時</li><li data-st="3"><span>3</span>お名前など</li></ol>
 
   <div class="card yk-closed" id="ykClosed" hidden>
