@@ -224,7 +224,7 @@ document.querySelectorAll(".sk3").forEach(c => {
 });
 
 /* 五線譜リボン（2026-10-27 作り直し・北川くん）
-   ・音符は五線のカーブに乗って流れる（1つのループで動かす。見えているときだけ）
+   ・音符は五線のカーブに乗っている。ふだんは止まっていて、触ったときだけ少し流れる（2026-10-27）
    ・触ったところを中心に、ギターの弦のように揺れて、だんだんおさまる（5本が少しずつずれて揺れる）
    ・「視差効果を減らす」の人には動かさない（render.mjs が書き出した止まった形のまま） */
 document.querySelectorAll(".ribbon.wave").forEach(r => {
@@ -255,27 +255,29 @@ document.querySelectorAll(".ribbon.wave").forEach(r => {
   }
   function drawNotes(st, L, t){
     const n = L.notes.length, span = st.RW + 320, amp = L.front ? 1 : .45, lag = (L.front ? 0 : .12) + .06;
-    L.notes.forEach((el, i) => { const u = ((t / L.dur) + i / n) % 1, x = st.rev ? st.RW + 160 - span*u : -160 + span*u;
+    L.notes.forEach((el, i) => { const u = ((ft / L.dur) + i / n) % 1, x = st.rev ? st.RW + 160 - span*u : -160 + span*u;
       const y = fy(L, x) + disp(st, x, t, lag, amp), a = Math.atan(fd(L, x)) * 57.2958;
       el.setAttribute("transform", `translate(${R1(x)} ${R1(y)}) rotate(${R1(a)})`); });
   }
-  let seen = false, raf = 0, t0 = 0;
+  /* 2026-10-27 北川くん「止めて、触れたときだけ」：ふだんは音符も線も止まったまま。
+     触ると揺れて、音符が少し流れて、だんだん止まる。動いていないときはループも止める（スクロールが軽い） */
+  let seen = false, raf = 0, t0 = 0, ft = 0, en = 0, last = 0, drawn = false;
   const now = () => (performance.now() - t0) / 1000;
   const live = st => st.sv.getClientRects().length > 0;
-  /* 軽くする（2026-10-27）：揺れていないときは、音符の位置の書きかえを1秒に約30回にする（ゆっくり流れているので見た目は変わらない）。
-     スクロール中のスマホが重くならないように */
-  let tick = 0;
+  const EN = { tau: .9, speed: 2.2 };   // 流れがおさまる速さ／触ったときの流れの速さ
   function frame(){
     raf = 0; if(!seen || reduce.matches) return;
-    const t = now(), busy = S.some(st => st.pl.length);
-    if(!busy && (tick++ & 1)){ raf = requestAnimationFrame(frame); return; }
+    const t = now(), dt = Math.min(.1, t - last); last = t;
+    ft += dt * en * EN.speed; en *= Math.exp(-dt / EN.tau);
     S.forEach(st => { if(!live(st)) return;
       st.pl = st.pl.filter(p => t - p.t0 < 5);
       const moving = st.pl.length > 0;
       st.layers.forEach(L => { if(moving || !L.still){ drawLines(st, L, t); L.still = !moving; } drawNotes(st, L, t); }); });
-    raf = requestAnimationFrame(frame);
+    drawn = true;
+    if(en > .004 || S.some(st => st.pl.length) || S.some(st => st.layers.some(L => !L.still))) raf = requestAnimationFrame(frame);
   }
-  const run = () => { if(!raf && seen && !reduce.matches) raf = requestAnimationFrame(frame); };
+  const run = () => { if(!raf && seen && !reduce.matches){ last = now(); raf = requestAnimationFrame(frame); } };
+  const firstDraw = () => { if(!drawn && seen) run(); };
   t0 = performance.now();
   /* 触ったところ（画面の位置 → 五線の中の位置）で弾く。マウスが通ったら軽く、押したら強く */
   function pluck(st, e, a){
@@ -283,12 +285,12 @@ document.querySelectorAll(".ribbon.wave").forEach(r => {
     const m = st.sv.getScreenCTM(); if(!m) return;
     const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse()), t = now();
     if(st.pl.some(p => t - p.t0 < .35 && Math.abs(p.x - pt.x) < 80)) return;
-    st.pl.push({ x: pt.x, t0: t, a }); if(st.pl.length > 5) st.pl.shift(); run();
+    st.pl.push({ x: pt.x, t0: t, a }); if(st.pl.length > 5) st.pl.shift(); en = Math.min(1, en + a / 24); run();
   }
   S.forEach(st => { const h = st.sv.querySelector(".hit");
     h.addEventListener("pointerenter", e => pluck(st, e, e.pointerType === "mouse" ? 14 : 20));
     h.addEventListener("pointerdown", e => pluck(st, e, 24)); });
-  if("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; run(); }, {rootMargin:"100px 0px"}).observe(r); else { seen = true; run(); }
+  if("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; firstDraw(); }, {rootMargin:"100px 0px"}).observe(r); else { seen = true; firstDraw(); }
   reduce.addEventListener("change", run);
 });
 
