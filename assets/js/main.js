@@ -205,12 +205,16 @@ if("IntersectionObserver" in window){
   document.querySelectorAll("#main > section").forEach(s => io.observe(s));
   const ct = new IntersectionObserver(es => es.forEach(e => { inContact = e.isIntersecting; onScroll(); }), {threshold:.08});
   const ctEl = document.getElementById("contact"); if(ctEl) ct.observe(ctEl);
-  const rv = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const t = e.target; t.classList.add("in"); rv.unobserve(t);
-    if(t.classList.contains("rv")) setTimeout(() => { t.style.transitionDelay = ""; t.classList.add("settled"); }, 1200); } }), {rootMargin:"0px 0px -8% 0px"});
+  const show = t => { t.classList.add("in"); if(t.classList.contains("rv")) setTimeout(() => { t.style.transitionDelay = ""; t.classList.add("settled"); }, 1200); };
+  const rv = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const t = e.target; rv.unobserve(t); [t].concat(t._rv || []).forEach(show); } }), {rootMargin:"0px 0px -8% 0px"});
+  /* 横に並んだカードの列（料金・はじめるまで・生徒さんの声など）は、列が画面に入ったら全部いっしょに出す
+     （1枚ずつだと、横の見えていないカードが下にずれたまま残り、スワイプしたときに縦に動いて見えるため）2026-10-27 */
+  const rowOf = c => c.closest(".hs, .feat, .shelf");
   document.querySelectorAll(".reveal").forEach(x => rv.observe(x));
   /* できることのカードは、画面に入った順に1枚ずつ出る（同時に入ったときは少しずつずらす） */
   document.querySelectorAll("#main .card").forEach(c => { const i = [...c.parentElement.children].indexOf(c); c.classList.add("rv");
-    const ms = c.classList.contains("sk3") ? i*180 : c.closest("#lesson") ? (i%6)*130 : (i%6)*70; c.style.transitionDelay = `${ms}ms`; if(c.classList.contains("sk3")) c.style.setProperty("--cd", ms+"ms"); rv.observe(c); });
+    const ms = c.classList.contains("sk3") ? i*180 : c.closest("#lesson") ? (i%6)*130 : (i%6)*70; c.style.transitionDelay = `${ms}ms`; if(c.classList.contains("sk3")) c.style.setProperty("--cd", ms+"ms");
+    const row = rowOf(c); if(row){ if(!row._rv){ row._rv = []; rv.observe(row); } row._rv.push(c); } else rv.observe(c); });
 } else document.querySelectorAll(".reveal").forEach(x => x.classList.add("in"));
 
 /* Profile の3枚のイラスト：触る（マウスを乗せる・指で触る）と少し動く */
