@@ -228,6 +228,7 @@ export function buildOutputs(files){
             <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
         </div>
       </div>
+      ${solo ? access() : ""}
       <div class="les-extra">
         <div><h3><span>STEP</span>はじめるまで</h3>
           <ol class="flow hs" id="flow">
@@ -287,6 +288,28 @@ export function buildOutputs(files){
         ${statsHTML()}
       </div>
     </section>`;
+  }
+  /* 2026-10-27：レッスンのページに「スタジオへの行き方」（北川くん）。スタジオの住所だけ（自宅は出さない）。
+     駅からの道は、予約のメール（コード.gs の「スタジオの道」）と同じ「約4分」にそろえる。北口はスタジオ公式サイトより */
+  const STUDIO = {name:"サウンドスタジオM小岩店", addr:"東京都江戸川区西小岩1-27-16 オルフェウスビル4F", way:"JR小岩駅 北口から歩いて約4分", site:"https://orpheusrecords.jp/ssm/koiwa/"};
+  const PIN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>`;
+  const PC_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="11.5" rx="1.6"/><path d="M9 20h6M12 16.5V20"/></svg>`;
+  function access(){
+    const map = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(STUDIO.name + " " + STUDIO.addr);
+    return `<div class="acc-wrap reveal" id="access"><h3><span>ACCESS</span>スタジオへの行き方</h3>
+      <div class="acc-grid">
+        <div class="card acc-card"><i class="acc-pin">${PIN}</i><div>
+          <span class="chip or">STUDIO</span><b class="acc-nm">${esc(STUDIO.name)}</b>
+          <p class="acc-way">${esc(STUDIO.way)}</p><p class="acc-ad">${esc(STUDIO.addr)}</p>
+          <ul class="acc-notes"><li>当日はレッスンの5分前に、4階の受付へお越しください</li><li>スタジオ代（1時間 約1,500円）は、当日スタジオでお支払いください</li><li>ギターはスタジオで借りられます</li></ul>
+          <div class="acc-btns"><a class="btn or sm" href="${map}" target="_blank" rel="noopener">Googleマップで開く</a><a class="btn line sm" href="${STUDIO.site}" target="_blank" rel="noopener">スタジオのサイト</a></div>
+        </div></div>
+        <div class="card acc-card on"><i class="acc-pin">${PC_ICON}</i><div>
+          <span class="chip">ONLINE</span><b class="acc-nm">オンライン</b>
+          <p class="acc-way">ご自宅から、Google Meet で</p>
+          <ul class="acc-notes"><li>予約が確定すると、参加のリンクが届きます</li><li>スタジオ代はかかりません</li></ul>
+        </div></div>
+      </div></div>`;
   }
   /* 公式LINE の友だち追加（2026-10-25）。体験の予約・質問・予約の確認が LINE でできる */
   function lineCard(where){

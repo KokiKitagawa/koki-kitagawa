@@ -1753,3 +1753,21 @@ form.f .sk-ok span{flex:1;min-width:0}
   .lt-go{width:100%}
 }
 .les.solo{grid-template-columns:minmax(0,1fr);max-width:920px;margin-inline:auto}
+/* 2026-10-27：レッスンのページ「スタジオへの行き方」 */
+.acc-wrap{margin-top:clamp(64px,8vw,110px)}
+.acc-wrap h3{margin:0 0 22px;font-size:20px;font-weight:900;display:flex;align-items:baseline;gap:14px}
+.acc-wrap h3 span{font:700 11px/1 var(--en);letter-spacing:.22em;color:var(--or-hi)}
+.acc-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px}
+.acc-card{display:flex;gap:18px;padding:24px 24px 26px}
+.acc-pin{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--or-soft);color:var(--or-hi)}
+.acc-card.on .acc-pin{background:rgba(77,125,255,.16);color:#a9c1ff}
+.acc-pin svg{width:22px;height:22px}
+.acc-nm{display:block;margin:10px 0 0;font-size:18px;font-weight:900}
+.acc-way{margin:8px 0 0;font-size:15px;font-weight:700;color:var(--ink)}
+.acc-ad{margin:4px 0 0;font-size:13px;color:var(--sub)}
+.acc-notes{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:13px;color:var(--sub)}
+.acc-notes li{position:relative;padding-left:14px}
+.acc-notes li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--or)}
+.acc-card.on .acc-notes li::before{background:var(--stage)}
+.acc-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+@media (max-width:820px){ .acc-grid{grid-template-columns:1fr} .acc-card{padding:20px 18px 22px;gap:14px} .acc-pin{width:38px;height:38px} .acc-btns .btn{flex:1 1 auto} }
