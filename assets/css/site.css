@@ -1846,7 +1846,7 @@ form.f .sk-ok span{flex:1;min-width:0}
 .sk3 .tags li,.sk3 .tags li.mj{box-shadow:none;background:rgba(255,255,255,.06);gap:7px}
 .sk3 .tags i,.sk3-legend i{order:-1;flex:none;display:inline-block;width:6px;height:6px;padding:0;border-radius:50%;font-size:0;line-height:0;color:transparent;
   background:var(--or-hi);box-shadow:0 0 0 3px rgba(255,116,23,.16)}
-.sk3-legend i{margin:0 8px 0 3px;vertical-align:1px}
+.sk3-legend i{margin:0 8px 0 3px;vertical-align:.18em}
 .sk3 .tags li.go{background:rgba(92,200,245,.08);box-shadow:none}
 /* 2026-10-27：文字の大きさをそろえる（北川くん「Apple レベル」）。
    大見出し＝各セクションの英字（そのまま）／中見出し＝下の5つ（同じ大きさ・太さ・左に英字の小さなラベル）／小見出し＝12.5px のグレー／本文＝15px（スマホ 14.5px） */
@@ -1857,3 +1857,8 @@ form.f .sk-ok span{flex:1;min-width:0}
 .sk3 h5{font-size:12px;letter-spacing:.1em}
 .workcta .wc-head p,.ct .side p{font-size:15px;line-height:1.95}
 @media (max-width:820px){ .workcta .wc-head p,.ct .side p{font-size:14.5px} .wc-sub{margin-top:34px} }
+/* 2026-10-27：ヘッダーをすりガラスに（北川くん）。スクロールすると、うしろの色がうっすら透けて見える Apple 風。
+   文字が読みにくくならないよう、色を濃くするぼかし（saturate）と細い線で区切る */
+.hd.solid{background:rgba(8,11,19,.58);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);
+  border-color:rgba(255,255,255,.08);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){ .hd.solid{background:rgba(8,11,19,.9)} }
