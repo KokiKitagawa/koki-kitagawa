@@ -1709,3 +1709,47 @@ form.f .sk-ok span{flex:1;min-width:0}
 .ct-book .cb-ln{background:#06c755}
 .ct-book .cb-ln svg{width:28px;height:28px}
 .les-web{display:block;margin:-14px 0 6px;padding:8px 4px;font-size:13px;color:var(--sub);text-decoration:underline;text-underline-offset:3px}
+
+/* ===== 2026-10-27 試し：レッスンを専用ページ（lesson.html）に分ける ===== */
+/* 共通：レッスンの実績の数字（横に3つ） */
+.lt-stats{list-style:none;padding:0;margin:30px 0 0;display:flex;flex-wrap:wrap;gap:14px 34px}
+.lt-stats li{display:flex;flex-direction:column;gap:6px}
+.lt-stats b{font:800 clamp(26px,2.6vw,36px)/1 var(--en);letter-spacing:.02em;color:var(--ink)}
+.lt-stats b small{font:700 12.5px/1 var(--jp);margin-left:4px;color:var(--or-hi)}
+.lt-stats span{font-size:12.5px;color:var(--sub);letter-spacing:.06em}
+/* レッスンのページの1画面目：PC は写真を右に、文字を左に */
+.lhero{min-height:min(92svh,860px)}
+.lhero picture{left:auto;right:0;width:min(54%,820px)}
+.lhero picture img{left:0;width:100%;object-position:50% 22%}
+.lhero::before{background:linear-gradient(0deg,var(--black) 0%,rgba(6,8,13,0) 30%)}
+.hero.lhero h1.cp{font-size:clamp(34px,4.3vw,62px)}
+.lhero picture{-webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 34%);mask-image:linear-gradient(90deg,transparent 0%,#000 34%)}
+.lhero .lead{max-width:27em}
+.lhero .lt-stats{animation:rise .9s .62s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.lhero .lt-stats{animation:none}}
+/* トップのレッスン案内：カード1枚で、押すとレッスンのページへ */
+.lteaser .lt-card{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(24px,4vw,56px);align-items:center;
+  padding:clamp(18px,2.4vw,28px);border-radius:20px;color:inherit;text-decoration:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:inset 0 0 0 1px var(--line);transition:transform .25s,box-shadow .25s}
+.lteaser .lt-card:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 1px rgba(255,116,23,.45)}
+.lt-ph{display:block;aspect-ratio:4/5;border-radius:14px;overflow:hidden}
+.lt-ph img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block;transition:transform .6s}
+.lt-card:hover .lt-ph img{transform:scale(1.04)}
+.lt-tx{display:flex;flex-direction:column;align-items:flex-start}
+.lt-h{display:block;margin:18px 0 0;font-weight:900;font-size:clamp(24px,2.8vw,38px);line-height:1.4}
+.lt-p{display:block;margin:16px 0 0;color:var(--sub);line-height:1.95;max-width:30em}
+.lt-go{margin-top:32px}
+.lt-go i{font-style:normal;transition:transform .2s}
+.lt-card:hover .lt-go i{transform:translateX(4px)}
+@media (max-width:820px){
+  .lhero picture{width:100%;left:0;right:auto}
+  .lhero::before{background:linear-gradient(0deg,var(--black) 0%,var(--black) calc(100% - min(118vw,620px)),rgba(6,8,13,.55) calc(100% - min(118vw,620px) + 120px),rgba(6,8,13,0) 62%,rgba(6,8,13,.4) 100%)}
+  .hero.lhero h1.cp{font-size:clamp(26px,7.4vw,40px)}
+  .lhero picture{-webkit-mask-image:none;mask-image:none}
+  .lt-stats{gap:12px 22px;margin-top:26px}
+  .lteaser .lt-card{grid-template-columns:1fr;padding:14px 14px 22px}
+  .lt-ph{aspect-ratio:4/3}
+  .lt-tx{padding:0 6px}
+  .lt-go{width:100%}
+}
+.les.solo{grid-template-columns:minmax(0,1fr);max-width:920px;margin-inline:auto}

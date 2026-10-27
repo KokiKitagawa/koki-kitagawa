@@ -10,6 +10,8 @@ menu.addEventListener("click", e => { if(e.target.closest("a")) closeMenu(); });
 document.addEventListener("keydown", e => { if(e.key==="Escape" && !menu.hidden) closeMenu(); });
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-open]"); if(!b) return;
+  /* レッスンのページ（フォームがないページ）では、トップのフォームへ移る */
+  if(!document.getElementById("contact")){ location.href = "./#contact"; return; }
   closeMenu(); setKind(b.dataset.open);
   const fp = document.getElementById("f_plan"); if(b.dataset.plan && fp){ fp.value = b.dataset.plan; trialGo(); }
   document.getElementById("contact").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
@@ -190,7 +192,7 @@ if("IntersectionObserver" in window){
   const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const id = e.target.id; navA.forEach(a => a.classList.toggle("on", a.getAttribute("href")==="#"+id)); } }), {rootMargin:"-45% 0px -50% 0px"});
   document.querySelectorAll("#main > section").forEach(s => io.observe(s));
   const ct = new IntersectionObserver(es => es.forEach(e => { inContact = e.isIntersecting; onScroll(); }), {threshold:.08});
-  ct.observe(document.getElementById("contact"));
+  const ctEl = document.getElementById("contact"); if(ctEl) ct.observe(ctEl);
   const rv = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const t = e.target; t.classList.add("in"); rv.unobserve(t);
     if(t.classList.contains("rv")) setTimeout(() => { t.style.transitionDelay = ""; t.classList.add("settled"); }, 1200); } }), {rootMargin:"0px 0px -8% 0px"});
   document.querySelectorAll(".reveal").forEach(x => rv.observe(x));
@@ -274,6 +276,7 @@ if(bk){
 
 /* フォーム：Googleフォームへ送る */
 const from = (new URLSearchParams(location.search).get("from")||"").toLowerCase();
+if(document.getElementById("form")){
 document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",sp:"Spotify"})[from] || "";
 document.getElementById("form").addEventListener("submit", e => {
   e.preventDefault(); let ok = true, first = null;
@@ -304,6 +307,7 @@ document.getElementById("form").addEventListener("submit", e => {
     .then(() => { document.getElementById("form").querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; })
     .catch(() => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; });
 });
+}
 })();
 
 /* 曲の横並び：PC の矢印ボタンで1曲ずつ送る */

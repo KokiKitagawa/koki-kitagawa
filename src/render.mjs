@@ -103,7 +103,7 @@ export function buildOutputs(files){
      2026-10-17：Profile からお仕事のご依頼欄へ移した。スマホも縦に並べ、スクロールで1枚ずつ出す */
   function canDo(){
     const K = P.canDo; if(!K || !(K.groups||[]).length) return "";
-    const LINK = {stage:'href="#works" data-tab-go="stage"', music:'href="#works" data-tab-go="music"', lesson:'href="#lesson"'};
+    const LINK = {stage:'href="#works" data-tab-go="stage"', music:'href="#works" data-tab-go="music"', lesson:'href="lesson.html"'};
     let ci = 0; const chips = items => `<ul class="tags">${items.map(x=>{ const cls = [x.major?"mj":"", x.href?"go":""].filter(Boolean).join(" "), in_ = `${esc(x.t)}${x.major?'<i>MAJOR</i>':""}`;
       return `<li${cls?` class="${cls}"`:""} style="--i:${ci++}">${x.href?`<a href="${esc(x.href)}">${in_}<span class="arr" aria-hidden="true">→</span></a>`:in_}</li>`; }).join("")}</ul>`;
     const sub = u => !u.label ? chips(u.items) : `<h5>${esc(u.label)}</h5>${chips(u.items)}`;
@@ -194,7 +194,7 @@ export function buildOutputs(files){
       <div class="pv-tx"><span class="chip or">ORIGINAL</span><b>${esc(V.title)}</b>${V.sub?`<small>${esc(V.sub)}</small>`:""}</div></div>`;
   }
   const GL = `<i class="glint" aria-hidden="true"></i>`;   // 料金カードを触るとキラッと光る（B5）
-  function lesson(){
+  function lesson(no = "04", solo = false){   /* solo＝レッスンのページ用：上の1画面目と同じ写真・数字は出さない */
     const L = D.lessonPlans, base = L.single.price;
     const plan = p => { const per = Math.round(p.price/p.count), save = base*p.count - p.price;
       return `<li class="card plan ${p.rec?"rec":""} ${ph(({2:"hands",4:"guitar",8:"play"})[p.count])}">${p.rec?'<span class="badge">人気No.1</span>':""}<div class="nm">${esc(p.name)}</div><div class="ct">60分×${p.count}回</div>
@@ -203,13 +203,13 @@ export function buildOutputs(files){
     /* 月謝・単発のボタン：予約ページがあるときは「体験から始める」（気になるプランを予約ページへ渡す） */
     function pick(n){ return D.yoyaku ? `<a class="pick" href="yoyaku.html?plan=${encodeURIComponent(n)}">体験から始める</a>` : `<button class="pick" type="button" data-open="レッスン" data-plan="${esc(n)}">このプランを選ぶ</button>`; }
     return `<section class="s sbg" id="lesson"><div class="wrap">
-      ${sh("04","Lesson","ギターレッスン")}
-      <div class="les">
-        <div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>
+      ${solo ? sh(no,"Price","料金と体験レッスン") : sh(no,"Lesson","ギターレッスン")}
+      <div class="les${solo ? " solo" : ""}">
+        ${solo ? "" : `<div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>`}
         <div>
-          <p class="lede">現場で培った経験を、あなたのギターへ。</p>
-          <p class="lplace"><span class="chip or">小岩のスタジオ／オンライン対応</span></p>
-          <ul class="lstats big">${D.lessonStats.map(x=>`<li class="card">${x.tag?`<i class="ltag">${esc(x.tag)}</i>`:""}<b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>
+          ${solo ? "" : `<p class="lede">現場で培った経験を、あなたのギターへ。</p>
+          <p class="lplace"><span class="chip or">小岩のスタジオ／オンライン対応</span></p>`}
+          ${solo ? "" : `<ul class="lstats big">${D.lessonStats.map(x=>`<li class="card">${x.tag?`<i class="ltag">${esc(x.tag)}</i>`:""}<b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>`}
           ${D.trialProof ? `<p class="trial-proof"><span aria-hidden="true"></span>${esc(D.trialProof)}</p>` : ""}
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
@@ -237,7 +237,7 @@ export function buildOutputs(files){
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
           </ol>${swipe(3)}</div>
-        <div class="faq reveal"><h3><span>FAQ</span>よくある質問</h3>
+        <div class="faq reveal" id="faq"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
           <details><summary>ギターを持っていなくても受けられる？</summary><p>${esc(P.lesson.guitarRental)}</p></details>
           <details><summary>体験レッスンでは何をする？</summary><p>${esc((P.lesson.trialSteps||[]).join("→"))}の流れで、60分です。</p></details>
@@ -259,6 +259,35 @@ export function buildOutputs(files){
       </div>` : ""}
     </div><i class="seam" aria-hidden="true"></i></section>`;
   }
+  /* 2026-10-27 試し：レッスンは専用ページ（lesson.html）に分ける。トップはお仕事を探している人向けにして、レッスンは短い案内だけ */
+  const statsHTML = () => `<ul class="lt-stats">${D.lessonStats.map(x=>`<li><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>`;
+  function lessonTeaser(){
+    return `<section class="s sbg lteaser" id="lesson"><div class="wrap">
+      ${sh("04","Lesson","ギターレッスン")}
+      <a class="lt-card reveal" href="lesson.html">
+        <span class="lt-ph">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</span>
+        <span class="lt-tx"><span class="chip or">小岩のスタジオ／オンライン</span>
+          <b class="lt-h">現場で培った経験を、<br>あなたのギターへ。</b>
+          <span class="lt-p">初心者からプロを目指す方まで。体験レッスンは60分 ¥${yen(D.lessonPlans.trial.price)}。料金・予約・よくある質問は、レッスンのページにまとめています。</span>
+          ${statsHTML()}
+          <span class="btn or lt-go">レッスンのページへ<i aria-hidden="true">→</i></span></span>
+      </a>
+    </div><i class="seam" aria-hidden="true"></i></section>`;
+  }
+  function lessonHero(){
+    const book = D.yoyaku ? (D.lineAdd ? `<a class="btn or ln-btn only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener">${LINE_ICON}LINEで体験予約</a><a class="btn or only-pc" href="yoyaku.html">体験レッスンを予約</a>` : `<a class="btn or" href="yoyaku.html">体験レッスンを予約</a>`) : `<a class="btn or" href="#lesson">体験レッスン</a>`;
+    return `<section class="hero lhero" id="top" aria-label="北川弘喜のギターレッスン">
+      <picture><img src="${IMG.lesson}" alt="ギターを持ち、こちらを見てほほえむ北川弘喜" fetchpriority="high"></picture>
+      <div class="wrap">
+        <p class="role">GUITAR LESSON</p>
+        <h1 class="cp"><span class="l1">現場で培った経験を、</span><span class="l2"><em class="kw or">あなたのギター</em>へ。</span></h1>
+        <p class="name">KOKI KITAGAWA</p>
+        <p class="lead">ライブ・TV・レコーディングの現場で弾いているギタリストが、直接教えます。小岩のスタジオとオンラインで、初心者からプロを目指す方まで。</p>
+        <div class="cta">${book}<a class="btn line" href="#plans">料金を見る</a></div>
+        ${statsHTML()}
+      </div>
+    </section>`;
+  }
   /* 公式LINE の友だち追加（2026-10-25）。体験の予約・質問・予約の確認が LINE でできる */
   function lineCard(where){
     return `<a class="dm ln only-pc" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><i>${LINE_ICON}</i><span><b>公式LINE を友だち追加</b><small>体験の予約・ご質問・予約の確認が、LINE でできます</small></span><em class="ln-add">友だち追加</em></a>`;
@@ -266,7 +295,7 @@ export function buildOutputs(files){
   /* 生徒さんの声：data/voices.json に本人からもらった言葉が入ったときだけ出す */
   function voices(){
     if(!D.voices.length) return "";
-    return `<div class="voices"><h3><span>VOICE</span>生徒さんの声</h3><ul class="vgrid hs" id="voices">${D.voices.map(v=>`<li class="card voice"><span class="q" aria-hidden="true">“</span><p>${esc(v.text).split("\n").join("<br>")}</p><div class="who"><b>${esc(v.who||"生徒さん")}</b>${[v.years,v.plan].filter(Boolean).map(x=>`<span class="chip or">${esc(x)}</span>`).join("")}</div></li>`).join("")}</ul>${D.voices.length>1?swipe(D.voices.length):""}</div>`;
+    return `<div class="voices" id="voice"><h3><span>VOICE</span>生徒さんの声</h3><ul class="vgrid hs" id="voices">${D.voices.map(v=>`<li class="card voice"><span class="q" aria-hidden="true">“</span><p>${esc(v.text).split("\n").join("<br>")}</p><div class="who"><b>${esc(v.who||"生徒さん")}</b>${[v.years,v.plan].filter(Boolean).map(x=>`<span class="chip or">${esc(x)}</span>`).join("")}</div></li>`).join("")}</ul>${D.voices.length>1?swipe(D.voices.length):""}</div>`;
   }
 
   /* 2026-10-17：レッスンの申し込みは予約ページに一本化。フォームの「レッスン」は、ご質問だけの短いフォームにした */
@@ -279,7 +308,7 @@ export function buildOutputs(files){
       ${sh("05","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">
-          <p>${D.yoyaku ? `制作・演奏・ライブサポート等のお仕事のご依頼、取材などその他のお問い合わせは、こちらのフォームからご連絡ください。体験レッスンのご予約は<a class="ul" href="#lesson">LESSON</a>の一番下から。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
+          <p>${D.yoyaku ? `制作・演奏・ライブサポート等のお仕事のご依頼、取材などその他のお問い合わせは、こちらのフォームからご連絡ください。体験レッスンのご予約は<a class="ul" href="lesson.html">レッスンのページ</a>から。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
           <div class="quick">
             ${D.yoyaku ? "" : `<a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>気軽にメッセージください</small></span></a>`}
             <button class="dm wk" type="button" data-open="お仕事"><i class="arw" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></i><span><b>お仕事のご依頼は、フォームから</b><small class="sp-only">下のフォームで「お仕事」を選んでください</small><small class="pc-only">右のフォームで「お仕事」を選んでください</small></span></button>
@@ -381,7 +410,8 @@ export function buildOutputs(files){
     return `<div class="ribbon wave${rev?" rev":""}" aria-hidden="true">${staffSvg(n, rev, 1440, 240, 54, "pc", 14, 48, 78)}${staffSvg(n, rev, 620, 200, 50, "sp", 8, 26, 44)}</div>`; };
 
   const bookModal = D.booking && !D.yoyaku ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
-  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lesson()+contact()+bookModal;
+  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lessonTeaser()+contact()+bookModal;
+  const lessonMain = lessonHero()+lesson("01", true);
 
   const url = p.siteUrl;
   const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="ギターを弾く北川弘喜。書けるギタリスト、弾ける作曲家。">`;
@@ -392,28 +422,48 @@ export function buildOutputs(files){
     "provider":{"@type":"Person","name":p.name,"url":url},"areaServed":[{"@type":"Place","name":"東京都江戸川区 小岩"},{"@type":"Place","name":"オンライン"}],
     "availableChannel":{"@type":"ServiceChannel","serviceLocation":{"@type":"Place","name":"サウンドスタジオM小岩店","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区","streetAddress":"西小岩1-27-16 オルフェウスビル4F"}}},
     "offers":[{"@type":"Offer","name":"体験レッスン（60分）","price":site.lessonPlans.trial.price,"priceCurrency":"JPY"},{"@type":"Offer","name":"単発レッスン（60分）","price":site.lessonPlans.single.price,"priceCurrency":"JPY"}],
-    "url":url+"#lesson"};
+    "url":url+"lesson.html"};
   const cfg = JSON.stringify({form: site.form}).replace(/</g,"\\u003c");
 
+  function assemble(mainHTML, page){
   let html = files["src/template.html"];
   for(const f of ASSETS) html = html.split(`"${f}"`).join(`"${f}?v=${stamp(files[f])}"`);
   const put = (mark, val) => { if(!html.includes(mark)) warnings.push("差込口が見つかりません: " + mark); html = html.split(mark).join(val); };
   put("<!--@meta-->", meta);
-  put("<!--@jsonld-->", [ld, ldLesson].map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
+  put("<!--@jsonld-->", (page==="lesson" ? [ldLesson] : [ld]).map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
   put("<!--@phstyle-->", phStyle);
-  put("<!--@main-->", main);
+  put("<!--@main-->", mainHTML);
   /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */
   /* 2026-10-25：スマホは公式LINE から予約するのを一番に（友だち追加すると、すぐ予約のボタンが届く）。PC は予約ページのまま */
-  if(D.yoyaku) html = html.split('<button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>').join('<a class="btn or' + (D.lineAdd ? ' only-pc' : '') + '" href="yoyaku.html">体験レッスンを予約</a>'
+  const LES_BTN = '<button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>';
+  if(page === "lesson"){
+    /* レッスンのページ：上・下・メニューの申し込みは、スマホ＝LINE、PC＝予約ページ。お仕事のボタンはトップのフォームへ */
+    if(D.yoyaku) html = html.split('<button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>').join('<a class="btn or' + (D.lineAdd ? ' only-pc' : '') + '" href="yoyaku.html">体験レッスンを予約</a>'
     + (D.lineAdd ? `<a class="btn or ln-btn only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener">${LINE_ICON}LINEで体験予約</a>` : ''));
-  else if(D.booking) html = html.split('data-open="レッスン">レッスンを申し込む').join('data-book>体験レッスンを予約');
+    else if(D.booking) html = html.split('data-open="レッスン">レッスンを申し込む').join('data-book>体験レッスンを予約');
+    html = html.split('<button class="btn gr sm" type="button" data-open="お仕事">仕事を依頼する</button>').join(D.yoyaku ? '<a class="btn or sm only-pc" href="yoyaku.html">体験レッスンを予約</a>' : '');
+    html = html.split('<button class="btn gr" type="button" data-open="お仕事">お仕事依頼</button>').join('');
+    html = html.split('<button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>').join('<a class="btn gr" href="./#contact">仕事を依頼する</a>');
+    for(const id of ["profile","career","works","contact"]) html = html.split(`href="#${id}"`).join(`href="./#${id}"`);
+    html = html.replace(/<title>[^<]*<\/title>/, "<title>ギターレッスン（小岩・オンライン）| 北川弘喜 Koki Kitagawa</title>")
+      .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="ギタリスト・作曲家 北川弘喜のギターレッスン。JR小岩駅近くのスタジオとオンラインで、初心者からプロを目指す方まで。体験レッスン60分 ${yen(D.lessonPlans.trial.price)}円。">`)
+      .replace(/<meta property="og:title" content="[^"]*">/, '<meta property="og:title" content="北川弘喜のギターレッスン（小岩・オンライン）">')
+      .split(`content="${url}"`).join(`content="${url}lesson.html"`).split(`href="${url}"`).join(`href="${url}lesson.html"`);
+  } else {
+    /* トップ：レッスンの入口は、レッスンのページへ */
+    html = html.split(LES_BTN).join('<a class="btn or" href="lesson.html">ギターレッスン</a>');
+    html = html.split('href="#lesson"').join('href="lesson.html"');
+  }
   put("<!--@sns-->", snsHTML());
   put("<!--@config-->", cfg);
   /* 限定公開（2026-10-21）：data/site.json の noindex が true のあいだは、検索に出さない（URLを知っている人は見られる） */
   if(site.noindex) html = html.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n<meta name="robots" content="noindex, nofollow">');
-  for(const bad of ["undefined","null</","NaN"]) if(main.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
-  if(main.includes("要確認")) warnings.push("「要確認」が画面に出ています");
-  return { files: {"index.html": html, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)}, warnings };
+  for(const bad of ["undefined","null</","NaN"]) if(mainHTML.includes(bad)) warnings.push("本文に " + bad + " が出ています。データを確かめてください");
+  if(mainHTML.includes("要確認")) warnings.push("「要確認」が画面に出ています");
+  return html;
+  }
+  const html = assemble(main, "top"), lessonHtml = assemble(lessonMain, "lesson");
+  return { files: {"index.html": html, "lesson.html": lessonHtml, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)}, warnings };
 }
 
 /* プライバシーポリシー（privacy.html）。トップと同じCSSを使う */
@@ -489,7 +539,7 @@ ${css}
   <p class="nf-lead">お探しのページは、URLが変わったか、なくなった可能性があります。<br>お手数ですが、トップページからお探しください。</p>
   <div class="nf-btns">
     <a class="btn line" href="${url}">トップへ戻る</a>
-    <a class="btn or" href="${url}#lesson">${booking ? "体験レッスンを見る" : "レッスンを見る"}</a>
+    <a class="btn or" href="${url}lesson.html">${booking ? "体験レッスンを見る" : "レッスンを見る"}</a>
     <a class="btn gr" href="${url}#contact">お問い合わせ</a>
   </div>
 </main>
@@ -534,7 +584,7 @@ ${HEAD_ICONS("")}
 ${css}
 </head>
 <body class="doc yk-page">
-<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="./#lesson">← 戻る</a></div></header>
+<header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><a class="yk-back" href="lesson.html">← 戻る</a></div></header>
 <main class="wrap docw ykw">
   <div class="sh"><span class="no">—</span><h2>Booking</h2><p>体験レッスンのご予約</p></div>
 
