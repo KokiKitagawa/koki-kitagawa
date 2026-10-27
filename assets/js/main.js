@@ -207,15 +207,69 @@ document.querySelectorAll(".sk3").forEach(c => {
   c.addEventListener("pointerenter", play); c.addEventListener("touchstart", play, {passive:true});
 });
 
-/* 五線譜リボン：触ると五線が揺れる。音符の流れは、画面に見えているときだけ動かす（「視差効果を減らす」の人は止める） */
+/* 五線譜リボン（2026-10-27 作り直し・北川くん）
+   ・音符は五線のカーブに乗って流れる（1つのループで動かす。見えているときだけ）
+   ・触ったところを中心に、ギターの弦のように揺れて、だんだんおさまる（5本が少しずつずれて揺れる）
+   ・「視差効果を減らす」の人には動かさない（render.mjs が書き出した止まった形のまま） */
 document.querySelectorAll(".ribbon.wave").forEach(r => {
-  const svgs = [...r.querySelectorAll("svg")];
-  const wig = () => { if(reduce.matches || r.classList.contains("wig")) return; r.classList.add("wig"); setTimeout(() => r.classList.remove("wig"), 1500); };
-  r.querySelectorAll(".hit").forEach(h => { h.addEventListener("pointerenter", wig); h.addEventListener("touchstart", wig, {passive:true}); h.addEventListener("click", wig); });
-  let seen = false;
-  const sync = () => svgs.forEach(v => { if(!v.pauseAnimations) return; (seen && !reduce.matches && v.getClientRects().length) ? v.unpauseAnimations() : v.pauseAnimations(); });
-  if("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; sync(); }, {rootMargin:"100px 0px"}).observe(r); else seen = true;
-  reduce.addEventListener("change", sync); addEventListener("resize", sync, {passive:true}); sync();
+  const R1 = n => Math.round(n*10)/10;
+  const S = [...r.querySelectorAll("svg.staffs")].map(sv => {
+    const RW = +sv.dataset.rw, rev = sv.dataset.rev === "1";
+    const xs = []; for(let x=-160; x<=RW+160; x+=10) xs.push(x); if(rev) xs.reverse();
+    const layers = [...sv.querySelectorAll(".st-layer")].map(g => { const [c,a,k,ph] = g.dataset.f.split(",").map(Number);
+      return { front: g.classList.contains("st-front"), c, a, k, ph, s: +g.dataset.s, dur: +g.dataset.dur,
+        lines: [...g.querySelectorAll(".ln")], notes: [...g.querySelectorAll(".nt")], still: true }; });
+    return { sv, RW, rev, xs, layers, pl: [] };
+  });
+  /* 揺れ（2026-10-27 北川くん「もっとゆっくり、水の波紋みたいに」）：
+     触った点から、ゆっくりした波が左右へ広がっていく。遠くへ行くほど・時間がたつほど小さくなる */
+  const RP = { f: 1.15, lam: 230, tau: 1.25, far: 520, edge: 90 };   // 1秒に約1回ゆれる／波の長さ／おさまる速さ／届く距離／波の先のぼかし
+  const disp = (st, x, t, lag, amp) => { let y = 0; const v = RP.lam * RP.f;
+    for(const p of st.pl){ const u = t - p.t0 - lag; if(u <= 0) continue;
+      const r = Math.abs(x - p.x), front = v * u - r; if(front <= 0) continue;
+      const fade = Math.min(1, front / RP.edge), m = fade * fade * (3 - 2 * fade);   // 波の先はなめらかに
+      y += p.a * amp * m * Math.exp(-u / RP.tau) * Math.exp(-r / RP.far) * Math.sin(2 * Math.PI * (RP.f * u - r / RP.lam)); }
+    return y; };
+  const fy = (L, x) => L.c + L.a * Math.sin(L.k*x + L.ph), fd = (L, x) => L.a * L.k * Math.cos(L.k*x + L.ph);
+  function drawLines(st, L, t){
+    const amp = L.front ? 1 : .45, base = L.front ? 0 : .12;
+    L.lines.forEach((el, j) => { const d = (j - 2) * L.s, lag = base + j * .03;
+      el.setAttribute("d", "M" + st.xs.map(x => { const dy = fd(L, x), n = Math.hypot(1, dy);
+        return R1(x - d*dy/n) + " " + R1(fy(L, x) + d/n + disp(st, x, t, lag, amp)); }).join(" L")); });
+  }
+  function drawNotes(st, L, t){
+    const n = L.notes.length, span = st.RW + 320, amp = L.front ? 1 : .45, lag = (L.front ? 0 : .12) + .06;
+    L.notes.forEach((el, i) => { const u = ((t / L.dur) + i / n) % 1, x = st.rev ? st.RW + 160 - span*u : -160 + span*u;
+      const y = fy(L, x) + disp(st, x, t, lag, amp), a = Math.atan(fd(L, x)) * 57.2958;
+      el.setAttribute("transform", `translate(${R1(x)} ${R1(y)}) rotate(${R1(a)})`); });
+  }
+  let seen = false, raf = 0, t0 = 0;
+  const now = () => (performance.now() - t0) / 1000;
+  const live = st => st.sv.getClientRects().length > 0;
+  function frame(){
+    raf = 0; if(!seen || reduce.matches) return;
+    const t = now();
+    S.forEach(st => { if(!live(st)) return;
+      st.pl = st.pl.filter(p => t - p.t0 < 5);
+      const moving = st.pl.length > 0;
+      st.layers.forEach(L => { if(moving || !L.still){ drawLines(st, L, t); L.still = !moving; } drawNotes(st, L, t); }); });
+    raf = requestAnimationFrame(frame);
+  }
+  const run = () => { if(!raf && seen && !reduce.matches) raf = requestAnimationFrame(frame); };
+  t0 = performance.now();
+  /* 触ったところ（画面の位置 → 五線の中の位置）で弾く。マウスが通ったら軽く、押したら強く */
+  function pluck(st, e, a){
+    if(reduce.matches) return;
+    const m = st.sv.getScreenCTM(); if(!m) return;
+    const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse()), t = now();
+    if(st.pl.some(p => t - p.t0 < .35 && Math.abs(p.x - pt.x) < 80)) return;
+    st.pl.push({ x: pt.x, t0: t, a }); if(st.pl.length > 5) st.pl.shift(); run();
+  }
+  S.forEach(st => { const h = st.sv.querySelector(".hit");
+    h.addEventListener("pointerenter", e => pluck(st, e, e.pointerType === "mouse" ? 14 : 20));
+    h.addEventListener("pointerdown", e => pluck(st, e, 24)); });
+  if("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; run(); }, {rootMargin:"100px 0px"}).observe(r); else { seen = true; run(); }
+  reduce.addEventListener("change", run);
 });
 
 /* お仕事のご依頼「進め方」：1つずつ順番に出す（同時に画面に入ったときは 0.18秒ずつずらす） */

@@ -1771,3 +1771,35 @@ form.f .sk-ok span{flex:1;min-width:0}
 .acc-card.on .acc-notes li::before{background:var(--stage)}
 .acc-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
 @media (max-width:820px){ .acc-grid{grid-template-columns:1fr} .acc-card{padding:20px 18px 22px;gap:14px} .acc-pin{width:38px;height:38px} .acc-btns .btn{flex:1 1 auto} }
+/* 2026-10-27：お仕事のご依頼は外枠をなくす（枠の中に枠で小さく見えるため・北川くん）。中のカードはそのまま、横幅いっぱいに */
+.workcta{background:none;box-shadow:none;border:0;border-radius:0;padding:0;margin-top:clamp(64px,8vw,104px)}
+/* 2026-10-27：スマホのトップ。写真の下に段差が出ていた（影の重ね方の順番がずれていた）のを直し、
+   PC と同じように、写真をぼかした色が SUMMER SONIC などの下までつながるようにする（北川くん） */
+.hero-blur{display:none}
+@media (max-width:820px){
+  .hero-blur{display:block;position:absolute;inset:-8%;z-index:-3;background-size:cover;background-position:62% 30%;
+    filter:blur(46px) saturate(1.25) brightness(.62);transform:translateZ(0)}
+  .lhero .hero-blur{background-position:50% 22%}
+  .hero picture{-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 56%,transparent 100%);mask-image:linear-gradient(180deg,#000 0%,#000 56%,transparent 100%)}
+  .hero::before,.lhero::before{background:linear-gradient(180deg,rgba(6,8,13,.42) 0%,rgba(6,8,13,0) 14%,rgba(6,8,13,0) 30%,rgba(6,8,13,.34) 46%,rgba(6,8,13,.46) 80%,var(--black) 100%)}
+}
+/* 2026-10-27：スマホの「すべての制作実績」も PC と同じ大きいレコードに（2列。北川くん）。
+   レコードが大きくなるので、スマホでは縦のスクロールを止めない（横に動かすと回せる） */
+@media (max-width:820px){
+  .recs{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:28px 14px}
+  .recs .card.vrec{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-items:start;gap:12px;padding:0;
+    background:none!important;box-shadow:none!important;border-radius:0}
+  .recs .vrec .vinyl{width:100%}
+  .recs .vrec .rtx{display:block;text-align:center;width:100%}
+  .recs .vrec .rtx b,.recs .vrec .rtx span,.recs .vrec .rtx small{display:block;width:100%;text-align:center}
+  .recs .vrec .rtx i{font-size:9.5px;padding:3px 7px}
+  .recs .vrec .rtx b{margin-top:7px;font-size:clamp(12px,3.1vw,14px);line-height:1.35;letter-spacing:0}
+  .recs .vrec .rtx span{font-size:11.5px;margin-top:3px}
+  .recs .vrec .rtx small{font-size:10.5px;margin-top:3px}
+  .vrec .vpp{width:40px;height:40px;margin:-20px 0 0 -20px}
+  .vrec .vpp .tri{border-left-width:12px;border-top-width:7px;border-bottom-width:7px}
+}
+@media (pointer:coarse){ .vrec .vinyl{touch-action:pan-y} }
+/* 2026-10-27：五線譜リボンの作り直し。揺れは main.js で描くので、前の CSS の揺れは使わない。音符のぼかしの光をやめて軽く */
+.st-front .nt{filter:none}
+.ribbon.wave .ln{transform:none!important;animation:none!important}

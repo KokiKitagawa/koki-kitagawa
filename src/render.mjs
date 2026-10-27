@@ -50,6 +50,7 @@ export function buildOutputs(files){
 
   function hero(){
     return `<section class="hero" id="top" aria-label="北川弘喜">
+      <i class="hero-blur" aria-hidden="true" style="background-image:url('${IMG.heroSp}')"></i>
       <picture><source media="(max-width:820px)" srcset="${IMG.heroSp}"><img src="${IMG.heroPc}" alt="紫の照明の中、ギターのネックを斜めに構えて弾く北川弘喜" fetchpriority="high"></picture>
       <div class="wrap">
         <p class="role">GUITARIST / COMPOSER</p>
@@ -202,7 +203,7 @@ export function buildOutputs(files){
         ${pick(p.name)}${GL}</li>`; };
     /* 月謝・単発のボタン：予約ページがあるときは「体験から始める」（気になるプランを予約ページへ渡す） */
     function pick(n){ return D.yoyaku ? `<a class="pick" href="yoyaku.html?plan=${encodeURIComponent(n)}">体験から始める</a>` : `<button class="pick" type="button" data-open="レッスン" data-plan="${esc(n)}">このプランを選ぶ</button>`; }
-    return `<section class="s sbg" id="lesson"><div class="wrap">
+    return `<section class="s sbg" id="lesson">${solo ? `<i class="seam-t" aria-hidden="true"></i>` : ""}<div class="wrap">
       ${solo ? sh(no,"Price","料金と体験レッスン") : sh(no,"Lesson","ギターレッスン")}
       <div class="les${solo ? " solo" : ""}">
         ${solo ? "" : `<div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>`}
@@ -278,6 +279,7 @@ export function buildOutputs(files){
   function lessonHero(){
     const book = D.yoyaku ? (D.lineAdd ? `<a class="btn or ln-btn only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener">${LINE_ICON}LINEで体験予約</a><a class="btn or only-pc" href="yoyaku.html">体験レッスンを予約</a>` : `<a class="btn or" href="yoyaku.html">体験レッスンを予約</a>`) : `<a class="btn or" href="#lesson">体験レッスン</a>`;
     return `<section class="hero lhero" id="top" aria-label="北川弘喜のギターレッスン">
+      <i class="hero-blur" aria-hidden="true" style="background-image:url('${IMG.lesson}')"></i>
       <picture><img src="${IMG.lesson}" alt="ギターを持ち、こちらを見てほほえむ北川弘喜" fetchpriority="high"></picture>
       <div class="wrap">
         <p class="role">GUITAR LESSON</p>
@@ -415,18 +417,26 @@ export function buildOutputs(files){
   const FRONT = [["tr",0,"w"],["q",-6,"o"],["e",6,"h"],["bm",12,"o"],["h",-12,"w"],["q",0,"h"],["bs",0,"w"],["e",-6,"o"],["sh",0,"h"],["q",6,"o"],["bm",0,"h"],["e",-12,"w"],["q",12,"o"],["h",6,"h"]];
   const BACK  = [["q",6,"o"],["tr",0,"w"],["e",-6,"h"],["q",0,"w"],["bm",6,"o"],["h",-6,"w"],["bs",0,"h"],["e",12,"o"],["q",-12,"w"]];
   let rbN = 0;
-  function staffLayer(cls, geo, seq, scale, dur, rev, id){
-    const notes = seq.map(([g,dy,c],i) => `<g class="nt c-${c}"><animateMotion dur="${dur}s" begin="-${r1(dur*i/seq.length)}s" repeatCount="indefinite" rotate="${rev?"auto-reverse":"auto"}"><mpath href="#${id}"/></animateMotion><g transform="scale(${scale}) translate(0 ${placeY(g,dy)})">${glyph(g,dy)}</g></g>`).join("");
-    return `<g class="${cls}"><path id="${id}" class="ctr" d="${geo.center}"/>${geo.lines.map((d,k)=>`<path class="ln l${k}" d="${d}"/>`).join("")}${notes}</g>`;
+  /* 2026-10-27 作り直し（北川くん）：
+     ・曲がり方＝波を1本のきれいなカーブに（前は2つの波を足していて、いびつに見えた）
+     ・揺れ＝ギターの弦のように、触ったところを中心に揺れて、だんだんおさまる（main.js）
+     ・かくつき＝音符の流れを main.js の1つのループで動かす。音符の光のぼかしをやめて軽くした
+     ここでは、動かないとき（「視差効果を減らす」の人・JS なし）の形を書き出す。カーブの式は data-f に入れて main.js と共有 */
+  function staffLayer(cls, geo, seq, scale, dur, rev, W, s, RW){
+    const n = seq.length, span = RW + 320;
+    const notes = seq.map(([g,dy,c],i) => { const x = rev ? RW+160 - span*i/n : -160 + span*i/n, y = W.f(x), a = Math.atan(W.d(x))*180/Math.PI;
+      return `<g class="nt c-${c}" transform="translate(${r1(x)} ${r1(y)}) rotate(${r1(a)})"><g transform="scale(${scale}) translate(0 ${placeY(g,dy)})">${glyph(g,dy)}</g></g>`; }).join("");
+    return `<g class="${cls} st-layer" data-f="${[W.c,W.a,W.k,W.ph].map(v=>Math.round(v*1e5)/1e5).join(",")}" data-s="${s}" data-dur="${dur}">${geo.lines.map((d,k)=>`<path class="ln l${k}" d="${d}"/>`).join("")}${notes}</g>`;
   }
-  /* PC 用（横長）とスマホ用（幅をせまくして、うねりを大きく）の2枚を描き、CSS で片方だけ出す */
+  /* PC 用（横長）とスマホ用（幅をせまく）の2枚を描き、CSS で片方だけ出す */
   function staffSvg(n, rev, RW, RH, A, cls, nF, durF, durB){
-    const ff = x => RH/2 + (rev?-1:1)*(A*Math.sin(2*Math.PI*x/RW*0.95 + 0.5) + A*.18*Math.sin(2*Math.PI*x/RW*2.1));
-    const fb = x => RH/2 - A*.32 + (rev?-1:1)*(A*.74*Math.sin(2*Math.PI*x/RW*1.25 + 2.4));
-    const front = staffGeo(ff, 12, rev, RW), back = staffGeo(fb, 6.5, rev, RW);
-    return `<svg class="staffs ${cls}" viewBox="0 0 ${RW} ${RH}" preserveAspectRatio="xMidYMid slice" focusable="false">
-      ${staffLayer("st-back", back, BACK.slice(0, Math.ceil(nF*.65)), .54, durB, rev, `rbb${cls}${n}`)}
-      ${staffLayer("st-front", front, FRONT.slice(0, nF), 1, durF, rev, `rbf${cls}${n}`)}
+    const wave = (c, a, per, ph) => { const k = 2*Math.PI*per/RW; return {c, a, k, ph, f: x => c + a*Math.sin(k*x+ph), d: x => a*k*Math.cos(k*x+ph)}; };
+    const sg = rev ? -1 : 1;
+    const WF = wave(RH/2, sg*A*.92, .78, .35), WB = wave(RH/2 - A*.3, sg*A*.6, 1.12, 2.3);
+    const front = staffGeo(WF.f, 12, rev, RW), back = staffGeo(WB.f, 6.5, rev, RW);
+    return `<svg class="staffs ${cls}" viewBox="0 0 ${RW} ${RH}" preserveAspectRatio="xMidYMid slice" focusable="false" data-rw="${RW}" data-rev="${rev?1:0}">
+      ${staffLayer("st-back", back, BACK.slice(0, Math.ceil(nF*.65)), .54, durB, rev, WB, 6.5, RW)}
+      ${staffLayer("st-front", front, FRONT.slice(0, nF), 1, durF, rev, WF, 12, RW)}
       <path class="hit" d="${front.center}"/></svg>`;
   }
   const band = (words, rev) => { const n = ++rbN;
