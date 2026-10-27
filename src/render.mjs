@@ -242,7 +242,7 @@ export function buildOutputs(files){
         <div><h3><span>STEP</span>はじめるまで</h3>
           <ol class="flow hs" id="flow">
             ${D.yoyaku ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>スタジオもオンラインも、1つ選ぶだけ</small></li>
-            <li class="card"><span class="n">02</span><b>メールのリンクで確定</b><small>届いたメールのリンクを開くと、予約が確定します</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
+            <li class="card"><span class="n">02</span><b>予約が確定</b><small>LINE ならその場で確定。メールの方は、届いたリンクを開くと確定します</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
             <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>場所と当日の流れをお送りします</small></li>` : `<li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
@@ -767,7 +767,7 @@ ${css}
   <p class="small" id="skLoad">読み込んでいます…</p>
   <div class="card yk-closed" id="skBad" hidden>
     <b id="skBadT">このページは、生徒さん専用です</b>
-    <small id="skBadM">北川から届いたメールのURLから開いてください。</small>
+    <small id="skBadM">北川から届いた LINE（またはメール）のURLから開いてください。</small>
     <div class="nf-btns"><a class="btn line" href="yoyaku.html">体験レッスンの予約はこちら</a></div>
   </div>
 
