@@ -259,7 +259,7 @@ export function buildOutputs(files){
           <details><summary>キャンセル・日程の変更はできる？</summary><p>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</p></details>
           <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、水・木・金は22〜23時、土・日は21〜23時になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
         </div>
-      </div>${voices()}
+      </div>${whos()}${voices()}
       ${D.yoyaku ? `<div class="les-book reveal">
         ${D.lineAdd ? `<a class="ct-book ln only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>LINE で体験レッスンを予約</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。友だち追加すると、すぐに予約のボタンが届きます。お知らせも LINE に</small></span><i class="cb-arr cb-ln" aria-hidden="true">${LINE_ICON}</i></a>
         <a class="les-web only-sp" href="yoyaku.html">LINE を使わない方は、こちらの予約ページから →</a>` : ""}
@@ -324,6 +324,12 @@ export function buildOutputs(files){
   /* 公式LINE の友だち追加（2026-10-25）。体験の予約・質問・予約の確認が LINE でできる */
   function lineCard(where){
     return `<a class="dm ln only-pc" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><i>${LINE_ICON}</i><span><b>公式LINE を友だち追加</b><small>体験の予約・ご質問・予約の確認が、LINE でできます</small></span><em class="ln-add">友だち追加</em></a>`;
+  }
+  /* 2026-10-28：こんな方が来ています（北川くん：趣味で始めた主婦・上手くなりたいバンドギタリスト・V系好きな社会人）。data/profile.json の lesson.who */
+  function whos(){
+    const W = (P.lesson.who||[]).filter(w => w && w.t);
+    if(!W.length) return "";
+    return `<div class="voices whos" id="who"><h3><span>WHO</span>こんな方が来ています</h3><ul class="flow hs" id="whos">${W.map(w=>`<li class="card"><span class="n">${esc(w.en||"")}</span><b>${esc(w.t)}</b><small>${esc(w.s||"")}</small></li>`).join("")}</ul>${W.length>1?swipe(W.length):""}</div>`;
   }
   /* 生徒さんの声：data/voices.json に本人からもらった言葉が入ったときだけ出す */
   function voices(){
