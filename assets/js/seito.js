@@ -1,7 +1,9 @@
 /* seito.js — 生徒さん専用の予約ページ（seito.html?k=合言葉）の動き
    生徒さんの情報・残りの回数・空き枠は Apps Script（Googleカレンダー）から読む。
    ?demo=1 を付けると、見本の生徒さんで動きだけ確かめられる（送信はしない）。&out=1 で「今月の回数を使い切った」見本。
-   2026-10-25：何日分でも、まとめて選んで1回で予約できる（スタジオもオンラインも、その場で確定。部屋は前の日に北川くんが取る）。 */
+   2026-10-25：何日分でも、まとめて選んで1回で予約できる（スタジオもオンラインも、その場で確定。部屋は前の日に北川くんが取る）。
+   2026-10-27：使わなかった回は、キャンセルしなくても次の月に回せる（今月2回・来月6回など）。選んだ日ごとに「〇月の何回目」を出す。
+     追加（単発）をキャンセルしても「次の月まで使えます」と出さない。 */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
@@ -24,6 +26,30 @@
 
   let me = null, mode = "", hours = 1, day = "", pick = [];
 
+  /* ---------- 回数の数え方（コード.gs の「回数を数える」「月謝にできる数」と同じ） ---------- */
+  const USED = ["仮", "確定", "キャンセル（1回分）"];
+  const nextM = m => { let y = +m.slice(0, 4), n = +m.slice(5, 7) + 1; if (n > 12) { n = 1; y++; } return y + "-" + String(n).padStart(2, "0"); };
+  function count(base, start, ls, want){
+    const keys = ls.map(x => x.m).concat(want || []).concat([start]).filter(Boolean).sort(), out = {};
+    if (!keys.length) return out;
+    let carry = 0;
+    for (let m = keys[0]; m <= keys[keys.length - 1]; m = nextM(m)) {
+      const b = m >= start ? base : 0;
+      const used = ls.filter(x => x.m === m && USED.includes(x.state)).reduce((a, x) => a + x.getsu, 0);
+      out[m] = { base: b, carry, used, left: Math.max(0, b + carry - used), over: used > b + carry };
+      carry = Math.max(0, b - Math.max(0, used - carry));   // 使わなかった回は次の月まで
+    }
+    return out;
+  }
+  function canGetsu(base, start, ls, m, n){
+    const nx = nextM(m), before = count(base, start, ls, [m, nx]);
+    for (let k = n; k > 0; k--) {
+      const s = count(base, start, ls.concat([{ m, state: "仮", getsu: k }]), [m, nx]);
+      if ((!s[m].over || before[m].over) && (!s[nx].over || before[nx].over)) return k;
+    }
+    return 0;
+  }
+
   /* ---------- 見本 ---------- */
   function demoSlots(){
     const out = [], now = Date.now(), start = new Date(dayKey(now) + "T00:00:00+09:00").getTime();
@@ -42,8 +68,9 @@
                       : [{ m: m0, base: 4, carry: 1, used: 3, left: 2 }, { m: m1, base: 4, carry: 0, used: 0, left: 4 }],
       quota: demoOut ? { [m0]: Array(25).fill(0), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) } : { [m0]: Array.from({ length: 25 }, (_, n) => Math.min(n, 2)), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) },
       lessons: [{ id: "L1", state: "確定", mode: "スタジオ", hours: 2, s: sl[2].s, s2: 0, getsu: 2, tan: 0, free: true, room: "サウンドスタジオM小岩店" },
-                { id: "L2", state: "確定", mode: "スタジオ", hours: 1, s: sl[9].s, s2: 0, getsu: 1, tan: 0, free: true, room: "未手配" }],
-      slots: demoSlots() };
+                { id: "L2", state: "確定", mode: "スタジオ", hours: 1, s: sl[9].s, s2: 0, getsu: 1, tan: 0, free: true, room: "未手配" },
+                { id: "L3", state: "確定", mode: "オンライン", hours: 1, s: sl[11].s, s2: 0, getsu: 0, tan: 1, free: true, room: "" }],
+      slots: demoSlots(), cnt: { base: 4, start: m0, ls: [{ m: m0, state: "確定", getsu: demoOut ? 4 : 2 }] } };
   }
 
   /* ---------- 読み込み ---------- */
@@ -54,6 +81,9 @@
       : fetch(cfg.api + "?a=me&k=" + encodeURIComponent(key), { cache: "no-store" }).then(r => r.json());
     return p.then(r => {
       if (!r.ok) { bad(r.bad ? "このページのURLが正しくありません" : "いまは予約できません", r.msg); return; }
+      if (r.cnt) { const c = r.cnt, st = count(c.base, c.start, c.ls, r.months.map(x => x.m));
+        // 来月に回した分は、今月の残りから引く（実際に月謝で予約できる数）
+        r.months = r.months.map(x => Object.assign({}, x, st[x.m], { left: canGetsu(c.base, c.start, c.ls, x.m, st[x.m].left) })); }
       me = r; $("skLoad").hidden = true; $("skMain").hidden = false; drawMe(); drawList(); drawHours(); if (mode) drawDays(); drawSplit();
     }).catch(() => bad("読み込めませんでした", "時間をおいてもう一度開いてください。うまくいかないときは、北川にご連絡ください。"));
   }
@@ -65,7 +95,7 @@
     $("skName").textContent = me.name + " 様";
     $("skPlan").textContent = me.plan;
     $("skMonths").innerHTML = me.months.slice(0, 2).map((x, i) => me.base
-      ? `<div class="sk-m${x.left ? "" : " zero"}"><small>${i ? "来月" : "今月"}（${monName(x.m)}）</small><b>あと<em>${x.left}</em>回</b><i>${x.base}回${x.carry ? `＋振替${x.carry}回` : ""}のうち</i></div>`
+      ? `<div class="sk-m${x.left ? "" : " zero"}"><small>${i ? "来月" : "今月"}（${monName(x.m)}）</small><b>あと<em>${x.left}</em>回</b><i>${x.carry ? `${x.base}回＋${i ? "今月から" : "先月から"}${x.carry}回` : `${x.base}回のうち`}</i></div>`
       : `<div class="sk-m"><small>${i ? "来月" : "今月"}（${monName(x.m)}）</small><b>単発で予約</b><i>1回 ${yen(me.single)}</i></div>`).join("");
     $("skOut").hidden = !(me.base && me.months[0].left === 0);
   }
@@ -80,7 +110,7 @@
       const when = x.state === "仮" ? `<em>第1希望</em>${w(x.s)}${x.s2 ? `<em>第2希望</em>${w(x.s2)}` : ""}` : w(x.s);
       const parts = [x.getsu ? `月謝 ${x.getsu}回分` : "", x.tan ? `追加（単発）${x.tan}回` : ""].filter(Boolean).join("＋");
       const room = !x.room ? "" : x.room === "取れず" ? "<i>お部屋が取れませんでした（メールをご覧ください）</i>" : /^(未手配|手配中2?)$/.test(x.room) ? "お部屋は前の日に決まります" : esc(x.room);
-      return `<li class="sk-l" data-id="${esc(x.id)}" data-free="${x.free ? 1 : 0}" data-state="${esc(x.state)}">
+      return `<li class="sk-l" data-id="${esc(x.id)}" data-free="${x.free ? 1 : 0}" data-state="${esc(x.state)}" data-getsu="${x.getsu || 0}" data-tan="${x.tan || 0}">
         <span class="chip ${x.state === "確定" ? "gr" : "or"}">${x.state === "確定" ? "確定" : "確定待ち"}</span>
         <span class="sk-lt"><b>${when}</b><small>${esc(x.mode)}・${x.hours}時間・${parts}${room ? `<br>${room}` : ""}</small></span>
         ${x.past ? "" : `<button type="button" class="yk-chg" data-cx>キャンセル</button>`}
@@ -91,8 +121,11 @@
     const li = e.target.closest(".sk-l"); if (!li) return;
     const box = li.querySelector(".sk-cx");
     if (e.target.closest("[data-cx]")) {
-      const free = li.dataset.free === "1";
-      box.innerHTML = `<p>${li.dataset.state === "仮" ? "このお申し込みを取り消します（回数は減りません）。" : free ? "無料でキャンセルできます。この回は、次の月まで使えます。" : "<b>3日前を過ぎているので、レッスン1回分として扱います。</b>"}</p>
+      const free = li.dataset.free === "1", g = +li.dataset.getsu, t = +li.dataset.tan;
+      const freeMsg = !g ? "無料でキャンセルできます。追加（単発）の回なので、お支払いはありません。"
+        : t ? `無料でキャンセルできます。月謝の${g}回分は、次の月まで使えます（追加（単発）の${t}回分は、お支払いはありません）。`
+        : "無料でキャンセルできます。この回は、次の月まで使えます。";
+      box.innerHTML = `<p>${li.dataset.state === "仮" ? "このお申し込みを取り消します（回数は減りません）。" : free ? freeMsg : "<b>3日前を過ぎているので、レッスン1回分として扱います。</b>"}</p>
         <div class="sk-cxb"><button type="button" class="btn or sm" data-yes>キャンセルする</button><button type="button" class="btn line sm" data-no>やめる</button></div><p class="err" hidden></p>`;
       box.hidden = false; return;
     }
@@ -157,7 +190,10 @@
     drawDays(); drawSplit();
   });
   function drawPicked(){
-    picked.innerHTML = pick.map(t => `<li><span class="chip gr">${monName(monKey(t))}</span><b>${span(t, hours)}</b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`).join("");
+    const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
+    picked.innerHTML = pick.map(t => { const x = at(t), lab = !x || x.nth == null ? monName(monKey(t)) : nthText(x);
+      const tag = !x ? `<span class="chip gr">${monName(monKey(t))}</span>` : x.getsu ? `<span class="chip gr">月謝</span>` : `<span class="chip or">追加</span>`;
+      return `<li>${tag}<b>${span(t, hours)}<small class="sk-nth">${lab}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
     nowEl.hidden = !pick.length;
     nowEl.innerHTML = pick.length ? `<span class="chip or">${pick.length}日</span>選んでいます。ほかの日も、続けて選べます` : "";
   }
@@ -169,8 +205,25 @@
 
   /* ---------- 月謝と追加（単発）の分け方 ---------- */
   /* 早い日から順に、その月の回数（月謝）を使う。足りない分は追加（単発）。正しい数はサーバーが数え直す */
+  /* 「12月の5回目」「12月の5・6回目」「追加（単発）」 */
+  function nthText(x){
+    const m = monName(x.m), a = x.nth + 1, b = x.nth + x.getsu;
+    const g = x.getsu ? `${m}の${a === b ? a : a + "〜" + b}回目（${x.of}回のうち）` : "";
+    const t = x.tan ? `追加（単発）${x.tan}回・${yen(me.single * x.tan)}` : "";
+    return [g, t].filter(Boolean).join("＋");
+  }
   function split(){
     if (!pick.length || !me) return null;
+    if (me.cnt) {   // サーバーと同じ順番（早い日から）で数える
+      const { base, start } = me.cnt; let ls = me.cnt.ls.slice();
+      const items = pick.map(t => {
+        const m = monKey(t), g = canGetsu(base, start, ls, m, hours), c = count(base, start, ls, [m])[m] || { used: 0, base: 0, carry: 0 };
+        ls = ls.concat([{ m, state: "確定", getsu: g }]);
+        return { t, m, getsu: g, tan: hours - g, nth: c.used, of: c.base + c.carry };
+      });
+      const sum = k => items.reduce((a, x) => a + x[k], 0);
+      return { items, getsu: sum("getsu"), tan: sum("tan") };
+    }
     const left = {}, items = pick.map(t => {
       const m = monKey(t), q = (me.quota || {})[m] || [0];
       if (!(m in left)) { const total = pick.filter(p => monKey(p) === m).length * hours; left[m] = q[Math.min(total, q.length - 1)] || 0; }
