@@ -42,6 +42,9 @@ document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e
   const more = document.getElementById(g.dataset.grid + "More");
   if(more){ if(!all){ more.dataset.was = more.open ? "1" : ""; more.open = true; more.classList.add("filtered"); } else if(more.classList.contains("filtered")){ more.classList.remove("filtered"); more.open = more.dataset.was === "1"; } }
 }));
+/* すべての制作実績：「もっと見る」を開いたら（絞り込んだときも自動で開く）、スマホで隠していた5〜8枚目も出す */
+{ const cm = document.getElementById("cgridMore"), cw = document.getElementById("credits");
+  if(cm && cw) cm.addEventListener("toggle", () => cw.classList.toggle("all", cm.open)); }
 /* 横スクロールの矢印 */
 document.querySelectorAll(".arw").forEach(b => b.addEventListener("click", () => { const el = document.getElementById(b.dataset.for); el.scrollBy({left: el.clientWidth*.8*Number(b.dataset.dir), behavior:"smooth"}); }));
 /* WORKS のタブ（楽曲／ライブ・TV） */
@@ -57,6 +60,15 @@ document.querySelectorAll("[data-tab-go]").forEach(a => a.addEventListener("clic
    読み込み中に前の曲の「止まった」知らせが来ても、ボタンの見た目を戻さない（押した曲だけが光る）。
    押したかどうかは click だけで決める（ホバーの見た目には頼らない）ので、iPhone でも1回のタップで動く。 */
 const arts = [...document.querySelectorAll(".art[data-track]")], host = document.getElementById("spHost");
+let heard = false;
+/* 鳴らせなかったときの小さな案内（下に数秒だけ）。押すと Spotify でその曲を開く */
+const tip = document.createElement("a"); tip.className = "sp-tip"; tip.target = "_blank"; tip.rel = "noopener"; tip.hidden = true; document.body.appendChild(tip);
+let tipT = 0;
+function hideTip(){ tip.classList.remove("on"); clearTimeout(tipT); tipT = setTimeout(() => tip.hidden = true, 300); }
+function noPlay(b){ setUI(b, false);
+  tip.href = "https://open.spotify.com/track/" + b.dataset.track; tip.innerHTML = "<b>Spotify で聴く</b><span>この画面では再生できませんでした ↗</span>";
+  clearTimeout(tipT); tip.hidden = false; requestAnimationFrame(() => tip.classList.add("on")); tipT = setTimeout(hideTip, 5000); }
+tip.addEventListener("click", () => setTimeout(hideTip, 100));
 let ctrl = null, cur = null, apiAsked = false, apiFailed = false, loading = false, loadedUri = "", playTimer = 0, showTimer = 0;
 const uriOf = b => "spotify:track:" + b.dataset.track;
 const touchUI = matchMedia("(hover:none)");
@@ -72,7 +84,7 @@ function loadApi(){
     c.addListener("playback_update", e => { const d = e.data || {}; if(!cur) return;
       if(d.playingURI && d.playingURI !== uriOf(cur)) return;   // 前の曲の知らせは無視する
       if(loading && d.isPaused) return;                         // 読み込み中の「止まった」は無視する
-      if(!d.isPaused){ loading = false; clearTimeout(showTimer); host.classList.remove("show"); }
+      if(!d.isPaused){ loading = false; heard = true; clearTimeout(showTimer); hideTip(); }
       setUI(cur, !d.isPaused);
       const bar = cur.querySelector(".bar i"); if(bar && d.duration) bar.style.transform = `scaleX(${Math.min(1, d.position/d.duration)})`; });
     if(cur) start(cur);
@@ -89,10 +101,10 @@ function start(b){
     /* ready の合図が来ないときの保険：少し待ってから再生の合図を送る */
     playTimer = setTimeout(() => { if(loading && cur===b){ loading = false; ctrl.play(); } }, 1500);
   }
-  /* スマホは、Spotify の決まりで「プレイヤーの再生ボタン」を押さないと鳴らないことが多いので、すぐにプレイヤーを出す */
-  if(touchUI.matches){ host.classList.add("show"); return; }
-  /* PC：少し待っても鳴らないとき（ブラウザが自動再生を止めた等）は、プレイヤーを下に出して押してもらう */
-  showTimer = setTimeout(() => { if(cur===b && b.getAttribute("aria-pressed")!=="true") host.classList.add("show"); }, 3200);
+  /* 2026-10-27：下に Spotify のプレイヤーの窓は出さない（北川くん）。
+     少し待っても鳴らないとき（スマホで Spotify が自動の再生を止めた等）だけ、小さな「Spotify で聴く」の案内を出す */
+  heard = false;
+  showTimer = setTimeout(() => { if(cur===b && !heard) noPlay(b); }, touchUI.matches ? 2600 : 3600);
 }
 /* 押したら鳴らす（上のジャケットと、上に並んでいない曲のレコードの両方で使う） */
 function press(b){
@@ -246,9 +258,13 @@ document.querySelectorAll(".ribbon.wave").forEach(r => {
   let seen = false, raf = 0, t0 = 0;
   const now = () => (performance.now() - t0) / 1000;
   const live = st => st.sv.getClientRects().length > 0;
+  /* 軽くする（2026-10-27）：揺れていないときは、音符の位置の書きかえを1秒に約30回にする（ゆっくり流れているので見た目は変わらない）。
+     スクロール中のスマホが重くならないように */
+  let tick = 0;
   function frame(){
     raf = 0; if(!seen || reduce.matches) return;
-    const t = now();
+    const t = now(), busy = S.some(st => st.pl.length);
+    if(!busy && (tick++ & 1)){ raf = requestAnimationFrame(frame); return; }
     S.forEach(st => { if(!live(st)) return;
       st.pl = st.pl.filter(p => t - p.t0 < 5);
       const moving = st.pl.length > 0;

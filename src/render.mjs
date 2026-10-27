@@ -154,16 +154,24 @@ export function buildOutputs(files){
           <h4>${esc(c.title)}</h4><div class="who">${esc(c.artist)}<em>${c.year||""}</em></div></article>`;}).join("")}</div>
         <div class="swipe feat-sw"><span aria-hidden="true">横にスワイプ</span><span class="dots" aria-hidden="true">${feat.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span><span class="rail-btns"><button type="button" class="rb" data-rail="-1" aria-label="前の曲へ">‹</button><button type="button" class="rb" data-rail="1" aria-label="次の曲へ">›</button></span></div>
         <div class="sp-host" id="spHost" aria-hidden="true"><div id="spEmbed"></div></div>
-        <details class="acc allworks" id="credits"><summary><b>すべての制作実績を見る</b><span class="meta">${nMusic} CREDITS</span></summary>
-          <div class="in">
-            <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
-              <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${nMusic}</em></button>
-              <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
-              <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
-              <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
-            <ul class="grid4 recs" id="cgrid">${[...comp,...gtr].map(c=>rec(c.category, (c.roles||[]).join("・"), c.title, c.album ? `${c.artist}（${c.album}）` : c.artist, c.year, c)).join("")}
-              ${rec("karaoke","カラオケ音源制作","有名歌い手のカラオケ音源","作品名は非公開","×"+kara.length)}</ul>
-          </div></details>
+        ${(() => {
+          /* 2026-10-27：レコードは最初から数枚見せて、残りは「もっと見る」（ライブのチケットと同じ形・北川くん）。
+             PC は8枚、スマホは4枚。並びは 作詞・作曲・編曲 → ギター参加 → カラオケ音源（お仕事の人にいちばん伝えたい順） */
+          const order = [...comp, ...gtr, null];
+          const cards = order.map(c => c ? rec(c.category, (c.roles||[]).join("・"), c.title, c.album ? `${c.artist}（${c.album}）` : c.artist, c.year, c)
+            : rec("karaoke","カラオケ音源制作","有名歌い手のカラオケ音源","作品名は非公開","×"+kara.length));
+          const N = 8;
+          return `<div class="allworks2" id="credits">
+          <div class="aw-head"><h4>すべての制作実績</h4><span class="meta">${nMusic} CREDITS</span></div>
+          <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="cgrid">
+            <button type="button" class="fchip" data-f="ALL" aria-pressed="true">すべて<em>${nMusic}</em></button>
+            <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
+            <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
+            <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
+          <ul class="grid4 recs" id="cgrid">${cards.slice(0,N).join("")}</ul>
+          <details class="acc gigs-more recs-more" id="cgridMore"><summary><b>もっと見る</b><span class="meta"><span class="only-pc">+${cards.length-N}</span><span class="only-sp">+${cards.length-4}</span></span></summary>
+            <div class="in"><ul class="grid4 recs" id="cgrid2">${cards.slice(N).join("")}</ul></div></details>
+          </div>`; })()}
       </div>
       <div class="tabp" id="p-stage" role="tabpanel" aria-labelledby="t-stage">
         <figure class="gearshot reveal">${pic("gearWide","ライブ会場のステージ。手前に大きなエフェクターボード、奥にゴールドトップのギターとアンプ")}<figcaption class="cap">ON STAGE</figcaption></figure>

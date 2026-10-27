@@ -1803,3 +1803,57 @@ form.f .sk-ok span{flex:1;min-width:0}
 /* 2026-10-27：五線譜リボンの作り直し。揺れは main.js で描くので、前の CSS の揺れは使わない。音符のぼかしの光をやめて軽く */
 .st-front .nt{filter:none}
 .ribbon.wave .ln{transform:none!important;animation:none!important}
+/* 2026-10-27：すべての制作実績は、最初から PC 8枚・スマホ 4枚を見せて、残りは「もっと見る」 */
+.allworks2{margin-top:clamp(56px,7vw,88px)}
+.aw-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 18px}
+.aw-head h4{margin:0;font-size:clamp(18px,1.8vw,22px);font-weight:900;letter-spacing:.04em}
+.aw-head .meta{font:600 11px/1 var(--en);letter-spacing:.22em;color:var(--faint)}
+.allworks2 .filters{margin-bottom:26px}
+.recs-more{margin-top:34px}
+.recs-more .in{padding-top:30px}
+@media (max-width:820px){ .allworks2:not(.all) #cgrid > li:nth-child(n+5){display:none} .allworks2 .filters{margin-bottom:22px} }
+/* 2026-10-27：曲を鳴らしても下に Spotify の窓は出さない（北川くん）。鳴らせなかったときだけ小さな案内 */
+.sp-host,.sp-host.show{position:fixed;left:-9999px;bottom:0;width:300px;height:80px;opacity:0;pointer-events:none;box-shadow:none}
+.sp-tip{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:46;display:flex;flex-direction:column;gap:2px;align-items:center;
+  padding:10px 20px;border-radius:999px;background:rgba(20,26,37,.92);box-shadow:inset 0 0 0 1px rgba(29,185,84,.55),0 14px 40px -12px rgba(0,0,0,.8);
+  color:var(--ink);text-decoration:none;transform:translate(-50%,16px);opacity:0;transition:opacity .25s,transform .3s cubic-bezier(.2,.7,.2,1);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.sp-tip.on{opacity:1;transform:translate(-50%,0)}
+.sp-tip b{font-size:13.5px;color:#1ed760}
+.sp-tip span{font-size:11px;color:var(--sub)}
+@media (min-width:821px){ .sp-tip{bottom:28px} }
+/* 2026-10-27：五線譜を軽く。五線譜の書きかえがページのほかの部分に広がらないように閉じこめる */
+.ribbon.wave{contain:layout paint}
+.ribbon.wave .staffs{will-change:transform;transform:translateZ(0)}
+/* 2026-10-27：お仕事の「進め方」を PC は横一列に（線でつないだ 01→05）。順番に出る動きは残し、つなぐ線も左から伸びる（北川くん） */
+@media (min-width:821px){
+  .steps{grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin-top:8px}
+  .steps li{display:block;position:relative;padding:0 22px 0 0;background:none;border:0;border-radius:0}
+  .steps .n{display:grid;place-items:center;width:54px;height:54px;margin:0 0 20px;border-radius:50%;font-size:22px;opacity:1;position:relative;z-index:1;
+    background:#0c1424;box-shadow:inset 0 0 0 1.5px rgba(92,200,245,.55),0 0 0 6px rgba(92,200,245,.06)}
+  .steps li::after{content:"";position:absolute;left:62px;right:8px;top:27px;height:1.5px;border-radius:1px;transform-origin:left center;
+    background:linear-gradient(90deg,rgba(92,200,245,.7),rgba(92,200,245,.18))}
+  .steps li:last-child::after{display:none}
+  .steps b{font-size:16px;letter-spacing:.04em}
+  .steps small{margin-top:8px;font-size:13px;line-height:1.75}
+}
+@media (min-width:821px) and (prefers-reduced-motion:no-preference){
+  .js .steps .st{transform:translateY(18px)}
+  .js .steps .st::after{transform:scaleX(0);transition:transform .9s cubic-bezier(.2,.7,.2,1) .3s}
+  .js .steps .st.in{transform:none}
+  .js .steps .st.in::after{transform:none}
+}
+/* 2026-10-27：「できること」のタグを上品に。MAJOR の四角いしるしは、文字の前の小さなオレンジの点に（下の説明も同じ点）。タグの線もなくす（北川くん） */
+.sk3 .tags li,.sk3 .tags li.mj{box-shadow:none;background:rgba(255,255,255,.06);gap:7px}
+.sk3 .tags i,.sk3-legend i{order:-1;flex:none;display:inline-block;width:6px;height:6px;padding:0;border-radius:50%;font-size:0;line-height:0;color:transparent;
+  background:var(--or-hi);box-shadow:0 0 0 3px rgba(255,116,23,.16)}
+.sk3-legend i{margin:0 8px 0 3px;vertical-align:1px}
+.sk3 .tags li.go{background:rgba(92,200,245,.08);box-shadow:none}
+/* 2026-10-27：文字の大きさをそろえる（北川くん「Apple レベル」）。
+   大見出し＝各セクションの英字（そのまま）／中見出し＝下の5つ（同じ大きさ・太さ・左に英字の小さなラベル）／小見出し＝12.5px のグレー／本文＝15px（スマホ 14.5px） */
+.workcta h3,.aw-head h4,.les-extra h3,.voices h3,.acc-wrap h3{font-size:clamp(20px,1.9vw,24px);font-weight:800;letter-spacing:.04em;line-height:1.35}
+.les-extra h3,.voices h3,.acc-wrap h3{margin:0 0 20px;gap:14px}
+.les-extra h3 span,.voices h3 span,.acc-wrap h3 span,.wc-head .wc-en{font:700 11px/1 var(--en);letter-spacing:.24em}
+.wc-sub{margin:40px 0 16px;font-size:12.5px;letter-spacing:.16em}
+.sk3 h5{font-size:12px;letter-spacing:.1em}
+.workcta .wc-head p,.ct .side p{font-size:15px;line-height:1.95}
+@media (max-width:820px){ .workcta .wc-head p,.ct .side p{font-size:14.5px} .wc-sub{margin-top:34px} }
