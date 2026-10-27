@@ -1087,6 +1087,10 @@ form.f.yk>*{min-width:0}
 .yk-picked:empty{display:none}
 .yk-picked li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--or-soft);box-shadow:inset 0 0 0 1px rgba(255,116,23,.35)}
 .yk-picked li b{flex:1;font-size:15px}
+.sk-line{display:grid;gap:12px;margin:16px 0 0;padding:16px;border-radius:14px;background:rgba(6,199,85,.08);box-shadow:inset 0 0 0 1px rgba(61,220,132,.35)}
+.sk-line b{display:block;color:#3ddc84;font-size:15px}.sk-line small{display:block;margin-top:4px;font-size:12.5px;line-height:1.7;opacity:.8}
+.sk-lnb{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;border-radius:999px;background:#06c755;color:#fff;font-weight:700;font-size:15px;text-decoration:none}
+.sk-lnb span{font:900 11px/1 Arial,sans-serif;padding:4px 6px;border-radius:5px;background:#fff;color:#06c755}
 .yk-picked li b .sk-nth{display:block;margin-top:3px;font-size:12px;font-weight:500;opacity:.75;letter-spacing:.02em}
 .yk-x{width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.08);color:var(--ink);font-size:18px;cursor:pointer;flex:none}
 .yk-info{display:grid;gap:22px}

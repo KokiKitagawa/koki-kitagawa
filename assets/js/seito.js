@@ -3,7 +3,7 @@
    ?demo=1 を付けると、見本の生徒さんで動きだけ確かめられる（送信はしない）。&out=1 で「今月の回数を使い切った」見本。
    2026-10-25：何日分でも、まとめて選んで1回で予約できる（スタジオもオンラインも、その場で確定。部屋は前の日に北川くんが取る）。
    2026-10-27：使わなかった回は、キャンセルしなくても次の月に回せる（今月2回・来月6回など）。選んだ日ごとに「〇月の何回目」を出す。
-     追加（単発）をキャンセルしても「次の月まで使えます」と出さない。 */
+     追加（単発）をキャンセルしても「次の月まで使えます」と出さない。LINE がまだの人に「LINE でお知らせを受け取る」ボタン。 */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
@@ -70,7 +70,7 @@
       lessons: [{ id: "L1", state: "確定", mode: "スタジオ", hours: 2, s: sl[2].s, s2: 0, getsu: 2, tan: 0, free: true, room: "サウンドスタジオM小岩店" },
                 { id: "L2", state: "確定", mode: "スタジオ", hours: 1, s: sl[9].s, s2: 0, getsu: 1, tan: 0, free: true, room: "未手配" },
                 { id: "L3", state: "確定", mode: "オンライン", hours: 1, s: sl[11].s, s2: 0, getsu: 0, tan: 1, free: true, room: "" }],
-      slots: demoSlots(), cnt: { base: 4, start: m0, ls: [{ m: m0, state: "確定", getsu: demoOut ? 4 : 2 }] } };
+      slots: demoSlots(), lineLink: "https://line.me/R/oaMessage/%40557brylm/", cnt: { base: 4, start: m0, ls: [{ m: m0, state: "確定", getsu: demoOut ? 4 : 2 }] } };
   }
 
   /* ---------- 読み込み ---------- */
@@ -98,6 +98,12 @@
       ? `<div class="sk-m${x.left ? "" : " zero"}"><small>${i ? "来月" : "今月"}（${monName(x.m)}）</small><b>あと<em>${x.left}</em>回</b><i>${x.carry ? `${x.base}回＋${i ? "今月から" : "先月から"}${x.carry}回` : `${x.base}回のうち`}</i></div>`
       : `<div class="sk-m"><small>${i ? "来月" : "今月"}（${monName(x.m)}）</small><b>単発で予約</b><i>1回 ${yen(me.single)}</i></div>`).join("");
     $("skOut").hidden = !(me.base && me.months[0].left === 0);
+    /* LINE がまだの人に「LINE でお知らせを受け取る」（押すと LINE が開き、文を送るだけで自動でつながる） */
+    let ln = $("skLine");
+    if (!ln) { ln = document.createElement("div"); ln.id = "skLine"; ln.className = "sk-line"; $("skOut").before(ln); }
+    ln.hidden = !me.lineLink;
+    if (me.lineLink) ln.innerHTML = `<div><b>お知らせを LINE で受け取る</b><small>ボタンを押すと LINE が開きます。入っている文を、そのまま送ってください。自動でつながります。</small></div>`
+      + `<a class="sk-lnb" href="${esc(me.lineLink)}" target="_blank" rel="noopener"><span>LINE</span>LINE でお知らせを受け取る</a>`;
   }
   $("skMore").addEventListener("click", () => { $("skOk").checked = true; form.scrollIntoView({ behavior: "smooth", block: "start" }); });
 
