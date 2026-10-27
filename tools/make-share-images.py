@@ -70,6 +70,43 @@ d.text((L + 22, 508), "小岩・オンライン｜体験レッスン受付中", 
 img.save("img/ogp.jpg", quality=86, optimize=True, progressive=True)
 print("img/ogp.jpg", img.size)
 
+# ---------- レッスンのページの共有画像 1200×630（img/ogp-lesson.jpg） ----------
+# 2026-10-27：レッスンのページ（lesson.html）・予約ページを LINE などで送ったとき、ひと目でレッスンの案内と分かるように。
+#   写真は img/lesson-900.webp（レッスンのページの1画面目と同じ）。文字はレッスンのページの1画面目と同じ。料金は data/site.json から。
+import json
+trial = json.load(open("data/site.json", encoding="utf-8"))["lessonPlans"]["trial"]["price"]
+src = Image.open("img/lesson-900.webp").convert("RGB")
+PW = 640; ph = Image.Image.resize(src, (PW, round(src.height * PW / src.width)), Image.LANCZOS).crop((0, 0, PW, Hh))
+# 下地：同じ写真を大きくぼかして敷く（レッスンのページの .hero-blur と同じ考え方）
+bg = src.resize((W, round(src.height * W / src.width)), Image.LANCZOS).crop((0, 120, W, 120 + Hh)).filter(ImageFilter.GaussianBlur(40))
+b = np.asarray(bg).astype(np.float32) * .2 + np.array(BG) * .8
+img = Image.fromarray(b.clip(0, 255).astype(np.uint8))
+# 写真は右に。左のふちをなめらかに消す
+m = np.clip(np.linspace(0, 1, PW) / .38, 0, 1) ** 1.6
+mask = Image.fromarray((np.tile(m, (Hh, 1)) * 255).astype(np.uint8))
+img.paste(ph, (W - PW, 0), mask)
+a = np.asarray(img).astype(np.float32)
+y = np.linspace(0, 1, Hh)[:, None, None]
+bot = np.clip((y - .78) / .22, 0, 1) ** 1.5 * .5
+a = a * (1 - bot) + np.array(BG) * bot
+img = Image.fromarray(a.clip(0, 255).astype(np.uint8))
+d = ImageDraw.Draw(img)
+f_catch = font(52)
+spaced(d, (L, 72), "GUITAR LESSON", f_small, SUB, 5)
+y1, y2 = 140, 214
+pre = "あなたの"; wkw = d.textlength("ギター", font=f_catch); x_kw = L + d.textlength(pre, font=f_catch)
+img = glow(img, (x_kw - 30, y2 - 6, x_kw + wkw + 30, y2 + 80), OR)
+d = ImageDraw.Draw(img)
+d.text((L, y1), "現場で培った経験を、", font=f_catch, fill=INK)
+d.text((L, y2), "あなたのギターへ。", font=f_catch, fill=INK)
+d.text((L, 330), "北川弘喜のギターレッスン", font=font(26), fill=INK)
+d.text((L, 372), "小岩のスタジオ・オンライン｜初心者からプロ志向まで", font=font(19, bold=False), fill=SUB)
+d.rounded_rectangle((L, 470, L + 4, 548), 2, fill=OR)
+d.text((L + 22, 468), "体験レッスン  60分  ¥{:,}".format(trial), font=font(26), fill=INK)
+d.text((L + 22, 512), "空いている日時から、そのまま予約できます", font=font(19, bold=False), fill=SUB)
+img.save("img/ogp-lesson.jpg", quality=86, optimize=True, progressive=True)
+print("img/ogp-lesson.jpg", img.size)
+
 # ---------- アイコン（ホーム画面・タブ） ----------
 # 2026-10-15：本人がギターを弾くイラスト（北川くんが ChatGPT で作成。元は 05_写真と動画/AI生成_参考/アイコン用イラスト_1_文字なし.png）。
 #   少し寄って切り出す（ギターの先まで入れて、顔を少し大きく）。元の絵は読むだけで上書きしない。

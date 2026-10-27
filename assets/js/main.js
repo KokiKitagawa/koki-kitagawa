@@ -378,7 +378,7 @@ document.getElementById("form").addEventListener("submit", e => {
   const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:sub,[F.message]:msg,[F.from]:v("f_from")});
   btn.disabled = true; btn.textContent = "送信中…"; document.getElementById("sendErr").hidden = true;
   fetch(F.action, {method:"POST", mode:"no-cors", body})
-    .then(() => { document.getElementById("form").querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; })
+    .then(() => { document.getElementById("form").querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; if(window.gtag) gtag("event", "contact_sent", {kind}); })
     .catch(() => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; });
 });
 }

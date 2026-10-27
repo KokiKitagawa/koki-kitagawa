@@ -182,6 +182,7 @@
 
   function finish(d, r){
     const el = $("ykDone"), min = r.min || 30;
+    if (window.gtag && !demo) gtag("event", "trial_booking", { mode: d.mode, via: r.line ? "line" : "mail" });
     const list = d.slots.map(t => `<li><span class="chip or">${d.mode === "studio" ? "スタジオ" : "オンライン"}</span><b>${full(t)}</b></li>`).join("");
     if (r.line) {   // LINE から：その場で確定
       el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました</h3>`

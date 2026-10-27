@@ -489,6 +489,9 @@ export function buildOutputs(files){
     html = html.replace(/<title>[^<]*<\/title>/, "<title>ギターレッスン（小岩・オンライン）| 北川弘喜 Koki Kitagawa</title>")
       .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="ギタリスト・作曲家 北川弘喜のギターレッスン。JR小岩駅近くのスタジオとオンラインで、初心者からプロを目指す方まで。体験レッスン60分 ${yen(D.lessonPlans.trial.price)}円。">`)
       .replace(/<meta property="og:title" content="[^"]*">/, '<meta property="og:title" content="北川弘喜のギターレッスン（小岩・オンライン）">')
+      /* 2026-10-27：LINE などで送ったときの画像は、レッスン用（tools/make-share-images.py で書き出す） */
+      .split(`${url}${IMG.ogp}`).join(`${url}${IMG.ogpLesson}`)
+      .replace(/<meta property="og:image:alt" content="[^"]*">/, '<meta property="og:image:alt" content="ギターを持つ北川弘喜。北川弘喜のギターレッスン、体験レッスン60分。">')
       .split(`content="${url}"`).join(`content="${url}lesson.html"`).split(`href="${url}"`).join(`href="${url}lesson.html"`);
   } else {
     /* トップ：レッスンの入口は、レッスンのページへ */
@@ -504,7 +507,20 @@ export function buildOutputs(files){
   return html;
   }
   const html = assemble(main, "top"), lessonHtml = assemble(lessonMain, "lesson");
-  return { files: {"index.html": html, "lesson.html": lessonHtml, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)}, warnings };
+  const ga = /^G-[A-Z0-9]+$/.test(site.ga || "") ? site.ga : "";
+  if(site.ga && !ga) warnings.push("site.json の ga が G- ではじまる形ではありません: " + site.ga);
+  const out = {"index.html": html, "lesson.html": lessonHtml, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku, ga: !!ga}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)};
+  /* 2026-10-27：Google アナリティクス（来た人の数・LINE や予約のボタンが押された数）。北川くんの OK で「よそのプログラムを読み込まない」の例外。
+     URL の ?k=（生徒さんの鍵）・?l=（LINE の合言葉）を Google に送らないよう、アドレスは ? より前だけにする。生徒さん専用ページには入れない */
+  if(ga) for(const f of Object.keys(out)) if(f !== "seito.html") out[f] = out[f].replace("</head>", gaTag(ga) + "\n</head>");
+  return { files: out, warnings };
+}
+
+/* Google アナリティクスの読み込み。押された数を数えるボタン：LINE（line_click）・予約ページへ（booking_page_click）・レッスンのページへ（lesson_page_click） */
+function gaTag(id){
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","${id}",{page_location:location.origin+location.pathname,page_referrer:document.referrer.split("?")[0]});
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"",w=location.pathname;if(/line\\.me/.test(h))gtag("event","line_click",{place:w});else if(/yoyaku\\.html/.test(h))gtag("event","booking_page_click",{place:w});else if(/lesson\\.html/.test(h))gtag("event","lesson_page_click",{place:w});},true);</script>`;
 }
 
 /* プライバシーポリシー（privacy.html）。トップと同じCSSを使う */
@@ -517,6 +533,7 @@ function privacyPage(files, p, url, ext = {}){
     ["保管のしかた", "フォームの内容は Google フォーム（Google LLC のサービス）を通じて受け取り、Google のスプレッドシートに保存します。" + (ext.yoyaku ? "予約ページの内容は、Google のサービス（Apps Script・カレンダー・スプレッドシート）で受け取り、保存します。" : "")],
     ["第三者への提供", "法令にもとづく場合を除き、ご本人の同意なく第三者に渡すことはありません。"],
     ["外部のサービス", `楽曲の再生に Spotify の埋め込みプレーヤーを${ext.video ? "、動画の再生に YouTube を" : ""}${ext.yoyaku ? "" : ext.booking ? "、レッスンの予約に Google カレンダーの予約ページを" : ""}、文字の表示に Google Fonts を使っています。これらのサービスが、それぞれの方針にもとづいて閲覧の情報を扱うことがあります。`],
+    ...(ext.ga ? [["アクセス解析", "サイトの使われ方を知るために、Google アナリティクス（Google LLC のサービス）を使っています。Cookie を使って、見たページ・押したボタン・おおよその地域などの情報を集めますが、お名前など個人を特定する情報は含みません。集めた情報は Google の方針にもとづいて扱われます。ブラウザの設定で Cookie をオフにするか、Google が配っている「Google アナリティクス オプトアウト アドオン」を使うと、集められないようにできます。"]] : []),
     ["確認・削除のご依頼", "お預かりした情報の確認や削除をご希望のときは、お問い合わせフォームまたは Instagram の DM からご連絡ください。"],
     ["改定", "内容を変えるときは、このページでお知らせします。"]
   ];
@@ -617,7 +634,7 @@ export function yoyakuPage(files, p, site, url){
 <meta property="og:type" content="website">
 <meta property="og:title" content="体験レッスンのご予約 | 北川弘喜">
 <meta property="og:url" content="${url}yoyaku.html">
-<meta property="og:image" content="${url}${JSON.parse(files["data/images.json"]).paths.ogp}">
+<meta property="og:image" content="${url}${JSON.parse(files["data/images.json"]).paths.ogpLesson}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
