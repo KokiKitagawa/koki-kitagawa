@@ -462,13 +462,21 @@ export function buildOutputs(files){
 
   const url = p.siteUrl;
   const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="ギターを弾く北川弘喜。書けるギタリスト、弾ける作曲家。">`;
-  const ld = {"@context":"https://schema.org","@type":"Person","name":p.name,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
+  /* 2026-10-28：Google 向けの説明（目に見えない）。トップ＝人（北川弘喜）とサイトの名前、レッスンのページ＝レッスンの中身（場所・料金・受付時間）。
+     料金は site.json、受付時間は yoyaku の予約枠（水木金 16〜23時・土日 12〜23時）と同じ */
+  const ld = {"@context":"https://schema.org","@type":"Person","@id":url+"#person","name":p.name,"image":url+IMG.ogp,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
     "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
     "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean)};
+  /* サイトの名前（Google の検索結果で、URL の上に出る名前） */
+  const ldSite = {"@context":"https://schema.org","@type":"WebSite","name":"北川弘喜 Koki Kitagawa","alternateName":["北川弘喜","Koki Kitagawa","KOKI KITAGAWA"],"url":url,"inLanguage":"ja"};
+  const HOURS = [[["Wednesday","Thursday","Friday"],"16:00"],[["Saturday","Sunday"],"12:00"]].map(([d,o]) => ({"@type":"OpeningHoursSpecification","dayOfWeek":d,"opens":o,"closes":"23:00"}));
   const ldLesson = {"@context":"https://schema.org","@type":"Service","name":"北川弘喜のギターレッスン（小岩・オンライン）","serviceType":"ギターレッスン",
-    "provider":{"@type":"Person","name":p.name,"url":url},"areaServed":[{"@type":"Place","name":"東京都江戸川区 小岩"},{"@type":"Place","name":"オンライン"}],
+    "description":`ギタリスト・作曲家 北川弘喜のギターレッスン。JR小岩駅近くのスタジオ（サウンドスタジオM小岩店）とオンライン（Google Meet）で、初心者からプロを目指す方まで。3歳から受けられます。体験レッスン60分 ${yen(site.lessonPlans.trial.price)}円。`,
+    "image":url+IMG.ogpLesson,"provider":{"@type":"Person","@id":url+"#person","name":p.name,"url":url},"hoursAvailable":HOURS,"areaServed":[{"@type":"Place","name":"東京都江戸川区 小岩"},{"@type":"Place","name":"オンライン"}],
     "availableChannel":{"@type":"ServiceChannel","serviceLocation":{"@type":"Place","name":"サウンドスタジオM小岩店","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区","streetAddress":"西小岩1-27-16 オルフェウスビル4F"}}},
-    "offers":[{"@type":"Offer","name":"体験レッスン（60分）","price":site.lessonPlans.trial.price,"priceCurrency":"JPY"},{"@type":"Offer","name":"単発レッスン（60分）","price":site.lessonPlans.single.price,"priceCurrency":"JPY"}],
+    "offers":[{"@type":"Offer","name":"体験レッスン（60分）","price":site.lessonPlans.trial.price,"priceCurrency":"JPY"},{"@type":"Offer","name":"単発レッスン（60分）","price":site.lessonPlans.single.price,"priceCurrency":"JPY"},
+      ...site.lessonPlans.monthly.map(m => ({"@type":"Offer","name":`月謝 ${m.name}（1回60分）`,"price":m.price,"priceCurrency":"JPY",
+        "priceSpecification":{"@type":"UnitPriceSpecification","price":m.price,"priceCurrency":"JPY","unitText":"月","referenceQuantity":{"@type":"QuantitativeValue","value":1,"unitCode":"MON"}}}))],
     "url":url+"lesson.html"};
   const cfg = JSON.stringify({form: site.form}).replace(/</g,"\\u003c");
 
@@ -477,7 +485,7 @@ export function buildOutputs(files){
   for(const f of ASSETS) html = html.split(`"${f}"`).join(`"${f}?v=${stamp(files[f])}"`);
   const put = (mark, val) => { if(!html.includes(mark)) warnings.push("差込口が見つかりません: " + mark); html = html.split(mark).join(val); };
   put("<!--@meta-->", meta);
-  put("<!--@jsonld-->", (page==="lesson" ? [ldLesson] : [ld]).map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
+  put("<!--@jsonld-->", (page==="lesson" ? [ldLesson] : [ld, ldSite]).map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
   put("<!--@phstyle-->", phStyle);
   put("<!--@main-->", mainHTML);
   /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */
