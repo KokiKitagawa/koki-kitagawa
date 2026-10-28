@@ -562,6 +562,8 @@ export function buildOutputs(files){
     html = html.replace(/<title>[^<]*<\/title>/, "<title>ギターレッスン（小岩・オンライン）| 北川弘喜 Koki Kitagawa</title>")
       .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="ギタリスト・作曲家 北川弘喜のギターレッスン。JR小岩駅近くのスタジオとオンラインで、初心者からプロを目指す方まで。体験レッスン60分 ${yen(D.lessonPlans.trial.price)}円。">`)
       .replace(/<meta property="og:title" content="[^"]*">/, '<meta property="og:title" content="北川弘喜のギターレッスン（小岩・オンライン）">')
+      /* 2026-10-28：LINE などで送ったときの説明文もレッスン向けに */
+      .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="JR小岩駅から約4分のスタジオとオンラインのギターレッスン。初心者からプロ志向まで、3歳から。体験レッスン60分 ${yen(D.lessonPlans.trial.price)}円。">`)
       /* 2026-10-27：LINE などで送ったときの画像は、レッスン用（tools/make-share-images.py で書き出す） */
       .split(`${url}${IMG.ogp}`).join(`${url}${IMG.ogpLesson}`)
       .replace(/<meta property="og:image:alt" content="[^"]*">/, '<meta property="og:image:alt" content="ギターを持つ北川弘喜。北川弘喜のギターレッスン、体験レッスン60分。">')
@@ -706,6 +708,7 @@ export function yoyakuPage(files, p, site, url){
 <link rel="canonical" href="${url}yoyaku.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="体験レッスンのご予約 | 北川弘喜">
+<meta property="og:description" content="小岩のスタジオかオンラインを選んで、空いている日時から申し込めます。体験レッスン60分 ${yen(site.lessonPlans.trial.price)}円。">
 <meta property="og:url" content="${url}yoyaku.html">
 <meta property="og:image" content="${url}${JSON.parse(files["data/images.json"]).paths.ogpLesson}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
