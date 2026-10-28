@@ -153,6 +153,8 @@ export function buildOutputs(files){
     </div><i class="seam" aria-hidden="true"></i></section>`;
   }
 
+  /* イラスト：載せるときだけ C2PA（AIで作った絵の証明のデータ・約8KBずつ）を外して軽くする。元のファイルはそのまま（2026-10-28 北川くん「軽い方」） */
+  const ill = name => (files["src/ill/"+name+".svg"]||"").replace(/<metadata>[\s\S]*?<\/metadata>/g,"").replace(/\s+xmlns:c2pa="[^"]*"/g,"").trim();
   /* できること：3枚のカード（イラスト → 番号と英字の見出し → 短い説明 → 項目のタグ → 詳しく＞）。data/profile.json の canDo、イラストは src/ill/*.svg（触ると少し動く）
      2026-10-17：Profile からお仕事のご依頼欄へ移した。スマホも縦に並べ、スクロールで1枚ずつ出す */
   function canDo(){
@@ -161,7 +163,7 @@ export function buildOutputs(files){
     let ci = 0; const chips = items => `<ul class="tags">${items.map(x=>{ const cls = [x.major?"mj":"", x.href?"go":""].filter(Boolean).join(" "), in_ = `${esc(x.t)}${x.major?'<i>MAJOR</i>':""}`;
       return `<li${cls?` class="${cls}"`:""} style="--i:${ci++}">${x.href?`<a href="${esc(x.href)}">${in_}<span class="arr" aria-hidden="true">→</span></a>`:in_}</li>`; }).join("")}</ul>`;
     const sub = u => !u.label ? chips(u.items) : `<h5>${esc(u.label)}</h5>${chips(u.items)}`;
-    return `<ul class="skills3" id="skills" aria-label="できること">${K.groups.map(g=>(ci=0,`<li class="card sk3 sk-${g.ill}">${(files["src/ill/"+g.ill+".svg"]||"").trim()}<div class="sk3-tx"><div class="num"><i>${esc(g.no)}</i><span>${esc(g.en)}</span></div><b>${esc(g.name)}</b>${g.desc?`<p class="sk3-desc">${esc(g.desc)}</p>`:""}</div>
+    return `<ul class="skills3" id="skills" aria-label="できること">${K.groups.map(g=>(ci=0,`<li class="card sk3 sk-${g.ill}">${ill(g.ill)}<div class="sk3-tx"><div class="num"><i>${esc(g.no)}</i><span>${esc(g.en)}</span></div><b>${esc(g.name)}</b>${g.desc?`<p class="sk3-desc">${esc(g.desc)}</p>`:""}</div>
             <div class="sk3-tags">${g.subs.map(sub).join("")}</div><a class="more" ${LINK[g.link]||""}>詳しく<span class="sr">（${esc(g.name)}）</span></a></li>`)).join("")}</ul>
           <p class="sk3-note">${esc(K.note)}</p><p class="sk3-legend"><i>MAJOR</i>${esc(K.majorNote.replace(/^MAJOR＝/,"＝"))}</p>`;
   }
