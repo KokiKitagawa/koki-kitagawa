@@ -57,13 +57,12 @@ button,input,select,textarea{font:inherit;color:inherit}
 .hero .proof{padding:0}
 .hero .sign{position:absolute;right:var(--gut);bottom:clamp(40px,8vh,90px);font:400 clamp(44px,5vw,76px)/1 var(--sig);color:rgba(255,255,255,.82);transform:rotate(-6deg)}
 @media (prefers-reduced-motion:no-preference){
-  .hero h1 span,.hero .name,.hero .lead,.hero .cta,.hero .proof,.hero .marks{animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
-  .hero h1 span:nth-child(2){animation-delay:.12s} .hero .name{animation-delay:.28s} .hero .lead{animation-delay:.38s}
-  .hero .cta{animation-delay:.5s} .hero .proof,.hero .marks{animation-delay:.62s}
+  /* 2026-10-28：見出し・名前・説明・ボタンは開いた瞬間から出す。動くのは写真と実績の帯だけ（改善レポート B） */
+  .hero .proof,.hero .marks{animation:rise .9s cubic-bezier(.2,.7,.2,1) both;animation-delay:.25s}
   .hero picture img{animation:slowin 2.4s ease-out both}
 }
 @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@keyframes slowin{from{opacity:0;transform:scale(1.05)}to{opacity:1;transform:none}}
+@keyframes slowin{from{opacity:.15;transform:scale(1.05)}to{opacity:1;transform:none}}   /* 0 から始めると Google の「表示の速さ」で写真が遅れて数えられるので .15 から */
 
 /* ---------- section scaffold ---------- */
 section.s{padding:var(--sec) 0;position:relative}

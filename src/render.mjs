@@ -71,7 +71,10 @@ export function buildOutputs(files){
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
     media: J("data/media.json").map(x => { const d = pick(x, ["title","year","artist","role","type"]); if(String(d.role).includes("要確認")) d.role = ""; return d; }),
-    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, yoyaku: !!(site.booking||{}).api, lineAdd: (site.booking||{}).lineAdd||"", booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, trialProof: (site.trialProof||{}).text||"", news: ((site.news||{}).items||[]).filter(n=>n&&n.text).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
+    voices: (J("data/voices.json").items||[]).filter(v => v && v.text), lessonPlans: site.lessonPlans, lessonStats: site.lessonStats, yoyaku: !!(site.booking||{}).api, lineAdd: (site.booking||{}).lineAdd||"", booking: (site.booking||{}).url||"", bookingEmbed: (site.booking||{}).embed||(site.booking||{}).url||"", video: site.video||{}, trialProof: (site.trialProof||{}).text||"", news: [...((site.news||{}).items||[]).filter(n=>n&&n.text),
+      /* 2026-10-28：credits.json の曲に "news":"2026.10" を付けると、NEWS にも自動で出る（カラオケは出さない） */
+      ...J("data/credits.json").filter(c => c.news && c.category !== "karaoke").map(c => ({date:String(c.news), text:`${c.artist}「${c.title}」の${(c.roles||[]).join("・")}を担当`, url:c.spotify||""}))]
+      .map((n,i) => [n,i]).sort((x,y) => String(y[0].date||"").localeCompare(String(x[0].date||""), "en", {numeric:true}) || x[1]-y[1]).map(x => x[0]).slice(0,3), timeline: site.timeline, liveYears: site.liveYears
   };
   const IMG = images.paths, ICON = site.icons;
   const warnings = [];
