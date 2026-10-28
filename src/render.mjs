@@ -107,11 +107,12 @@ export function buildOutputs(files){
       <div class="wrap">
         <p class="role">GUITARIST / COMPOSER</p>
         <h1 class="cp"><span class="l1"><em class="kw or">書ける</em>ギタリスト、</span><span class="l2"><em class="kw bl">弾ける</em>作曲家。</span></h1>
-        <p class="name">KOKI KITAGAWA</p>
-        <p class="lead">ギタリストとしてライブやレコーディング、コンポーザーとして作詞・作曲・編曲まで。「弾く」と「作る」の両方で活動しています。</p>
-        <div class="cta">
-          <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
+        <p class="name nm2"><span class="jp">北川弘喜</span><span class="en">KOKI KITAGAWA</span></p>
+        <p class="lead">SUMMER SONIC・CDTV のサポートギター。<br>B-PROJECT・星名美怜ほかへ作詞・作曲・編曲。</p>
+        <div class="cta cta3">
           <button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>
+          <button class="btn or" type="button" data-open="レッスン">レッスンを申し込む</button>
+          <a class="btn line listen" href="#works"><svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>演奏を聴く</a>
         </div>
         <ul class="marks v-a" aria-label="主な実績">
           <li><i>FESTIVAL<em>2023</em></i><b>SUMMER SONIC</b><span>サポートギター</span></li>
