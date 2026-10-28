@@ -338,7 +338,7 @@ if(bk){
 /* フォーム：Apps Script（予約と同じ）へ送る。api が空なら Googleフォームへ */
 const from = (new URLSearchParams(location.search).get("from")||"").toLowerCase();
 if(document.getElementById("form")){
-document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",sp:"Spotify"})[from] || "";
+document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",tt:"TikTok",sp:"Spotify"})[from] || "";
 document.getElementById("form").addEventListener("submit", e => {
   e.preventDefault(); let ok = true, first = null;
   const check = (id, test, msg) => { const el = document.getElementById(id), er = el.closest("div,fieldset").querySelector(".err"); const bad = !test(el.value.trim());

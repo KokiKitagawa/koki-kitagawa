@@ -525,7 +525,13 @@ export function buildOutputs(files){
      料金は site.json、受付時間は yoyaku の予約枠（水木金 16〜23時・土日 12〜23時）と同じ */
   const ld = {"@context":"https://schema.org","@type":"Person","@id":url+"#person","name":p.name,"image":url+IMG.ogp,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
     "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
-    "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean)};
+    "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean),
+    /* 2026-10-28：できること（knowsAbout） */
+    "knowsAbout":["ギター演奏","ギターレコーディング","作曲","編曲","作詞","ギターレッスン"]};
+  /* 2026-10-28：代表曲（トップに出している曲のうち、作曲に入っているもの）。名前＋曲名の検索で結びつきやすく */
+  const ldSongs = JSON.parse(files["data/credits.json"]).filter(c => c.featured && c.category !== "karaoke" && (c.roles||[]).includes("作曲")).map(c => ({"@context":"https://schema.org","@type":"MusicComposition","name":c.title,
+    "composer":{"@id":url+"#person"},...((c.roles||[]).includes("作詞") ? {"lyricist":{"@id":url+"#person"}} : {}),...(c.year ? {"dateCreated":String(c.year)} : {}),
+    "recordedAs":{"@type":"MusicRecording","name":c.title,"byArtist":{"@type":"MusicGroup","name":c.artist},...(c.spotify ? {"url":c.spotify} : {})}}));
   /* サイトの名前（Google の検索結果で、URL の上に出る名前） */
   const ldSite = {"@context":"https://schema.org","@type":"WebSite","name":"北川弘喜 Koki Kitagawa","alternateName":["北川弘喜","Koki Kitagawa","KOKI KITAGAWA"],"url":url,"inLanguage":"ja"};
   const HOURS = [[["Wednesday","Thursday","Friday"],"16:00"],[["Saturday","Sunday"],"12:00"]].map(([d,o]) => ({"@type":"OpeningHoursSpecification","dayOfWeek":d,"opens":o,"closes":"23:00"}));
@@ -544,7 +550,7 @@ export function buildOutputs(files){
   for(const f of ASSETS) html = html.split(`"${f}"`).join(`"${f}?v=${stamp(files[f])}"`);
   const put = (mark, val) => { if(!html.includes(mark)) warnings.push("差込口が見つかりません: " + mark); html = html.split(mark).join(val); };
   put("<!--@meta-->", meta);
-  put("<!--@jsonld-->", (page==="lesson" ? [ldLesson] : [ld, ldSite]).map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
+  put("<!--@jsonld-->", (page==="lesson" ? [ldLesson] : [ld, ldSite, ...ldSongs]).map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
   put("<!--@phstyle-->", phStyle);
   put("<!--@main-->", mainHTML);
   /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */
@@ -595,7 +601,7 @@ export function buildOutputs(files){
 /* Google アナリティクスの読み込み。押された数を数えるボタン：LINE（line_click）・予約ページへ（booking_page_click）・レッスンのページへ（lesson_page_click） */
 function gaTag(id){
   return `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());gtag("config","${id}",{page_location:location.origin+location.pathname,page_referrer:document.referrer.split("?")[0]});
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());var kkF={ig:"instagram",x:"x",yt:"youtube",tt:"tiktok",sp:"spotify"}[(new URLSearchParams(location.search).get("from")||"").toLowerCase()];gtag("config","${id}",{page_location:location.origin+location.pathname+(kkF?"?utm_source="+kkF+"&utm_medium=social":""),page_referrer:document.referrer.split("?")[0]});
 document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"",w=location.pathname;if(/line\\.me/.test(h))gtag("event","line_click",{place:w});else if(/yoyaku\\.html/.test(h))gtag("event","booking_page_click",{place:w});else if(/lesson\\.html/.test(h))gtag("event","lesson_page_click",{place:w});},true);</script>`;
 }
 
@@ -626,7 +632,7 @@ function privacyPage(files, p, url, ext = {}){
 <link rel="canonical" href="${url}privacy.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@72..118,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 ${HEAD_ICONS("")}
 ${css}
 </head>
@@ -662,7 +668,7 @@ function notFoundPage(files, url, booking){
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@72..118,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 ${HEAD_ICONS(url)}
 ${css}
 </head>
@@ -713,7 +719,7 @@ export function yoyakuPage(files, p, site, url){
 <meta property="og:image" content="${url}${JSON.parse(files["data/images.json"]).paths.ogpLesson}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@72..118,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 ${HEAD_ICONS("")}
 ${css}
 </head>
@@ -829,7 +835,7 @@ export function seitoPage(files, p, site, url){
 <title>レッスンのご予約（生徒さん専用） | 北川弘喜</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@72..118,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 ${HEAD_ICONS("")}
 ${css}
 </head>
