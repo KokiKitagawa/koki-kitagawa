@@ -223,74 +223,57 @@ document.querySelectorAll(".sk3").forEach(c => {
   c.addEventListener("pointerenter", play); c.addEventListener("touchstart", play, {passive:true});
 });
 
-/* 五線譜リボン（2026-10-27 作り直し・北川くん）
-   ・音符は五線のカーブに乗っている。ふだんは止まっていて、触ったときだけ少し流れる（2026-10-27）
-   ・触ったところを中心に、ギターの弦のように揺れて、だんだんおさまる（5本が少しずつずれて揺れる）
-   ・「視差効果を減らす」の人には動かさない（render.mjs が書き出した止まった形のまま） */
+/* 五線譜リボン（2026-10-28 北川くん）
+   ・五線は揺らさない（止まった形のまま）
+   ・音符はずっと五線のカーブに乗って流れる（10/27 より前と同じ）
+   ・音符を触る（マウスを乗せる・指で触る）と、その音符だけ軽くはねる
+   ・画面に入っていないときはループを止める。「視差効果を減らす」の人には動かさない */
 document.querySelectorAll(".ribbon.wave").forEach(r => {
   const R1 = n => Math.round(n*10)/10;
   const S = [...r.querySelectorAll("svg.staffs")].map(sv => {
     const RW = +sv.dataset.rw, rev = sv.dataset.rev === "1";
-    const xs = []; for(let x=-160; x<=RW+160; x+=10) xs.push(x); if(rev) xs.reverse();
     const layers = [...sv.querySelectorAll(".st-layer")].map(g => { const [c,a,k,ph] = g.dataset.f.split(",").map(Number);
-      return { front: g.classList.contains("st-front"), c, a, k, ph, s: +g.dataset.s, dur: +g.dataset.dur,
-        lines: [...g.querySelectorAll(".ln")], notes: [...g.querySelectorAll(".nt")], still: true }; });
-    return { sv, RW, rev, xs, layers, pl: [] };
+      return { front: g.classList.contains("st-front"), c, a, k, ph, dur: +g.dataset.dur,
+        notes: [...g.querySelectorAll(".nt")].map(el => ({ el, x: 0, y: 0, kick: -9 })) }; });
+    return { sv, RW, rev, layers };
   });
-  /* 揺れ（2026-10-27 北川くん「もっとゆっくり、水の波紋みたいに」）：
-     触った点から、ゆっくりした波が左右へ広がっていく。遠くへ行くほど・時間がたつほど小さくなる */
-  const RP = { f: 1.15, lam: 230, tau: 1.25, far: 520, edge: 90 };   // 1秒に約1回ゆれる／波の長さ／おさまる速さ／届く距離／波の先のぼかし
-  const disp = (st, x, t, lag, amp) => { let y = 0; const v = RP.lam * RP.f;
-    for(const p of st.pl){ const u = t - p.t0 - lag; if(u <= 0) continue;
-      const r = Math.abs(x - p.x), front = v * u - r; if(front <= 0) continue;
-      const fade = Math.min(1, front / RP.edge), m = fade * fade * (3 - 2 * fade);   // 波の先はなめらかに
-      y += p.a * amp * m * Math.exp(-u / RP.tau) * Math.exp(-r / RP.far) * Math.sin(2 * Math.PI * (RP.f * u - r / RP.lam)); }
-    return y; };
   const fy = (L, x) => L.c + L.a * Math.sin(L.k*x + L.ph), fd = (L, x) => L.a * L.k * Math.cos(L.k*x + L.ph);
-  function drawLines(st, L, t){
-    const amp = L.front ? 1 : .45, base = L.front ? 0 : .12;
-    L.lines.forEach((el, j) => { const d = (j - 2) * L.s, lag = base + j * .03;
-      el.setAttribute("d", "M" + st.xs.map(x => { const dy = fd(L, x), n = Math.hypot(1, dy);
-        return R1(x - d*dy/n) + " " + R1(fy(L, x) + d/n + disp(st, x, t, lag, amp)); }).join(" L")); });
-  }
+  /* はねる動き：さわってから約0.8秒。上へポンと上がって、少し左右にゆれて戻る */
+  const HOP = { h: 13, rot: 12, tau: .22, len: .9 };
   function drawNotes(st, L, t){
-    const n = L.notes.length, span = st.RW + 320, amp = L.front ? 1 : .45, lag = (L.front ? 0 : .12) + .06;
-    L.notes.forEach((el, i) => { const u = ((ft / L.dur) + i / n) % 1, x = st.rev ? st.RW + 160 - span*u : -160 + span*u;
-      const y = fy(L, x) + disp(st, x, t, lag, amp), a = Math.atan(fd(L, x)) * 57.2958;
-      el.setAttribute("transform", `translate(${R1(x)} ${R1(y)}) rotate(${R1(a)})`); });
+    const n = L.notes.length, span = st.RW + 320;
+    L.notes.forEach((N, i) => { const u = ((t / L.dur) + i / n) % 1, x = st.rev ? st.RW + 160 - span*u : -160 + span*u;
+      let y = fy(L, x), a = Math.atan(fd(L, x)) * 57.2958;
+      const k = t - N.kick;
+      if(k >= 0 && k < HOP.len){ const e = Math.exp(-k / HOP.tau);
+        y -= HOP.h * e * Math.abs(Math.sin(k * Math.PI / .32));
+        a += HOP.rot * e * Math.sin(k * Math.PI * 2 / .36); }
+      N.x = x; N.y = y;
+      N.el.setAttribute("transform", `translate(${R1(x)} ${R1(y)}) rotate(${R1(a)})`); });
   }
-  /* 2026-10-27 北川くん「止めて、触れたときだけ」：ふだんは音符も線も止まったまま。
-     触ると揺れて、音符が少し流れて、だんだん止まる。動いていないときはループも止める（スクロールが軽い） */
-  let seen = false, raf = 0, t0 = 0, ft = 0, en = 0, last = 0, drawn = false;
-  const now = () => (performance.now() - t0) / 1000;
+  let seen = false, raf = 0;
+  const t0 = performance.now(), now = () => (performance.now() - t0) / 1000;
   const live = st => st.sv.getClientRects().length > 0;
-  const EN = { tau: .9, speed: 2.2 };   // 流れがおさまる速さ／触ったときの流れの速さ
   function frame(){
     raf = 0; if(!seen || reduce.matches) return;
-    const t = now(), dt = Math.min(.1, t - last); last = t;
-    ft += dt * en * EN.speed; en *= Math.exp(-dt / EN.tau);
-    S.forEach(st => { if(!live(st)) return;
-      st.pl = st.pl.filter(p => t - p.t0 < 5);
-      const moving = st.pl.length > 0;
-      st.layers.forEach(L => { if(moving || !L.still){ drawLines(st, L, t); L.still = !moving; } drawNotes(st, L, t); }); });
-    drawn = true;
-    if(en > .004 || S.some(st => st.pl.length) || S.some(st => st.layers.some(L => !L.still))) raf = requestAnimationFrame(frame);
+    const t = now();
+    S.forEach(st => { if(live(st)) st.layers.forEach(L => drawNotes(st, L, t)); });
+    raf = requestAnimationFrame(frame);
   }
-  const run = () => { if(!raf && seen && !reduce.matches){ last = now(); raf = requestAnimationFrame(frame); } };
-  const firstDraw = () => { if(!drawn && seen) run(); };
-  t0 = performance.now();
-  /* 触ったところ（画面の位置 → 五線の中の位置）で弾く。マウスが通ったら軽く、押したら強く */
-  function pluck(st, e, a){
+  const run = () => { if(!raf && seen && !reduce.matches) raf = requestAnimationFrame(frame); };
+  /* 触ったところに近い音符を、はねさせる（五線の中の位置で比べる） */
+  function poke(st, e){
     if(reduce.matches) return;
     const m = st.sv.getScreenCTM(); if(!m) return;
-    const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse()), t = now();
-    if(st.pl.some(p => t - p.t0 < .35 && Math.abs(p.x - pt.x) < 80)) return;
-    st.pl.push({ x: pt.x, t0: t, a }); if(st.pl.length > 5) st.pl.shift(); en = Math.min(1, en + a / 24); run();
+    const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(m.inverse()), t = now();
+    st.layers.forEach(L => L.notes.forEach(N => {
+      if(t - N.kick > .5 && Math.hypot(N.x - p.x, (N.y - p.y) * .8) < (L.front ? 52 : 40)) N.kick = t; }));
   }
-  S.forEach(st => { const h = st.sv.querySelector(".hit");
-    h.addEventListener("pointerenter", e => pluck(st, e, e.pointerType === "mouse" ? 14 : 20));
-    h.addEventListener("pointerdown", e => pluck(st, e, 24)); });
-  if("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; firstDraw(); }, {rootMargin:"100px 0px"}).observe(r); else { seen = true; firstDraw(); }
+  S.forEach(st => { const h = st.sv.querySelector(".hit"); if(!h) return;
+    let lastMove = 0;
+    h.addEventListener("pointermove", e => { if(e.pointerType !== "mouse") return; const t = performance.now(); if(t - lastMove < 50) return; lastMove = t; poke(st, e); });
+    h.addEventListener("pointerdown", e => poke(st, e)); });
+  if("IntersectionObserver" in window) new IntersectionObserver(es => { seen = es[0].isIntersecting; run(); }, {rootMargin:"100px 0px"}).observe(r); else { seen = true; run(); }
   reduce.addEventListener("change", run);
 });
 

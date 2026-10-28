@@ -9,6 +9,58 @@ const ASSETS = ["assets/css/kk-design-system.css","assets/css/site.css","assets/
 /* 中身から短い印をつくる（CSS・JSを直したら、見る人のブラウザに古いものが残らないよう ?v= を変える） */
 const stamp = t => { let h = 5381; for(let i=0;i<t.length;i++) h = ((h<<5) + h + t.charCodeAt(i)) >>> 0; return h.toString(36); };
 
+/* 2026-10-28：ことばの途中で改行しない（北川くん「iPhone で改行が変」）。
+   Chrome は CSS（word-break:auto-phrase）で文節ごとに折り返せるが、iPhone の Safari はできない。
+   そこで書き出すときに、文節の切れ目に <wbr>（ここなら改行してよい印）を入れ、CSS で word-break:keep-all にする。
+   文節の切り方：Intl.Segmenter（Node 標準）で単語に分けて、助詞・送りがな（ひらがな）や 」）、。・ は前の語にくっつける。
+   漢字・カタカナ・数字・英字が続くところ（体験レッスン、60分 など）は切らない */
+const JA_SEG = typeof Intl !== "undefined" && Intl.Segmenter ? new Intl.Segmenter("ja", {granularity: "word"}) : null;
+const RE_JA = /[぀-ヿ㐀-鿿]/;
+const RE_HIRA = /^[぀-ゟ]/;
+const RE_WORD = /[゠-ヿ㐀-鿿A-Za-z0-9０-９Ａ-ｚ]/;   // カタカナ・漢字・英数字
+const OPEN = "「『（(［[【〈《“‘¥￥#＃";
+const AFTER = "、。，．・」』）)］]】〉》”’！？!?：…〜～";   // この字のあとは切ってよい
+function jaPhrases(text){
+  if(!JA_SEG || !RE_JA.test(text)) return text;
+  /* 短い英語の名前（Jams Collection・Bunny La Crew など、3語・18字まで）と「CDTV 出演」のような 英語＋空白＋日本語 は、空白で改行しない */
+  text = text.replace(/(?<![A-Za-z0-9.'!?-]|[A-Za-z0-9.'!?-] )[A-Za-z0-9][A-Za-z0-9.'!?-]*(?: [A-Za-z0-9][A-Za-z0-9.'!?-]*){1,2}(?![A-Za-z0-9.'!?-]| [A-Za-z0-9])/g, m => m.length <= 18 ? m.replace(/ /g, "\u00a0") : m)
+             .replace(/(?<![A-Za-z0-9 .'-])([A-Za-z0-9][A-Za-z0-9.'-]{0,7}) (?=[\u3040-\u30ff\u3400-\u9fff])/g, "$1\u00a0");
+  let out = "", prev = "", q = 0;   // q＝「」『』の中（中では切らない）
+  for(const {segment: w} of JA_SEG.segment(text)){
+    if(prev && !q && !/\s$/.test(prev) && !/^\s/.test(w)){
+      const a = prev.slice(-1), b = w[0];
+      let brk;
+      if(OPEN.includes(a) || AFTER.includes(b) || "〜～".includes(a)) brk = false;   // 「 のすぐあと・」、。 の前・〜 のあとでは切らない
+      else if("おご".includes(b) && (w.length === 1 || RE_WORD.test(w[1]))) brk = true;   // お送り・ご提案 などの「お・ご」の前は切ってよい
+      else if(RE_HIRA.test(b)) brk = "、。，．・！？!?…".includes(a);                  // ひらがな（助詞・送りがな）は前にくっつける。、。」 のあとだけ切る
+      else if(OPEN.includes(b)) brk = true;                               // 「 の前は切ってよい
+      else if(/[!-~]/.test(a) && /[A-Za-z0-9]/.test(b) || "ごお".includes(a)) brk = false;   // 23:59・ご連絡 などは切らない
+      else if(RE_WORD.test(b)) brk = !RE_WORD.test(a) || a === "・";                   // 漢字・カタカナ・英数字が続くところ（体験レッスン・60分）は切らない
+      else brk = false;
+      if(brk) out += "<wbr>";
+    }
+    for(const ch of w){ if("「『".includes(ch)) q++; else if("」』".includes(ch) && q) q--; }
+    out += w; prev = w;
+  }
+  return out.replace(/\d+(?:-\d+){1,3}/g, m => `<span class="nb">${m}</span>`);   // 住所の番地（1-27-16）は途中で切らない
+}
+/* HTML の文字の部分だけに入れる（script・style・svg・option・textarea・title の中と、タグの属性には入れない） */
+function addWbr(html){
+  const i = html.indexOf("<body"); if(i < 0) return html;
+  const head = html.slice(0, i), body = html.slice(i);
+  const SKIP = /^(script|style|svg|option|textarea|title|noscript|select)$/i;
+  let skip = 0, res = "";
+  for(const part of body.split(/(<[^>]*>)/)){
+    if(part.startsWith("<")){
+      const m = part.match(/^<(\/?)([a-zA-Z0-9-]+)/);
+      if(m && SKIP.test(m[2]) && !part.endsWith("/>")) skip += m[1] ? -1 : 1;
+      if(skip < 0) skip = 0;
+      res += part;
+    } else res += skip ? part : jaPhrases(part);
+  }
+  return head + res;
+}
+
 export function buildOutputs(files){
   const J = k => JSON.parse(files[k]);
   const p = J("data/profile.json"), site = J("data/site.json"), images = J("data/images.json");
@@ -250,10 +302,10 @@ export function buildOutputs(files){
         <div class="faq reveal" id="faq"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
           <details><summary>ギターを持っていなくても受けられる？</summary><p>${esc(P.lesson.guitarRental)}</p></details>
-          <details><summary>体験レッスンでは何をする？</summary><p>${esc((P.lesson.trialSteps||[]).join("→"))}の流れで、60分です。</p></details>
+          <details><summary>体験レッスンでは何をする？</summary><p>${esc((P.lesson.trialSteps||[]).map((s, i) => "①②③④⑤"[i] + s).join("　"))}。この流れで60分です。</p></details>
           <details><summary>体験のあと、しつこく勧誘されない？</summary><p>${esc(P.lesson.noPush)}</p></details>
           <details><summary>何歳から受けられる？</summary><p>${esc(P.lesson.ages)}</p></details>
-          <details><summary>どこでレッスンする？</summary><p>${esc(P.lesson.place)}。オンラインでも受けられます。</p></details>
+          <details><summary>どこでレッスンする？</summary><p>サウンドスタジオM小岩店（JR小岩駅から歩いて約4分）か、オンライン（Google Meet）で受けられます。</p></details>
           <details><summary>スタジオ代はかかる？</summary><p>スタジオで受ける場合は、レッスン料金とは別に、スタジオ代（1時間 約1,500円）を当日スタジオでお支払いください。オンラインはかかりません。</p></details>
           <details><summary>支払い方法は？</summary><p>${payLines("")}</p></details>
           <details><summary>キャンセル・日程の変更はできる？</summary><p>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</p></details>
@@ -261,7 +313,7 @@ export function buildOutputs(files){
         </div>
       </div>${whos()}${voices()}
       ${D.yoyaku ? `<div class="les-book reveal">
-        ${D.lineAdd ? `<a class="ct-book ln only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>LINE で体験レッスンを予約</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。友だち追加すると、すぐに予約のボタンが届きます。お知らせも LINE に</small></span><i class="cb-arr cb-ln" aria-hidden="true">${LINE_ICON}</i></a>
+        ${D.lineAdd ? `<a class="ct-book ln only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>LINE で体験レッスンを予約</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。友だち追加すると、すぐに予約のボタンが届きます。お知らせも LINE に届きます</small></span><i class="cb-arr cb-ln" aria-hidden="true">${LINE_ICON}</i></a>
         <a class="les-web only-sp" href="yoyaku.html">LINE を使わない方は、こちらの予約ページから →</a>` : ""}
         <a class="ct-book${D.lineAdd ? " only-pc" : ""}" href="yoyaku.html"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>体験レッスンを予約する</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。空いている日時から、そのまま申し込めます</small></span><i class="cb-arr" aria-hidden="true">→</i></a>
         ${D.lineAdd ? lineCard("les") : ""}
@@ -526,6 +578,7 @@ export function buildOutputs(files){
   const out = {"index.html": html, "lesson.html": lessonHtml, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku, ga: !!ga}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)};
   /* 2026-10-27：Google アナリティクス（来た人の数・LINE や予約のボタンが押された数）。北川くんの OK で「よそのプログラムを読み込まない」の例外。
      URL の ?k=（生徒さんの鍵）・?l=（LINE の合言葉）を Google に送らないよう、アドレスは ? より前だけにする。生徒さん専用ページには入れない */
+  for(const f of Object.keys(out)) out[f] = addWbr(out[f]);   /* 2026-10-28：ことばの途中で改行しない */
   if(ga) for(const f of Object.keys(out)) if(f !== "seito.html") out[f] = out[f].replace("</head>", gaTag(ga) + "\n</head>");
   return { files: out, warnings };
 }
@@ -716,7 +769,7 @@ ${css}
     <dl class="yk-brief" aria-label="申し込む前に">
       <dt>料金</dt><dd>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込）</dd>
       <dt>スタジオ代</dt><dd>スタジオは1時間 約1,500円（当日スタジオで）／オンラインはなし</dd>
-      <dt>お支払い</dt><dd>スタジオ：現金・PayPay（当日レッスンの前）／オンライン：カード（前日まで）</dd>
+      <dt>お支払い</dt><dd>スタジオ：現金・PayPay（当日レッスンの前に）／オンライン：カード（前日まで）</dd>
       <dt>キャンセル</dt><dd>3日前 23:59 まではURLから無料。それより後もキャンセル料はかかりません</dd>
     </dl>
     <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>

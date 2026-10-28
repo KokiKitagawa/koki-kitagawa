@@ -1,7 +1,7 @@
 /* site.css — ページの組み方（色・書体は kk-design-system.css の変数を使う） */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:calc(var(--head) + 8px);-webkit-text-size-adjust:100%}
-body{margin:0;overflow-x:clip;background:var(--black);color:var(--ink);font:400 16px/1.9 var(--jp);letter-spacing:.04em;
+body{margin:0;background:var(--black);color:var(--ink);font:400 16px/1.9 var(--jp);letter-spacing:.04em;
   font-feature-settings:"palt" 1;-webkit-font-smoothing:antialiased}
 img{display:block;max-width:100%;height:auto}
 a{color:inherit;text-decoration:none}
@@ -1892,3 +1892,11 @@ form.f .sk-ok span{flex:1;min-width:0}
    下のメニュー（PROFILE など）と、予約ページの「← 戻る」。見えない余白を足して、その分を外側に戻す */
 footer nav a{display:inline-block;padding:16px 4px;margin:-16px -4px}
 a.yk-back{display:inline-block;padding:12px 10px;margin:-12px -10px}
+/* 2026-10-28：iPhone で指で縮小したときに崩れる・Safari の「フルページ」のスクショが出ない対策（北川くん）。
+   横のはみ出しを body で切ると、その設定がページ全体（画面そのもの）に移り、iPhone の拡大・縮小やフルページのスクショとぶつかる。
+   切るのは中身の箱（main・footer）だけにする */
+main,footer{overflow-x:clip}
+/* 2026-10-28：ことばの途中で改行しない（iPhone の Safari でも）。改行してよいところは render.mjs が <wbr> で入れる。
+   入りきらない長いことばだけは、はみ出さないように途中で折る */
+body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.nb{white-space:nowrap}
