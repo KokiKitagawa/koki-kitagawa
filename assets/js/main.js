@@ -335,7 +335,7 @@ if(bk){
   document.addEventListener("keydown", e => { if(e.key === "Escape" && !bk.hidden) closeBk(); });
 }
 
-/* フォーム：Googleフォームへ送る */
+/* フォーム：Apps Script（予約と同じ）へ送る。api が空なら Googleフォームへ */
 const from = (new URLSearchParams(location.search).get("from")||"").toLowerCase();
 if(document.getElementById("form")){
 document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",sp:"Spotify"})[from] || "";
@@ -356,7 +356,6 @@ document.getElementById("form").addEventListener("submit", e => {
     er.hidden = !none; er.textContent = none ? "ご依頼の内容を1つ以上選んでください" : ""; if(none){ ok = false; first = first || box.querySelector("input"); } }
   if(kind!=="レッスン" && kind!=="お仕事") check("f_msg", v => v, "メッセージを入れてください");
   if(!ok){ (first.type==="hidden" ? document.querySelector('input[name="kind"]') : first).focus(); return; }
-  /* Googleフォームへ送る（届いた内容はスプレッドシートにたまり、メールでお知らせが来る） */
   const F = CFG.form, v = id => document.getElementById(id).value.trim(), btn = document.getElementById("send");
   /* 追加の項目は「メッセージ」の頭にまとめて送る（Googleフォームの設定はそのまま） */
   const sel = n => [...document.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value).join("、");
@@ -365,11 +364,18 @@ document.getElementById("form").addEventListener("submit", e => {
   const head = extra.filter(x => x[1]).map(x => `【${x[0]}】${x[1]}`).join("\n");
   const msg = [head, v("f_msg")].filter(Boolean).join("\n\n");
   const sub = (kind==="レッスンのご質問" ? "レッスンのご質問" : kind==="レッスン" ? `レッスンの申し込み（${v("f_plan")}）` : kind==="お仕事" ? `お仕事のご相談（${sel("f_job")}）` : `お問い合わせ（${kind}）`);
-  const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:sub,[F.message]:msg,[F.from]:v("f_from")});
   btn.disabled = true; btn.textContent = "送信中…"; document.getElementById("sendErr").hidden = true;
-  fetch(F.action, {method:"POST", mode:"no-cors", body})
-    .then(() => { document.getElementById("form").querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; if(window.gtag) gtag("event", "contact_sent", {kind}); })
-    .catch(() => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; });
+  const ok_ = () => { document.getElementById("form").querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; if(window.gtag) gtag("event", "contact_sent", {kind}); };
+  const ng_ = () => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; };
+  if(CFG.api){
+    /* 2026-10-28：予約と同じ Apps Script に送る。届いたかを確かめ、相手に確認のメールが自動で届く（Content-Type は付けない） */
+    fetch(CFG.api, {method:"POST", body: JSON.stringify({a:"contact", kind:v("f_kind"), name:v("f_name"), email:v("f_mail"), subject:sub, message:msg, from:v("f_from")})})
+      .then(r => r.json()).then(j => j && j.ok ? ok_() : ng_()).catch(ng_);
+  } else {
+    /* 予備：Googleフォームへ（届いたかは分からない） */
+    const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:sub,[F.message]:msg,[F.from]:v("f_from")});
+    fetch(F.action, {method:"POST", mode:"no-cors", body}).then(ok_).catch(ng_);
+  }
 });
 }
 })();

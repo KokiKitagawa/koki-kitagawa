@@ -394,7 +394,7 @@ export function buildOutputs(files){
       ${sh("05","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">
-          <p>${D.yoyaku ? `制作・演奏・ライブサポート等のお仕事のご依頼、取材などその他のお問い合わせは、こちらのフォームからご連絡ください。体験レッスンのご予約は<a class="ul" href="lesson.html">レッスンのページ</a>から。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}2日以内にメールでご返信します。</p>
+          <p>${D.yoyaku ? `制作・演奏・ライブサポート等のお仕事のご依頼、取材などその他のお問い合わせは、こちらのフォームからご連絡ください。体験レッスンのご予約は<a class="ul" href="lesson.html">レッスンのページ</a>から。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}24時間以内にメールでご返信します。</p>
           <div class="quick">
             ${D.yoyaku ? "" : `<a class="dm" href="${P.links.instagram}" target="_blank" rel="noopener"><i>${svg("ig")}</i><span><b>レッスンのご質問は Instagram の DM でも</b><small>気軽にメッセージください</small></span></a>`}
             <button class="dm wk" type="button" data-open="お仕事"><i class="arw" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></i><span><b>お仕事のご依頼は、フォームから</b><small class="sp-only">下のフォームで「お仕事」を選んでください</small><small class="pc-only">右のフォームで「お仕事」を選んでください</small></span></button>
@@ -420,7 +420,7 @@ export function buildOutputs(files){
           <div class="xf" data-for="お仕事">
             <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["作詞・作曲","編曲・トラック制作","ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
             <fieldset class="opts" id="f_whoBox"><legend>ご依頼主<i>必須</i></legend>${["会社・団体","個人"].map(x=>`<label class="opt"><input type="radio" name="f_who" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
-            <div id="companyBox" hidden><label for="f_company">会社名・団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="例：株式会社〇〇、〇〇プロジェクト"><p class="err" hidden></p></div>
+            <div id="companyBox" hidden><label for="f_company">会社名・団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="例：株式会社〇〇"><p class="err" hidden></p></div>
             <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option>${W.budgets.map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
             <details class="yk-more"><summary><b>わかれば<wbr>書く<wbr>（任意）</b><small>使い道・<wbr>納期・<wbr>参考音源。<wbr>書いてもらえると、<wbr>お見積もりが<wbr>早くなります</small></summary>
             <div class="yk-more-in">
@@ -435,7 +435,7 @@ export function buildOutputs(files){
           <input type="hidden" name="from" id="f_from">
           <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
           <button class="btn gr send" type="submit" id="send">この内容で送る</button>
-          <div class="done" id="done" hidden role="status">ありがとうございます。送信しました。2日以内にメールでご返信します。</div>
+          <div class="done" id="done" hidden role="status">ありがとうございます。送信しました。確認のメールをお送りしたので、ご覧ください（届かないときは、迷惑メールのフォルダもご確認ください）。24時間以内にご返信します。</div>
           <p class="err" id="sendErr" hidden>送信できませんでした。通信の状態を確かめて、もう一度お試しください。うまくいかない場合は Instagram の DM からご連絡ください。</p>
         </form>
       </div>
@@ -526,7 +526,7 @@ export function buildOutputs(files){
       ...site.lessonPlans.monthly.map(m => ({"@type":"Offer","name":`月謝 ${m.name}（1回60分）`,"price":m.price,"priceCurrency":"JPY",
         "priceSpecification":{"@type":"UnitPriceSpecification","price":m.price,"priceCurrency":"JPY","unitText":"月","referenceQuantity":{"@type":"QuantitativeValue","value":1,"unitCode":"MON"}}}))],
     "url":url+"lesson.html"};
-  const cfg = JSON.stringify({form: site.form}).replace(/</g,"\\u003c");
+  const cfg = JSON.stringify({form: site.form, api: (site.booking||{}).api || ""}).replace(/</g,"\\u003c");
 
   function assemble(mainHTML, page){
   let html = files["src/template.html"];
