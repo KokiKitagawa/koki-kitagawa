@@ -263,17 +263,18 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
           
           <div class="xf" data-for="お仕事">
             <fieldset class="opts" id="f_jobs"><legend>ご依頼の<wbr>内容<i>必須・<wbr>複数OK</i></legend><label class="opt"><input type="checkbox" name="f_job" value="作詞・作曲"><span>作詞・<wbr>作曲</span></label><label class="opt"><input type="checkbox" name="f_job" value="編曲・トラック制作"><span>編曲・<wbr>トラック制作</span></label><label class="opt"><input type="checkbox" name="f_job" value="ギターREC"><span>ギターREC</span></label><label class="opt"><input type="checkbox" name="f_job" value="ライブサポート"><span>ライブサポート</span></label><label class="opt"><input type="checkbox" name="f_job" value="カラオケ音源"><span>カラオケ音源</span></label><label class="opt"><input type="checkbox" name="f_job" value="その他"><span>その他</span></label><p class="err" hidden></p></fieldset>
-            <div class="two">
-              <div><label for="f_company">会社名・<wbr>団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="個人の方は「個人」とご記入ください"><p class="err" hidden></p></div>
-              <div><label for="f_use">使い道</label><select id="f_use"><option value="">選んでください</option><option>CD・配信</option><option>ライブ・ツアー</option><option>CM・映像</option><option>ゲーム</option><option>舞台・ミュージカル</option><option>その他</option></select></div>
-            </div>
-            <div class="two">
-              <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option><option>6〜10万円</option><option>10〜30万円</option><option>30万円以上</option><option>まだ決まっていない（相談したい）</option></select><p class="err" hidden></p></div>
-              <div><label for="f_due">納期</label><input id="f_due" placeholder="例：11月末まで"></div>
-            </div>
-            <div><label for="f_ref">参考音源の<wbr>URL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
+            <fieldset class="opts" id="f_whoBox"><legend>ご依頼主<i>必須</i></legend><label class="opt"><input type="radio" name="f_who" value="会社・団体"><span>会社・<wbr>団体</span></label><label class="opt"><input type="radio" name="f_who" value="個人"><span>個人</span></label><p class="err" hidden></p></fieldset>
+            <div id="companyBox" hidden><label for="f_company">会社名・<wbr>団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="例：株式会社〇〇、〇〇プロジェクト"><p class="err" hidden></p></div>
+            <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option><option>6〜10万円</option><option>10〜30万円</option><option>30万円以上</option><option>まだ決まっていない（相談したい）</option></select><p class="err" hidden></p></div>
+            <details class="yk-more"><summary><b>わかれば<wbr>書く<wbr>（任意）</b><small>使い道・<wbr>納期・<wbr>参考音源。<wbr>書いてもらえると、<wbr>お見積もりが<wbr>早くなります</small></summary>
+            <div class="yk-more-in">
+              <div class="two">
+                <div><label for="f_use">使い道</label><select id="f_use"><option value="">選んでください</option><option>CD・配信</option><option>ライブ・ツアー</option><option>CM・映像</option><option>ゲーム</option><option>舞台・ミュージカル</option><option>その他</option></select></div>
+                <div><label for="f_due">納期</label><input id="f_due" placeholder="例：11月末まで"></div>
+              </div>
+              <div><label for="f_ref">参考音源の<wbr>URL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
+            </div></details>
           </div>
-          <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：ご相談の内容"></div>
           <div><label for="f_msg">メッセージ<i id="msgReq">必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
           <input type="hidden" name="from" id="f_from">
           <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に<wbr>同意したものとします。</p>
@@ -315,6 +316,6 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
 </div>
 
 <script type="application/json" id="cfg">{"form":{"action":"https://docs.google.com/forms/d/e/1FAIpQLSfvnTQ09UhGhzNjL7lpcy01ZUpQUyUhQizAKKZVJMnw4f4GmQ/formResponse","kind":"entry.1760490644","name":"entry.955876901","email":"entry.578010398","subject":"entry.411187707","message":"entry.197220302","from":"entry.2074772989"}}</script>
-<script src="assets/js/main.js?v=1byevtg" defer></script>
+<script src="assets/js/main.js?v=35zh81" defer></script>
 </body>
 </html>

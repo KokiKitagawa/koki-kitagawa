@@ -419,17 +419,18 @@ export function buildOutputs(files){
           </div>`}
           <div class="xf" data-for="お仕事">
             <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["作詞・作曲","編曲・トラック制作","ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
-            <div class="two">
-              <div><label for="f_company">会社名・団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="個人の方は「個人」とご記入ください"><p class="err" hidden></p></div>
-              <div><label for="f_use">使い道</label><select id="f_use"><option value="">選んでください</option>${W.uses.map(x=>`<option>${esc(x)}</option>`).join("")}</select></div>
-            </div>
-            <div class="two">
-              <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option>${W.budgets.map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
-              <div><label for="f_due">納期</label><input id="f_due" placeholder="例：11月末まで"></div>
-            </div>
-            <div><label for="f_ref">参考音源のURL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
+            <fieldset class="opts" id="f_whoBox"><legend>ご依頼主<i>必須</i></legend>${["会社・団体","個人"].map(x=>`<label class="opt"><input type="radio" name="f_who" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
+            <div id="companyBox" hidden><label for="f_company">会社名・団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="例：株式会社〇〇、〇〇プロジェクト"><p class="err" hidden></p></div>
+            <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option>${W.budgets.map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
+            <details class="yk-more"><summary><b>わかれば<wbr>書く<wbr>（任意）</b><small>使い道・<wbr>納期・<wbr>参考音源。<wbr>書いてもらえると、<wbr>お見積もりが<wbr>早くなります</small></summary>
+            <div class="yk-more-in">
+              <div class="two">
+                <div><label for="f_use">使い道</label><select id="f_use"><option value="">選んでください</option>${W.uses.map(x=>`<option>${esc(x)}</option>`).join("")}</select></div>
+                <div><label for="f_due">納期</label><input id="f_due" placeholder="例：11月末まで"></div>
+              </div>
+              <div><label for="f_ref">参考音源のURL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
+            </div></details>
           </div>
-          <div><label for="f_sub">件名</label><input id="f_sub" name="subject" placeholder="例：ご相談の内容"></div>
           <div><label for="f_msg">メッセージ<i id="msgReq">必須</i></label><textarea id="f_msg" name="message" required placeholder="ご希望の内容、日程、納期など"></textarea><p class="err" hidden></p></div>
           <input type="hidden" name="from" id="f_from">
           <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>

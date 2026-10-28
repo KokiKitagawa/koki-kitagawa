@@ -29,10 +29,12 @@ function applyKind(v){ kindEl.value = v;
   document.getElementById("f_msg").placeholder = PH[v] || "ご希望の内容、日程、納期など";
   document.getElementById("msgReq").hidden = v==="レッスン" || v==="お仕事";
   const les = /^レッスン/.test(v), sb = document.getElementById("send"); sb.classList.toggle("or", les); sb.classList.toggle("gr", !les);
-  document.getElementById("f_sub").placeholder = v==="お仕事" ? "例：楽曲制作のご相談" : v==="レッスンのご質問" ? "例：オンラインのレッスンについて" : v==="レッスン" ? "例：体験レッスンの希望日について" : "例：取材のご依頼";
 }
 function setKind(v){ document.querySelectorAll('input[name="kind"]').forEach(r => r.checked = r.value===v); applyKind(v); }
 document.querySelectorAll('input[name="kind"]').forEach(r => r.addEventListener("change", () => applyKind(r.value)));
+/* ご依頼主：会社・団体のときだけ会社名を聞く（2026-10-28） */
+const whoVal = () => (document.querySelector('input[name="f_who"]:checked')||{}).value || "";
+document.querySelectorAll('input[name="f_who"]').forEach(r => r.addEventListener("change", () => { const cb = document.getElementById("companyBox"); if(cb) cb.hidden = whoVal() !== "会社・団体"; }));
 /* 絞り込みチップ */
 document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e => {
   const b = e.target.closest(".fchip"); if(!b) return;
@@ -346,7 +348,10 @@ document.getElementById("form").addEventListener("submit", e => {
   check("f_kind", v => v, "ご用件を選んでください");
   const kind = kindEl.value;
   if(kind==="レッスン") check("f_plan", v => v, "希望プランを選んでください");
-  if(kind==="お仕事"){ check("f_company", v => v, "会社名・団体名を入れてください（個人の方は「個人」）"); check("f_budget", v => v, "ご予算を選んでください"); }
+  if(kind==="お仕事"){ const wb = document.getElementById("f_whoBox"), we = wb.querySelector(".err"), nw = !whoVal();
+    we.hidden = !nw; we.textContent = nw ? "ご依頼主を選んでください" : ""; if(nw){ ok = false; first = first || wb.querySelector("input"); }
+    if(whoVal()==="会社・団体") check("f_company", v => v, "会社名・団体名を入れてください");
+    check("f_budget", v => v, "ご予算を選んでください"); }
   if(kind==="お仕事"){ const box = document.getElementById("f_jobs"), er = box.querySelector(".err"), none = !box.querySelector("input:checked");
     er.hidden = !none; er.textContent = none ? "ご依頼の内容を1つ以上選んでください" : ""; if(none){ ok = false; first = first || box.querySelector("input"); } }
   if(kind!=="レッスン" && kind!=="お仕事") check("f_msg", v => v, "メッセージを入れてください");
@@ -356,10 +361,10 @@ document.getElementById("form").addEventListener("submit", e => {
   /* 追加の項目は「メッセージ」の頭にまとめて送る（Googleフォームの設定はそのまま） */
   const sel = n => [...document.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value).join("、");
   const extra = kind==="レッスン" ? [["希望プラン",v("f_plan")],["ギター歴",v("f_level")],["受ける場所",sel("f_place")],["希望の曜日・時間",v("f_when")]]
-    : kind==="お仕事" ? [["会社名・団体名",v("f_company")],["ご依頼の内容",sel("f_job")],["使い道",v("f_use")],["ご予算",v("f_budget")],["納期",v("f_due")],["参考音源",v("f_ref")]] : [];
+    : kind==="お仕事" ? [["ご依頼主",whoVal()],["会社名・団体名",whoVal()==="会社・団体" ? v("f_company") : ""],["ご依頼の内容",sel("f_job")],["使い道",v("f_use")],["ご予算",v("f_budget")],["納期",v("f_due")],["参考音源",v("f_ref")]] : [];
   const head = extra.filter(x => x[1]).map(x => `【${x[0]}】${x[1]}`).join("\n");
   const msg = [head, v("f_msg")].filter(Boolean).join("\n\n");
-  const sub = v("f_sub") || (kind==="レッスンのご質問" ? "レッスンのご質問" : kind==="レッスン" ? `レッスンの申し込み（${v("f_plan")}）` : kind==="お仕事" ? `お仕事のご相談（${sel("f_job")}）` : "");
+  const sub = (kind==="レッスンのご質問" ? "レッスンのご質問" : kind==="レッスン" ? `レッスンの申し込み（${v("f_plan")}）` : kind==="お仕事" ? `お仕事のご相談（${sel("f_job")}）` : `お問い合わせ（${kind}）`);
   const body = new URLSearchParams({[F.kind]:v("f_kind"),[F.name]:v("f_name"),[F.email]:v("f_mail"),[F.subject]:sub,[F.message]:msg,[F.from]:v("f_from")});
   btn.disabled = true; btn.textContent = "送信中…"; document.getElementById("sendErr").hidden = true;
   fetch(F.action, {method:"POST", mode:"no-cors", body})
