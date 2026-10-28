@@ -1888,3 +1888,7 @@ form.f .sk-ok span{flex:1;min-width:0}
 @media (prefers-reduced-motion:no-preference){
   .sk3.rv.in .tags li{animation-timing-function:cubic-bezier(.25,1.15,.4,1)}
 }
+/* 2026-10-28：押しやすく（見た目は変えない）。スマホで指が当たる広さを 44px くらいに。
+   下のメニュー（PROFILE など）と、予約ページの「← 戻る」。見えない余白を足して、その分を外側に戻す */
+footer nav a{display:inline-block;padding:16px 4px;margin:-16px -4px}
+a.yk-back{display:inline-block;padding:12px 10px;margin:-12px -10px}
