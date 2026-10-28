@@ -1900,3 +1900,15 @@ main,footer{overflow-x:clip}
    入りきらない長いことばだけは、はみ出さないように途中で折る */
 body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 .nb{white-space:nowrap}
+/* 2026-10-28：予約ページの「くわしく書く（任意）」。ふだんはたたんでおいて、必須の欄だけ見せる */
+.yk-more{border:1px solid var(--line2);border-radius:12px}
+.yk-more>summary{list-style:none;cursor:pointer;display:grid;gap:2px;padding:14px 44px 14px 16px;position:relative}
+.yk-more>summary::-webkit-details-marker{display:none}
+.yk-more>summary::after{content:"＋";position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--sub)}
+.yk-more[open]>summary::after{content:"－"}
+.yk-more>summary b{font-size:14.5px}
+.yk-more>summary small{color:var(--faint);font-size:12.5px;line-height:1.6}
+.yk-more-in{display:grid;gap:22px;padding:6px 16px 18px}
+/* 料金カード：ボタンがなくなった分、下のすき間をつめる */
+.plans .plan{padding-bottom:22px}
+.plans-lead{margin-bottom:16px}

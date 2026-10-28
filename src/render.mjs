@@ -262,7 +262,7 @@ export function buildOutputs(files){
         <div class="p">¥${yen(p.price)}<small>/ 月</small></div><div class="per">1回あたり ¥${yen(per)}${save>0?`<em>単発より月¥${yen(save)}おトク</em>`:""}</div>
         ${pick(p.name)}${GL}</li>`; };
     /* 月謝・単発のボタン：予約ページがあるときは「体験から始める」（気になるプランを予約ページへ渡す） */
-    function pick(n){ return D.yoyaku ? `<a class="pick" href="yoyaku.html?plan=${encodeURIComponent(n)}">体験から始める</a>` : `<button class="pick" type="button" data-open="レッスン" data-plan="${esc(n)}">このプランを選ぶ</button>`; }
+    function pick(n){ return D.yoyaku ? "" :   /* 2026-10-28：予約ページがあるときは、月謝・単発のカードにボタンを出さない（北川くん「全部体験から始めるは気持ち悪い」）。入口は体験のカードの1つだけ */ `<button class="pick" type="button" data-open="レッスン" data-plan="${esc(n)}">このプランを選ぶ</button>`; }
     return `<section class="s sbg" id="lesson">${solo ? `<i class="seam-t" aria-hidden="true"></i>` : ""}<div class="wrap">
       ${solo ? sh(no,"Price","料金と体験レッスン") : sh(no,"Lesson","ギターレッスン")}
       <div class="les${solo ? " solo" : ""}">
@@ -275,16 +275,16 @@ export function buildOutputs(files){
           <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
             ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}${GL}</div>
-          ${D.yoyaku ? `<p class="plans-lead"><b>月謝・単発も、まずは体験レッスンから。</b>各プランの「体験から始める」から、気になるプランを伝えて体験を予約できます。</p>` : ""}
+          ${D.yoyaku ? `<p class="plans-lead"><b>月謝・単発のプランは、体験のあとにゆっくり選べます。</b></p>` : ""}
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
             ${pick("単発")}${GL}</li></ul>${swipe(L.monthly.length+1)}
           <p class="small" style="margin:14px 0 0">料金はすべて税込です。スタジオで受ける場合、スタジオ代（1時間 約1,500円）が別にかかります。オンラインはかかりません。</p>
-          <details class="acc open-card les-info"><summary><b>受付の時間・場所・お支払い</b></summary><div class="in">
+          <details class="acc open-card les-info"><summary><b>受付の時間・お支払い・キャンセル</b></summary><div class="in">
             <table class="hours"><tr><th>水・木・金</th><td>16〜23時<small>前月20日を過ぎてからのご予約は 22〜23時</small></td></tr>
             <tr><th>土・日</th><td>12〜23時<small>前月20日を過ぎてからのご予約は 21〜23時</small></td></tr>
             <tr><th>月・火</th><td>お休み</td></tr>
-            <tr><th>場所</th><td>${esc(P.lesson.place)}</td></tr><tr><th>スタジオ代</th><td>${esc(P.lesson.studioFee)}</td></tr><tr><th>お支払い</th><td>${payLines("")}</td></tr>
+            <tr><th>お支払い</th><td>${payLines("")}</td></tr>
             <tr><th>キャンセル・振替</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
             <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
         </div>
@@ -305,11 +305,6 @@ export function buildOutputs(files){
           <details><summary>体験レッスンでは何をする？</summary><p>${esc((P.lesson.trialSteps||[]).map((s, i) => "①②③④⑤"[i] + s).join("　"))}。この流れで60分です。</p></details>
           <details><summary>体験のあと、しつこく勧誘されない？</summary><p>${esc(P.lesson.noPush)}</p></details>
           <details><summary>何歳から受けられる？</summary><p>${esc(P.lesson.ages)}</p></details>
-          <details><summary>どこでレッスンする？</summary><p>サウンドスタジオM小岩店（JR小岩駅から歩いて約4分）か、オンライン（Google Meet）で受けられます。</p></details>
-          <details><summary>スタジオ代はかかる？</summary><p>スタジオで受ける場合は、レッスン料金とは別に、スタジオ代（1時間 約1,500円）を当日スタジオでお支払いください。オンラインはかかりません。</p></details>
-          <details><summary>支払い方法は？</summary><p>${payLines("")}</p></details>
-          <details><summary>キャンセル・日程の変更はできる？</summary><p>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</p></details>
-          <details><summary>予約はいつまでに？</summary><p>月謝の方は、毎月20日までに翌月分をご予約ください。20日を過ぎてからのご予約は、水・木・金は22〜23時、土・日は21〜23時になります。体験レッスンは、予約ページの空いている日時から選べます。</p></details>
         </div>
       </div>${whos()}${voices()}
       ${D.yoyaku ? `<div class="les-book reveal">
@@ -363,7 +358,7 @@ export function buildOutputs(files){
         <div class="card acc-card"><i class="acc-pin">${PIN}</i><div>
           <span class="chip or">STUDIO</span><b class="acc-nm">${esc(STUDIO.name)}</b>
           <p class="acc-way">${esc(STUDIO.way)}</p><p class="acc-ad">${esc(STUDIO.addr)}</p>
-          <ul class="acc-notes"><li>当日はレッスンの5分前に、4階の受付へお越しください</li><li>スタジオ代（1時間 約1,500円）は、当日スタジオでお支払いください</li><li>ギターはスタジオで借りられます</li></ul>
+          <ul class="acc-notes"><li>当日はレッスンの5分前に、4階の受付へお越しください</li><li>スタジオ代（1時間 約1,500円）は、当日スタジオでお支払いください</li></ul>
           <div class="acc-btns"><a class="btn or sm" href="${map}" target="_blank" rel="noopener">Googleマップで開く</a><a class="btn line sm" href="${STUDIO.site}" target="_blank" rel="noopener">スタジオのサイト</a></div>
         </div></div>
         <div class="card acc-card on"><i class="acc-pin">${PC_ICON}</i><div>
@@ -575,7 +570,7 @@ export function buildOutputs(files){
   const html = assemble(main, "top"), lessonHtml = assemble(lessonMain, "lesson");
   const ga = /^G-[A-Z0-9]+$/.test(site.ga || "") ? site.ga : "";
   if(site.ga && !ga) warnings.push("site.json の ga が G- ではじまる形ではありません: " + site.ga);
-  const out = {"index.html": html, "lesson.html": lessonHtml, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku, ga: !!ga}), "404.html": notFoundPage(files, url, !!D.booking), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)};
+  const out = {"index.html": html, "lesson.html": lessonHtml, "privacy.html": privacyPage(files, p, url, {video: !!ytId(D.video.youtube), booking: !!D.booking, yoyaku: D.yoyaku, ga: !!ga}), "404.html": notFoundPage(files, url, !!(D.booking || D.yoyaku)), "yoyaku.html": yoyakuPage(files, p, site, url), "seito.html": seitoPage(files, p, site, url)};
   /* 2026-10-27：Google アナリティクス（来た人の数・LINE や予約のボタンが押された数）。北川くんの OK で「よそのプログラムを読み込まない」の例外。
      URL の ?k=（生徒さんの鍵）・?l=（LINE の合言葉）を Google に送らないよう、アドレスは ? より前だけにする。生徒さん専用ページには入れない */
   for(const f of Object.keys(out)) out[f] = addWbr(out[f]);   /* 2026-10-28：ことばの途中で改行しない */
@@ -683,7 +678,6 @@ export function yoyakuPage(files, p, site, url){
   const css = ["assets/css/kk-design-system.css","assets/css/site.css"].map(f => `<link rel="stylesheet" href="${f}?v=${stamp(files[f])}">`).join("\n");
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const yen = n => Number(n).toLocaleString("ja-JP");
-  const pay = (L.payment||[]).filter(x => /^体験/.test(x[0]));
   const planNames = [...site.lessonPlans.monthly.map(m => m.name), "単発"];
   const cfg = JSON.stringify({api: B.api || "", fallback: B.url || "", plans: planNames, line: B.lineChat || ""}).replace(/</g,"\\u003c");
   const opt = (name, type, list) => list.map(x => `<label class="opt"><input type="${type}" name="${name}" value="${esc(x)}"><span>${esc(x)}</span></label>`).join("");
@@ -747,10 +741,12 @@ ${css}
       <div class="yk-lg"><span class="yn">3</span>お名前など</div>
       <div class="two">
         <div><label for="y_name">お名前<i>必須</i></label><input id="y_name" autocomplete="name"><p class="err" hidden></p></div>
-        <div><label for="y_kana">ふりがな</label><input id="y_kana"></div>
-      </div>
-      <div class="two">
         <div><label for="y_mail">メールアドレス<i>必須</i></label><input id="y_mail" type="email" inputmode="email" autocomplete="email"><p class="yk-sug" id="ykSug" hidden aria-live="polite"></p><p class="err" hidden></p></div>
+      </div>
+      <details class="yk-more"><summary><b>くわしく書く（任意）</b><small>ギター歴・弾きたい曲・ご質問など。書いてもらえると、体験の準備ができます</small></summary>
+      <div class="yk-more-in">
+      <div class="two">
+        <div><label for="y_kana">ふりがな</label><input id="y_kana"></div>
         <div><label for="y_tel">電話番号</label><input id="y_tel" type="tel" inputmode="tel" autocomplete="tel"></div>
       </div>
       <div class="two">
@@ -761,7 +757,8 @@ ${css}
       <fieldset class="opts"><legend>どうなりたいですか<i>いくつでもOK</i></legend>${opt("goals","checkbox",["好きな曲を弾けるようになりたい","基礎からしっかり","弾き語りがしたい","バンドで弾きたい","作曲・アレンジも学びたい","プロを目指したい","趣味で楽しく"])}</fieldset>
       <div><label for="y_song">弾きたい曲・好きなアーティスト</label><input id="y_song" placeholder="例：〇〇の「△△」"></div>
       <div><label for="y_q">ご質問・ご要望</label><textarea id="y_q" class="sm" placeholder="気になることがあれば、なんでも"></textarea></div>
-      <div><label for="y_from">このページを何で知りましたか</label><select id="y_from">${sel(["Instagram","TikTok","YouTube","X","Google検索","Googleマップ","知り合いの紹介","その他"])}</select></div>
+            <div><label for="y_from">このページを何で知りましたか</label><select id="y_from">${sel(["Instagram","TikTok","YouTube","X","Google検索","Googleマップ","知り合いの紹介","その他"])}</select></div>
+      </div></details>
     </div>
     <input type="text" name="website" id="y_web" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
 
@@ -782,13 +779,8 @@ ${css}
   <section class="yk-notes">
     <h3>ご案内</h3>
     <table class="hours">
-      <tr><th>料金</th><td>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込・初回のみ）</td></tr>
       <tr><th>場所</th><td>${esc(L.place)}<small><a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent("サウンドスタジオM小岩店")}" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>
-      <tr><th>スタジオ代</th><td>${esc(L.studioFee)}</td></tr>
-      <tr><th>お支払い</th><td>${pay.map(x => `<span class="pay"><b>${esc(x[0].replace(/^体験/, "").replace(/[（）]/g, ""))}</b>${esc(x[1])}</span>`).join("")}</td></tr>
-      <tr><th>ギター</th><td>${esc(L.guitarRental)}</td></tr>
       <tr><th>お子さん</th><td>${esc(L.ages)}</td></tr>
-      <tr><th>キャンセル</th><td>${esc(L.trialCancel)}</td></tr>
       <tr><th>そのあと</th><td>${esc(L.noPush)}</td></tr>
     </table>
   </section>
