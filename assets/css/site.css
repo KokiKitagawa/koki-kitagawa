@@ -1919,3 +1919,6 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 .hero .name.nm2 .en{font:700 12px/1 var(--en);font-stretch:118%;letter-spacing:.36em;color:var(--sub)}
 .hero .cta3 .btn.listen{display:inline-flex;align-items:center;gap:8px}
 @media (max-width:820px){.hero .cta3{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hero .cta3 .btn.listen{grid-column:1/-1;justify-content:center}}
+/* S3 お仕事のよくある質問（2026-10-28）：お仕事の色（青）で、Q の字も青に */
+.workcta .wfaq{background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(92,200,245,.18)}
+.wfaq summary::before{color:var(--gr-hi)}

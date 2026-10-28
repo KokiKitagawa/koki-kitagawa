@@ -243,7 +243,9 @@ export function buildOutputs(files){
         ${canDo()}
         <h4 class="wc-sub">進め方</h4>
         <ol class="steps">${W.flow.map((s,i)=>{ const t = typeof s==="string" ? {t:s,d:""} : s; return `<li class="st" style="--k:${i}"><span class="n">${String(i+1).padStart(2,"0")}</span><span class="tx"><b>${esc(t.t)}</b>${t.d?`<small>${esc(t.d)}</small>`:""}</span></li>`; }).join("")}</ol>
-        <ul class="wc-note"><li>${esc(W.style)}</li><li>料金：${esc(W.price)}</li><li>${esc(W.revisionNote)}</li></ul>
+        ${""/* S3 発注前のよくある質問（data/profile.json の work.faq。2026-10-28 北川くん） */}
+        <h4 class="wc-sub">よくある質問</h4>
+        <div class="faq wfaq">${(W.faq||[]).map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}</div>
         <button class="btn gr" type="button" data-open="お仕事">フォームで相談する</button>
       </div>
     </div></section>`;
