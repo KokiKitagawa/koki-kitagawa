@@ -453,7 +453,13 @@ export function buildOutputs(files){
   function staffGeo(f, s, rev, RW){
     const xs = []; for(let x=-160; x<=RW+160; x+=10) xs.push(x); if(rev) xs.reverse();
     const pt = (x, d) => { const dy = (f(x+.5)-f(x-.5)), L = Math.hypot(1, dy); return [x - d*dy/L, f(x) + d/L]; };
-    const line = d => "M" + xs.map(x => pt(x,d).map(r1).join(" ")).join(" L");
+    /* 2026-10-28 軽くする（A）：10px ごとの折れ線をやめて、80px ごとのなめらかな曲線（ベジェ）に。形は同じ（ずれは1px未満）で、トップのページが約2割軽くなる */
+    const H = 80, xb = []; for(let x=-160; x<=RW+160; x+=H) xb.push(x); if(xb[xb.length-1] < RW+160) xb.push(RW+160); if(rev) xb.reverse();
+    const tan = (x, d) => { const a = pt(x-.5,d), b = pt(x+.5,d); return [b[0]-a[0], b[1]-a[1]]; };
+    const line = d => { let o = "M" + pt(xb[0],d).map(r1).join(" ");
+      for(let i=1; i<xb.length; i++){ const x0 = xb[i-1], x1 = xb[i], h = (x1-x0)/3, p0 = pt(x0,d), p1 = pt(x1,d), t0 = tan(x0,d), t1 = tan(x1,d);
+        o += "C" + [p0[0]+t0[0]*h, p0[1]+t0[1]*h, p1[0]-t1[0]*h, p1[1]-t1[1]*h, p1[0], p1[1]].map(r1).join(" "); }
+      return o; };
     return { center: line(0), lines: [-2,-1,0,1,2].map(k => line(k*s)) };
   }
   /* 記号（中心の線＝真ん中の線。y は下向きが＋、1目盛り＝12）*/
