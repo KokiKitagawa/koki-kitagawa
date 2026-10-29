@@ -1921,3 +1921,10 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 /* S3 お仕事のよくある質問（2026-10-28）：お仕事の色（青）で、Q の字も青に */
 .workcta .wfaq{background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(92,200,245,.18)}
 .wfaq summary::before{color:var(--gr-hi)}
+
+/* 2026-10-29：iPhone で横にはみ出していたところ（北川くんのスクショ）。
+   住所・生徒さんページの LINE の説明（JS で入る文）は <wbr> がないので、ふつうの日本語の折り返しに。中身が枠より広がらないように min-width:0 */
+.acc-card>div,.sk-line>*{min-width:0}
+.acc-ad,.sk-line small{word-break:normal}
+.sk-lnb{padding:0 18px;white-space:nowrap}
+.sk-lnb span{flex:none}
