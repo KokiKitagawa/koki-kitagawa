@@ -291,7 +291,7 @@ export function buildOutputs(files){
           <details class="acc open-card les-info"><summary><b>受付の時間・お支払い・キャンセル</b></summary><div class="in">
             <table class="hours"><tr><th>水・木・金</th><td>16〜23時<small>前月20日を過ぎてからのご予約は 22〜23時</small></td></tr>
             <tr><th>土・日</th><td>12〜23時<small>前月20日を過ぎてからのご予約は 21〜23時</small></td></tr>
-            <tr><th>月・火</th><td>お休み</td></tr>
+            <tr><th>月・火</th><td>18〜23時</td></tr>
             <tr><th>お支払い</th><td>${payLines("")}</td></tr>
             <tr><th>キャンセル・振替</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
             <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
@@ -525,7 +525,7 @@ export function buildOutputs(files){
   const url = p.siteUrl;
   const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="ギターを弾く北川弘喜。書けるギタリスト、弾ける作曲家。">`;
   /* 2026-10-28：Google 向けの説明（目に見えない）。トップ＝人（北川弘喜）とサイトの名前、レッスンのページ＝レッスンの中身（場所・料金・受付時間）。
-     料金は site.json、受付時間は yoyaku の予約枠（水木金 16〜23時・土日 12〜23時）と同じ */
+     料金は site.json、受付時間は yoyaku の予約枠（水木金 16〜23時・土日 12〜23時・月火 18〜23時＝2026-11-03 追加）と同じ */
   const ld = {"@context":"https://schema.org","@type":"Person","@id":url+"#person","name":p.name,"image":url+IMG.ogp,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
     "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
     "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean),
@@ -537,7 +537,7 @@ export function buildOutputs(files){
     "recordedAs":{"@type":"MusicRecording","name":c.title,"byArtist":{"@type":"MusicGroup","name":c.artist},...(c.spotify ? {"url":c.spotify} : {})}}));
   /* サイトの名前（Google の検索結果で、URL の上に出る名前） */
   const ldSite = {"@context":"https://schema.org","@type":"WebSite","name":"北川弘喜 Koki Kitagawa","alternateName":["北川弘喜","Koki Kitagawa","KOKI KITAGAWA"],"url":url,"inLanguage":"ja"};
-  const HOURS = [[["Wednesday","Thursday","Friday"],"16:00"],[["Saturday","Sunday"],"12:00"]].map(([d,o]) => ({"@type":"OpeningHoursSpecification","dayOfWeek":d,"opens":o,"closes":"23:00"}));
+  const HOURS = [[["Wednesday","Thursday","Friday"],"16:00"],[["Saturday","Sunday"],"12:00"],[["Monday","Tuesday"],"18:00"]].map(([d,o]) => ({"@type":"OpeningHoursSpecification","dayOfWeek":d,"opens":o,"closes":"23:00"}));
   const ldLesson = {"@context":"https://schema.org","@type":"Service","name":"北川弘喜のギターレッスン（小岩・オンライン）","serviceType":"ギターレッスン",
     "description":`ギタリスト・作曲家 北川弘喜のギターレッスン。JR小岩駅近くのスタジオ（サウンドスタジオM小岩店）とオンライン（Google Meet）で、初心者からプロを目指す方まで。3歳から受けられます。体験レッスン60分 ${yen(site.lessonPlans.trial.price)}円。`,
     "image":url+IMG.ogpLesson,"provider":{"@type":"Person","@id":url+"#person","name":p.name,"url":url},"hoursAvailable":HOURS,"areaServed":[{"@type":"Place","name":"東京都江戸川区 小岩"},{"@type":"Place","name":"オンライン"}],
