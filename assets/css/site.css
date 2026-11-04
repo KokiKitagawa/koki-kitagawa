@@ -259,6 +259,7 @@ form.f{display:grid;gap:22px;padding:clamp(24px,3.4vw,44px);border-radius:4px;ba
 .f .note{font-size:12.5px;color:var(--faint);margin:0}
 .f .send{justify-self:start}
 .f .done{padding:20px;border-radius:4px;background:var(--gr-soft);color:var(--ink);font-size:14px}
+.f .done .again{display:flex;margin-top:14px}
 
 /* ---------- footer ---------- */
 footer{padding:80px 0 120px;border-top:1px solid var(--line)}
@@ -1928,3 +1929,58 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 .acc-ad,.sk-line small{word-break:normal}
 .sk-lnb{padding:0 18px;white-space:nowrap}
 .sk-lnb span{flex:none}
+
+/* 2026-11-04：トップの下のボタンは、ふだん「お仕事依頼」が左。レッスンのところに来たら「ギターレッスン」が左に入れ替わる（main.js） */
+.dock:not(.les) .btn.gr{order:-1}
+.dock.swap .btn{animation:dock-swap .35s ease}
+@keyframes dock-swap{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.dock.swap .btn{animation:none}}
+
+/* 2026-11-04：生徒さんの予約ページを1画面ずつ（seito.js の go）。いま何回目かを大きく・決定ボタン・残りの回数 */
+.sk-go{width:100%;margin-top:18px;min-height:58px;font-size:16px}
+.sk-wiz{gap:22px}
+.sk-wiz[hidden],.sk-step[hidden]{display:none!important}
+.sk-nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.sk-back{background:none;border:0;color:var(--sub);font:inherit;font-size:14px;font-weight:700;padding:10px 4px;cursor:pointer}
+.sk-dots{display:flex;gap:6px;margin:0;padding:0;list-style:none}
+.sk-dots{align-items:center}
+.sk-dots li{font-size:11px;line-height:1;font-weight:700;color:var(--faint);padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.04)}
+.sk-dots li.pa{color:var(--sub);background:rgba(255,255,255,.08)}
+.sk-dots li.on{background:var(--or);color:#fff}
+.sk-left{display:flex;flex-wrap:wrap;gap:8px}
+.sk-left:empty{display:none}
+.sk-left span{display:flex;align-items:baseline;gap:6px;padding:7px 10px;border-radius:10px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line2)}
+.sk-left b{font-size:13px;color:var(--ink)} .sk-left em{font:800 20px/1 var(--en);font-style:normal;color:var(--or-hi);margin:0 2px}
+.sk-left .zero em{color:var(--faint)} .sk-left .tan{background:var(--or-soft);box-shadow:inset 0 0 0 1px rgba(255,116,23,.35)}
+.sk-step.kinds{grid-template-columns:minmax(0,1fr)}
+.sk-step.kinds .kc span{padding:20px 20px 18px} .sk-step.kinds .kc b{font-size:18px} .sk-step.kinds .kc small{font-size:12.5px;line-height:1.7;margin-top:6px}
+.sk-hours #skHours{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+.sk-hours .opt span{display:flex;justify-content:center;min-height:64px;font-size:18px;border-radius:14px;width:100%}
+.sk-count{display:grid;justify-items:center;gap:2px;padding:18px 12px 16px;border-radius:16px;background:var(--or-soft);box-shadow:inset 0 0 0 1.5px rgba(255,116,23,.45);text-align:center}
+.sk-count:empty{display:none}
+.sk-count small{font-size:12.5px;color:var(--sub)}
+.sk-big{display:flex;align-items:baseline;justify-content:center;gap:6px;color:var(--ink)}
+.sk-big em{font:900 clamp(64px,18vw,88px)/.95 var(--en);font-stretch:80%;font-style:normal;color:var(--or-hi);letter-spacing:-.01em}
+.sk-big em i{font-style:normal;font-size:.5em;margin:0 2px}
+.sk-big span{font-size:20px;font-weight:900}
+.sk-big .m{font-size:17px;font-weight:700;color:var(--sub)}
+.sk-big.tan em{font:900 44px/1.1 var(--jp);color:var(--or-hi)}
+.sk-did{margin-top:6px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.07)}
+.sk-count.pop{animation:sk-pop .45s cubic-bezier(.2,.8,.3,1.3)}
+@keyframes sk-pop{0%{transform:scale(.94)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
+.sk-flash{margin:0 0 -10px;padding:10px 14px;border-radius:10px;background:var(--gr-soft);color:var(--gr-hi);font-size:13.5px;font-weight:700;animation:sk-pop .4s ease}
+.yk-times .opt.t1 span{background:var(--or);color:#fff;box-shadow:none}
+.yk-times .opt.dn span{background:rgba(255,255,255,.08);color:var(--ink);opacity:.7}
+.yk-times .opt.dis span{opacity:.35}
+.sk-bar{--fp:clamp(24px,3.4vw,44px);position:sticky;bottom:0;z-index:5;display:grid;gap:8px;margin:14px calc(var(--fp) * -1) 0;padding:12px var(--fp) calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(6,8,13,0),rgba(6,8,13,.94) 30%)}
+.sk-dec{width:100%;min-height:62px;flex-direction:column;gap:2px;line-height:1.25;font-size:15px}
+.sk-dec span{font-size:12.5px;font-weight:500;opacity:.9} .sk-dec b{font-size:17px}
+.sk-dec:disabled{background:rgba(255,255,255,.08);color:var(--faint);cursor:default}
+.sk-next{width:100%}
+.sk-pl{margin-top:18px}
+.sk-add{justify-self:start}
+.sk-step[data-step="4"]{display:grid;gap:18px}
+.sk-count+.yk-days{margin-top:16px}
+.sk-flash+.sk-count{margin-top:14px}
+@media (min-width:821px){ .sk-bar{margin:14px 0 0;padding:12px 0 16px;background:none} .sk-step.kinds{grid-template-columns:repeat(2,minmax(0,1fr))} .sk-hours #skHours{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media (prefers-reduced-motion:reduce){ .sk-count.pop,.sk-flash{animation:none} }

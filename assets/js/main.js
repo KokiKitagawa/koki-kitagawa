@@ -203,7 +203,9 @@ let inContact = false; const heroEl = document.getElementById("top");
 const onScroll = () => { hd.classList.toggle("solid", scrollY > 40); dock.classList.toggle("hide", inContact || scrollY < heroEl.offsetHeight * .7); };
 addEventListener("scroll", onScroll, {passive:true}); onScroll();
 if("IntersectionObserver" in window){
-  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const id = e.target.id; navA.forEach(a => a.classList.toggle("on", a.getAttribute("href")==="#"+id)); } }), {rootMargin:"-45% 0px -50% 0px"});
+  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ const id = e.target.id; navA.forEach(a => a.classList.toggle("on", a.getAttribute("href")==="#"+id));
+    /* 下のボタン（トップ）：ふだんは「お仕事依頼」が左、レッスンのところでは「ギターレッスン」が左（2026-11-04 北川くん） */
+    if(dock.classList.contains("les") !== (id==="lesson")){ dock.classList.toggle("les", id==="lesson"); dock.classList.remove("swap"); void dock.offsetWidth; dock.classList.add("swap"); } } }), {rootMargin:"-45% 0px -50% 0px"});
   document.querySelectorAll("#main > section").forEach(s => io.observe(s));
   const ct = new IntersectionObserver(es => es.forEach(e => { inContact = e.isIntersecting; onScroll(); }), {threshold:.08});
   const ctEl = document.getElementById("contact"); if(ctEl) ct.observe(ctEl);
@@ -365,7 +367,16 @@ document.getElementById("form").addEventListener("submit", e => {
   const msg = [head, v("f_msg")].filter(Boolean).join("\n\n");
   const sub = (kind==="レッスンのご質問" ? "レッスンのご質問" : kind==="レッスン" ? `レッスンの申し込み（${v("f_plan")}）` : kind==="お仕事" ? `お仕事のご相談（${sel("f_job")}）` : `お問い合わせ（${kind}）`);
   btn.disabled = true; btn.textContent = "送信中…"; document.getElementById("sendErr").hidden = true;
-  const ok_ = () => { document.getElementById("form").querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; document.getElementById("done").hidden = false; if(window.gtag) gtag("event", "contact_sent", {kind}); };
+  /* 送ったあとは、同じ内容を2回送らないよう止める。続けて別の内容を送るときは「別の内容を送る」（2026-11-04 北川くん） */
+  const ok_ = () => { const fm = document.getElementById("form"); fm.querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = true); btn.textContent = "送信しました"; const dn = document.getElementById("done"); dn.hidden = false;
+    const ag = dn.querySelector(".again"); if(ag) ag.disabled = false;
+    if(!ag){ const a = document.createElement("button"); a.type = "button"; a.className = "btn line sm again"; a.textContent = "別の内容を送る"; dn.append(a);
+      a.addEventListener("click", () => { const keep = {k: kindEl.value, n: v("f_name"), m: v("f_mail")}; fm.querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = false);
+        ["f_msg","f_company","f_use","f_due","f_ref","f_when"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+        fm.querySelectorAll('input[name="f_job"],input[name="f_place"]').forEach(x => x.checked = false);
+        document.getElementById("f_name").value = keep.n; document.getElementById("f_mail").value = keep.m; setKind(keep.k);
+        btn.textContent = "この内容で送る"; dn.hidden = true; fm.scrollIntoView({behavior:"smooth", block:"start"}); }); }
+    if(window.gtag) gtag("event", "contact_sent", {kind}); };
   const ng_ = () => { btn.disabled = false; btn.textContent = "この内容で送る"; document.getElementById("sendErr").hidden = false; };
   if(CFG.api){
     /* 2026-10-28：予約と同じ Apps Script に送る。届いたかを確かめ、相手に確認のメールが自動で届く（Content-Type は付けない） */

@@ -3,7 +3,9 @@
    ?demo=1 を付けると、見本の生徒さんで動きだけ確かめられる（送信はしない）。&out=1 で「今月の回数を使い切った」見本。
    2026-10-25：何日分でも、まとめて選んで1回で予約できる（スタジオもオンラインも、その場で確定。部屋は前の日に北川くんが取る）。
    2026-10-27：使わなかった回は、キャンセルしなくても次の月に回せる（今月2回・来月6回など）。選んだ日ごとに「〇月の何回目」を出す。
-     追加（単発）をキャンセルしても「次の月まで使えます」と出さない。LINE がまだの人に「LINE でお知らせを受け取る」ボタン。 */
+     追加（単発）をキャンセルしても「次の月まで使えます」と出さない。LINE がまだの人に「LINE でお知らせを受け取る」ボタン。
+   2026-11-04：1画面ずつ進む形に（0 はじめ → 1 受け方 → 2 時間 → 3 日時 → 4 確認）。日時は1回ずつ「決定」して、
+     いま何回目を選んでいるかを大きく出す。残りの回数は選ぶたびに変わる。?go=yoyaku で受け方の画面から開く（LINE のメニュー）。 */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
@@ -11,7 +13,7 @@
   const demo = qs.get("demo") === "1", demoOut = qs.get("out") === "1";
   const key = (qs.get("k") || "").trim();
   const H = 3600e3, TZ = "Asia/Tokyo", W = ["日","月","火","水","木","金","土"];
-  const form = $("yk"), days = $("ykDays"), times = $("ykTimes"), picked = $("ykPicked"), hint = $("ykHint"), nowEl = $("ykNow");
+  const form = $("yk"), days = $("ykDays"), times = $("ykTimes"), picked = $("ykPicked");
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
   const yen = n => "¥" + Number(n).toLocaleString("ja-JP");
   const J = t => new Date(t + 9 * H);
@@ -24,7 +26,7 @@
   const span = (t, h) => `${full(t)}〜${hm(t + h * H)}`;
   const monName = m => Number(m.slice(5, 7)) + "月";
 
-  let me = null, mode = "", hours = 1, day = "", pick = [];
+  let me = null, mode = "", hours = 1, day = "", pick = [], cur = 0, step = 0, first = true;
 
   /* ---------- 回数の数え方（コード.gs の「回数を数える」「月謝にできる数」と同じ） ---------- */
   const USED = ["仮", "確定", "キャンセル（1回分）"];
@@ -84,7 +86,8 @@
       if (r.cnt) { const c = r.cnt, st = count(c.base, c.start, c.ls, r.months.map(x => x.m));
         // 来月に回した分は、今月の残りから引く（実際に月謝で予約できる数）
         r.months = r.months.map(x => Object.assign({}, x, st[x.m], { left: canGetsu(c.base, c.start, c.ls, x.m, st[x.m].left) })); }
-      me = r; $("skLoad").hidden = true; $("skMain").hidden = false; drawMe(); drawList(); drawHours(); if (mode) drawDays(); drawSplit();
+      me = r; $("skLoad").hidden = true; $("skMain").hidden = false; drawMe(); drawList(); drawHours();
+      if (first) { first = false; history.replaceState({ sk: 0 }, ""); if (qs.get("go") === "yoyaku") go(1); else go(0, true); } else go(step === 4 && !pick.length ? 3 : step, true);
     }).catch(() => bad("読み込めませんでした", "時間をおいてもう一度開いてください。うまくいかないときは、北川にご連絡ください。"));
   }
   if (!demo && (!cfg.api || !key)) { bad(); return; }
@@ -105,7 +108,8 @@
     if (me.lineLink) ln.innerHTML = `<div><b>お知らせを LINE で受け取る</b><small>ボタンを押すと LINE が開きます。入っている文を、そのまま送ってください。自動でつながります。</small></div>`
       + `<a class="sk-lnb" href="${esc(me.lineLink)}" target="_blank" rel="noopener"><span>LINE</span>LINE を開く</a>`;
   }
-  $("skMore").addEventListener("click", () => { $("skOk").checked = true; form.scrollIntoView({ behavior: "smooth", block: "start" }); });
+  $("skMore").addEventListener("click", () => { $("skOk").checked = true; go(1); });
+  $("skGo").addEventListener("click", () => go(1));
 
   /* ---------- 予約中のレッスン ---------- */
   function drawList(){
@@ -148,19 +152,51 @@
     }).catch(r => { const er = box.querySelector(".err"); er.textContent = (r && r.msg) || "うまくいきませんでした。もう一度お試しください。"; er.hidden = false; yes.disabled = false; yes.textContent = "キャンセルする"; });
   });
 
+  /* ---------- 画面の切りかえ（1つ選んだら次の画面へ。スマホの「戻る」でも1つ前に戻る） ---------- */
+  function go(n, quiet){
+    step = n;
+    $("skHome").hidden = n !== 0; $("skNotes").hidden = n !== 0; form.hidden = n === 0; $("ykDone").hidden = true;
+    form.querySelectorAll(".sk-step").forEach(x => { x.hidden = Number(x.dataset.step) !== n; });
+    form.querySelectorAll(".sk-dots li").forEach(li => { const d = Number(li.dataset.d); li.className = d === n ? "on" : d < n ? "pa" : ""; });
+    if (n === 2) drawHours();
+    if (n === 3) { cur = 0; drawDays(); }
+    if (n === 4) { drawConf(); drawSplit(); }
+    drawLeft();
+    if (!quiet) { if (!history.state || history.state.sk !== n) history.pushState({ sk: n }, ""); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  }
+  addEventListener("popstate", e => { const n = e.state && e.state.sk != null ? e.state.sk : 0; if (me) go(n, true); window.scrollTo(0, 0); });
+  $("skBack").addEventListener("click", () => { if (history.state && history.state.sk === step && step > 0) history.back(); else go(Math.max(0, step - 1)); });
+
+  /* ---------- 残りの回数（選ぶたびに変わる） ---------- */
+  function liveLeft(){
+    if (!me.cnt || !me.base) return null;
+    const { base, start } = me.cnt, sp = split(), ls = me.cnt.ls.concat(sp ? sp.items.map(x => ({ m: x.m, state: "確定", getsu: x.getsu })) : []);
+    const ms = me.months.slice(0, 2).map(x => x.m), st = count(base, start, ls, ms.concat(nextM(ms[ms.length - 1])));
+    return ms.map(m => ({ m, left: canGetsu(base, start, ls, m, st[m].left) }));
+  }
+  function drawLeft(){
+    const box = $("skLeft"); if (!me || step === 0) { box.innerHTML = ""; return; }
+    const L = liveLeft(), sp = split();
+    box.innerHTML = (L ? L.map((x, i) => `<span class="${x.left ? "" : "zero"}">${i ? "来月" : "今月"}（${monName(x.m)}）<b>あと<em>${x.left}</em>回</b></span>`).join("")
+      : `<span>追加（単発）<b>1回 ${yen(me.single)}</b></span>`)
+      + (sp && sp.tan ? `<span class="tan">追加（単発）<b><em>${sp.tan}</em>回</b></span>` : "");
+  }
+
   /* ---------- 時間の長さ ---------- */
   function drawHours(){
     const max = me.max || 4;
-    $("skHours").innerHTML = Array.from({ length: max }, (_, i) => i + 1).map(n => `<label class="opt"><input type="radio" name="hours" value="${n}" ${n === hours ? "checked" : ""}><span>${n}時間</span></label>`).join("");
+    $("skHours").innerHTML = Array.from({ length: max }, (_, i) => i + 1).map(n => `<label class="opt"><input type="radio" name="hours" value="${n}" ${n === hours && step > 2 ? "checked" : ""}><span>${n}時間</span></label>`).join("");
   }
-  $("skHours").addEventListener("change", e => { hours = Number(e.target.value); pick = []; if (mode) drawDays(); drawSplit(); });
+  $("skHours").addEventListener("change", e => { const h = Number(e.target.value); if (h !== hours) pick = []; hours = h; setTimeout(() => go(3), 160); });
 
   /* ---------- 受け方 ---------- */
   form.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => {
-    mode = r.value; pick = []; hideErr(form.querySelector(".yk-mode .err"));
-    hint.textContent = "受けたい日を、いくつでも選んでください";
-    if (me) drawDays(); drawSplit();
+    if (r.value !== mode) pick = []; mode = r.value; hideErr(form.querySelector(".yk-mode .err"));
+    setTimeout(() => go(2), 160);
   }));
+  /* 1画面目に戻ったら、選んでいた受け方にもう一度押せるように（押すと次へ） */
+  form.querySelectorAll(".yk-mode .kc").forEach(l => l.addEventListener("click", e => { const r = l.querySelector("input"); if (r.checked && step === 1 && e.target === r) setTimeout(() => go(2), 160); }));
+  form.querySelectorAll(".sk-hours").forEach(f => f.addEventListener("click", e => { const r = e.target.closest("input"); if (r && r.checked && Number(r.value) === hours && step === 2) setTimeout(() => go(3), 160); }));
 
   /* 選んだ時間だけ続けて空いている「始まり」の時間 */
   function avail(){
@@ -168,46 +204,85 @@
     return (me.slots || []).filter(s => { for (let i = 0; i < hours; i++) if (!ok.has(s.s + i * H)) return false; return true; });
   }
   const maxDays = () => (me && me.days) || 12;
-  const clash = t => pick.some(p => p !== t && Math.abs(p - t) < hours * H);   // 選んだ時間と重なる
+  const clash = t => pick.some(p => p !== t && Math.abs(p - t) < hours * H);   // 決めた時間と重なる
+
+  /* ---------- いま何回目を選んでいるか（大きく） ---------- */
+  function nthFor(t){   // t の日に、次の1回を足したら何回目になるか
+    if (!me.cnt || !me.base) return { tan: hours, n: pick.length + 1 };
+    const { base, start } = me.cnt, sp = split(), m = monKey(t);
+    const ls = me.cnt.ls.concat(sp ? sp.items.map(x => ({ m: x.m, state: "確定", getsu: x.getsu })) : []);
+    const g = canGetsu(base, start, ls, m, hours), c = count(base, start, ls, [m])[m];
+    return { m, getsu: g, tan: hours - g, a: c.used + 1, b: c.used + g, of: c.base + c.carry };
+  }
+  function drawCount(){
+    const el = $("skCount"), t = cur || (day ? new Date(day + "T12:00:00+09:00").getTime() : 0);
+    if (!t) { el.innerHTML = ""; return; }
+    const x = nthFor(t), done = pick.length ? `<small class="sk-did">決めた日：${pick.length}日</small>` : "";
+    if (x.n) { el.innerHTML = `<small>いま選んでいるのは</small><div class="sk-big"><em>${x.n}</em><span>回目</span></div><small>追加（単発）1回 ${yen(me.single)}</small>${done}`; return; }
+    const num = x.a === x.b ? `${x.a}` : `${x.a}<i>〜</i>${x.b}`;
+    el.innerHTML = `<small>いま選んでいるのは</small>`
+      + (x.getsu ? `<div class="sk-big"><span class="m">${monName(x.m)}の</span><em>${num}</em><span>回目</span></div><small>${x.of}回のうち${x.tan ? `　＋ 追加（単発）${x.tan}回` : ""}</small>`
+                 : `<div class="sk-big tan"><span class="m">${monName(x.m)}の</span><em>追加</em><span>（単発）</span></div><small>${monName(x.m)}の回数を使い切っています。1回 ${yen(me.single)}</small>`) + done;
+  }
+
   function drawDays(){
     const list = avail(), by = {};
     list.forEach(s => { (by[dayKey(s.s)] = by[dayKey(s.s)] || []).push(s); });
-    pick.forEach(t => { const k = dayKey(t); if (!by[k]) by[k] = []; });
     const keys = Object.keys(by).filter(k => by[k].length).sort();
     if (!keys.includes(day)) day = keys[0] || "";
     days.innerHTML = keys.map(k => { const t = by[k][0].s, n = pick.filter(p => dayKey(p) === k).length;
-      return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${J(t).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ " + n + "つ" : by[k].length + "枠"}</i></button>`; }).join("");
+      return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${J(t).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ 決定" : by[k].length + "枠"}</i></button>`; }).join("");
     if (!keys.length) times.innerHTML = `<p class="small yk-none">いま${hours > 1 ? hours + "時間続けて" : ""}予約できる日時がありません。${hours > 1 ? "時間を短くするか、" : ""}${mode === "studio" ? "オンラインを選ぶか、" : ""}北川にご相談ください。</p>`;
     else drawTimes(by[day] || []);
-    drawPicked();
+    drawPicked(); drawCount(); drawBar(); drawLeft();
+    const on = days.querySelector(".on"); if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
   }
   function drawTimes(list){
-    times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+$/, "")}</p><div class="opts">` + list.map(s => { const on = pick.includes(s.s), off = !on && clash(s.s);
-      return `<label class="opt${on ? " t1" : ""}${off ? " dis" : ""}"><input type="checkbox" value="${s.s}" ${on ? "checked" : ""} ${off ? "disabled" : ""}><span>${hm(s.s)}${hours > 1 ? `<small class="sk-to">〜${hm(s.s + hours * H)}</small>` : ""}${on ? `<em class="yk-tag">予約</em>` : ""}</span></label>`; }).join("") + "</div>" : "";
+    const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
+    times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+$/, "")}</p><div class="opts">` + list.map(s => { const done = pick.includes(s.s), off = !done && clash(s.s), x = done && at(s.s);
+      return `<label class="opt${s.s === cur ? " t1" : ""}${done ? " dn" : ""}${off ? " dis" : ""}"><input type="radio" name="t" value="${s.s}" ${s.s === cur ? "checked" : ""} ${off || done ? "disabled" : ""}><span>${hm(s.s)}${hours > 1 ? `<small class="sk-to">〜${hm(s.s + hours * H)}</small>` : ""}${done ? `<em class="yk-tag">${x && x.getsu ? (x.getsu > 1 ? (x.nth + 1) + "〜" + (x.nth + x.getsu) : x.nth + 1) + "回目" : "追加"}</em>` : ""}</span></label>`; }).join("") + "</div>" : "";
   }
-  days.addEventListener("click", e => { const b = e.target.closest("[data-day]"); if (!b) return; day = b.dataset.day; drawDays(); });
-  /* 時間を押すと足す。もう一度押すと外れる。何日でも（最大 me.days 日） */
-  times.addEventListener("change", e => {
-    const t = Number(e.target.value);
-    hideErr($("ykWhenErr"));
-    if (pick.includes(t)) pick = pick.filter(x => x !== t);
-    else if (pick.length >= maxDays()) { e.target.checked = false; showErr($("ykWhenErr"), `1回の申し込みで選べるのは ${maxDays()}日までです。いったん申し込んでから、続けて予約してください。`); return; }
-    else pick = pick.concat(t).sort((a, b) => a - b);
-    drawDays(); drawSplit();
+  function drawBar(){
+    const d = $("skDec"), nx = $("skNext");
+    if (cur) { const x = nthFor(cur); d.disabled = false; d.innerHTML = `<span>${md(cur)}（${wd(cur)}）${hm(cur)}〜 を</span><b>${x.n ? x.n + "回目" : x.getsu ? (x.a === x.b ? x.a : x.a + "〜" + x.b) + "回目" : "追加（単発）"}に決定</b>`; }
+    else { d.disabled = true; d.textContent = pick.length ? "ほかの日も選べます" : "時間を選んでください"; }
+    nx.hidden = !pick.length;
+    nx.textContent = `決めた ${pick.length}日で次へ →`;
+  }
+  days.addEventListener("click", e => { const b = e.target.closest("[data-day]"); if (!b) return; day = b.dataset.day; cur = 0; drawDays(); });
+  times.addEventListener("change", e => { cur = Number(e.target.value); hideErr($("ykWhenErr")); drawTimes(avail().filter(s => dayKey(s.s) === day)); drawCount(); drawBar(); });
+  /* 決定：その1回を決めて、次の回へ */
+  $("skDec").addEventListener("click", () => {
+    if (!cur) return;
+    if (pick.length >= maxDays()) { showErr($("ykWhenErr"), `1回の申し込みで選べるのは ${maxDays()}日までです。いったん申し込んでから、続けて予約してください。`); return; }
+    const t = cur, x = nthFor(t); pick = pick.concat(t).sort((a, b) => a - b); cur = 0;
+    drawDays();
+    form.querySelectorAll(".sk-flash").forEach(x => x.remove());
+    const fl = document.createElement("p"); fl.className = "sk-flash";
+    fl.textContent = `✓ ${md(t)}（${wd(t)}）${hm(t)}〜 を${x.n ? x.n + "回目" : x.getsu ? (x.a === x.b ? x.a : x.a + "〜" + x.b) + "回目" : "追加（単発）"}に決めました`;
+    $("skCount").before(fl); setTimeout(() => fl.remove(), 2600);
+    $("skCount").classList.remove("pop"); void $("skCount").offsetWidth; $("skCount").classList.add("pop");
   });
+  $("skNext").addEventListener("click", () => go(4));
+  $("skAdd").addEventListener("click", () => go(3));
   function drawPicked(){
     const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
+    $("skPickedL").hidden = !pick.length;
     picked.innerHTML = pick.map(t => { const x = at(t), lab = !x || x.nth == null ? monName(monKey(t)) : nthText(x);
       const tag = !x ? `<span class="chip gr">${monName(monKey(t))}</span>` : x.getsu ? `<span class="chip gr">月謝</span>` : `<span class="chip or">追加</span>`;
       return `<li>${tag}<b>${span(t, hours)}<small class="sk-nth">${lab}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
-    nowEl.hidden = !pick.length;
-    nowEl.innerHTML = pick.length ? `<span class="chip or">${pick.length}日</span>選んでいます。ほかの日も、続けて選べます` : "";
   }
-  picked.addEventListener("click", e => {
+  function drawConf(){
+    const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
+    $("skConf").innerHTML = pick.map(t => { const x = at(t);
+      return `<li><span class="chip ${x && !x.getsu ? "or" : "gr"}">${x && !x.getsu ? "追加" : "月謝"}</span><b>${span(t, hours)}<small class="sk-nth">${mode === "studio" ? "小岩のスタジオ" : "オンライン"}${x && x.nth != null ? "・" + nthText(x) : ""}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
+  }
+  [picked, $("skConf")].forEach(el => el.addEventListener("click", e => {
     const rm = e.target.closest("[data-rm]"); if (!rm) return;
     pick = pick.filter(x => x !== Number(rm.dataset.rm));
-    hideErr($("ykWhenErr")); drawDays(); drawSplit();
-  });
+    hideErr($("ykWhenErr"));
+    if (step === 4) { if (!pick.length) go(3); else { drawConf(); drawSplit(); drawLeft(); } } else drawDays();
+  }));
 
   /* ---------- 月謝と追加（単発）の分け方 ---------- */
   /* 早い日から順に、その月の回数（月謝）を使う。足りない分は追加（単発）。正しい数はサーバーが数え直す */
@@ -264,8 +339,8 @@
     let bad = null;
     const need = (ok, el, msg, focus) => { if (!ok) { showErr(el, msg); bad = bad || focus; } else hideErr(el); };
     const s = split();
-    need(!!mode, form.querySelector(".yk-mode .err"), "スタジオかオンラインを選んでください。", form.querySelector(".yk-mode"));
-    need(!mode || pick.length > 0, $("ykWhenErr"), "日時を選んでください。", $("ykWhen"));
+    if (!mode) { go(1); return; }
+    if (!pick.length) { go(3); return; }
     need(!s || !s.tan || $("skOk").checked, $("skOkErr"), "追加（単発）になる分があります。よろしければ、チェックを入れてください。", $("skOkW"));
     if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     const data = { a: "lesson", k: key, mode, hours, slots: pick, msg: $("y_q").value, okSingle: $("skOk").checked };
@@ -292,9 +367,9 @@
     const parts = [r.getsu ? `月謝 ${r.getsu}回分` : "", r.tan ? `追加（単発）${r.tan}回` : ""].filter(Boolean).join("＋");
     el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました（${items.length}日）</h3>`
       + `<p>${mode === "studio" ? `確定の${r.line ? "お知らせを LINE に" : "メールを"}お送りしました。<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を${r.line ? " LINE " : "メール"}でお知らせします。` : `当日の入り口（Google Meet のリンク）を、${r.line ? "LINE" : "メール"}でお送りしました。`}</p>`
-      + `<ol class="yk-picked">${list}</ol><p class="small">${hours}時間ずつ（${parts}）${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p><button type="button" class="btn line" id="skAgain">続けて予約する</button>`;
-    form.hidden = true; el.hidden = false;
+      + `<ol class="yk-picked">${list}</ol><p class="small">${hours}時間ずつ（${parts}）${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p><button type="button" class="btn line" id="skAgain">予約のページに戻る</button>`;
+    form.hidden = true; $("skHome").hidden = true; el.hidden = false; pick = []; history.replaceState({ sk: 0 }, "");
     el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
-    $("skAgain").addEventListener("click", () => { el.hidden = true; form.hidden = false; pick = []; $("y_q").value = ""; $("skOk").checked = false; demo ? (drawDays(), drawSplit()) : load(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    $("skAgain").addEventListener("click", () => { pick = []; $("y_q").value = ""; $("skOk").checked = false; step = 0; demo ? go(0) : load(); window.scrollTo({ top: 0, behavior: "smooth" }); });
   }
 })();
