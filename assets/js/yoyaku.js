@@ -64,7 +64,7 @@
     loading.then(drawDays); mark();
   }));
 
-  const avail = () => (slots || []).filter(s => mode === "online" || s.st);
+  const avail = () => (slots || []).filter(s => mode === "online" ? s.on !== 0 : s.st);
   function drawDays(){
     const list = avail(), by = {};
     list.forEach(s => { (by[dayKey(s.s)] = by[dayKey(s.s)] || []).push(s); });

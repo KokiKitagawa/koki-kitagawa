@@ -200,7 +200,7 @@
 
   /* 選んだ時間だけ続けて空いている「始まり」の時間 */
   function avail(){
-    const ok = new Set((me.slots || []).filter(s => mode === "online" || s.st).map(s => s.s));
+    const ok = new Set((me.slots || []).filter(s => mode === "online" ? s.on !== 0 : s.st).map(s => s.s));
     return (me.slots || []).filter(s => { for (let i = 0; i < hours; i++) if (!ok.has(s.s + i * H)) return false; return true; });
   }
   const maxDays = () => (me && me.days) || 12;
