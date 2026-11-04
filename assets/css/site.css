@@ -66,6 +66,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* ---------- section scaffold ---------- */
 section.s{padding:var(--sec) 0;position:relative}
+/* メニューから飛んだとき、上の余白ぶん先までスクロールして見出しを上に（2026-11-05 北川くん） */
+section.s[id]{scroll-margin-top:calc(var(--sec) * -1 + 16px)}
 section.s + section.s{border-top:1px solid var(--line)}
 .sh{display:grid;grid-template-columns:auto 1fr;column-gap:22px;align-items:baseline;margin:0 0 clamp(44px,6vw,72px)}
 .sh .no{font:500 14px/1 var(--en);letter-spacing:.2em;color:var(--faint);grid-row:span 2;align-self:start;padding-top:.7em}
