@@ -377,10 +377,26 @@ details.open-card{border:0!important;margin-top:12px;border-radius:14px;box-shad
 details.open-card>summary{min-height:60px}
 details.open-card .in{padding:0 0 22px}
 details.open-card .in.body p{font-size:14.5px}
-.gcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0;padding:0}
-.gcard{list-style:none;padding:14px 16px;border-radius:10px;background:rgba(255,255,255,.04)}
-.gcard b{display:block;font-size:12px;color:var(--faint);font-weight:500;margin-bottom:6px;letter-spacing:.1em}
-.gcard span{display:block;font:500 13.5px/1.7 var(--en)}
+.gcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;padding:0}
+/* 2026-11-05：使用機材はスペック表の形（アイコン＋英字の見出し＋数／メーカーは小さく、モデル名を大きく） */
+.gcard{list-style:none;position:relative;overflow:hidden;padding:18px 18px 8px;border-radius:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));box-shadow:inset 0 0 0 1px rgba(200,215,245,.14)}
+.gcard::before{content:"";position:absolute;left:18px;right:18px;top:0;height:2px;border-radius:0 0 2px 2px;background:linear-gradient(90deg,var(--or-hi),transparent 70%);opacity:.8}
+.gcard:nth-child(2n)::before{background:linear-gradient(90deg,var(--gr-hi),transparent 70%)}
+.gh{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.gi{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:11px;background:var(--or-soft);color:var(--or-hi)}
+.gcard:nth-child(2n) .gi{background:var(--gr-soft);color:var(--gr-hi)}
+.gi svg{width:21px;height:21px}
+.gt{display:flex;flex-direction:column;gap:4px;min-width:0}
+.gen{font:600 10px/1 var(--en);letter-spacing:.18em;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt b wbr{display:none}
+.gt b{white-space:nowrap;font-size:14.5px;font-weight:900;letter-spacing:.04em;color:var(--ink)}
+.gh em{margin-left:auto;font:700 20px/1 var(--en);font-style:normal;color:rgba(255,255,255,.14);letter-spacing:.02em}
+.gl{margin:0;padding:0}
+.gl li{list-style:none;display:flex;flex-direction:column;gap:3px;padding:11px 0;border-bottom:1px dashed rgba(200,215,245,.1)}
+.gl li:last-child{border-bottom:0}
+.gl small{font:600 11.5px/1.2 var(--en);letter-spacing:.08em;color:var(--sub)}
+.gl span{font:600 15px/1.4 var(--en);color:var(--ink);letter-spacing:.01em}
 /* career shelf */
 .shelf{display:grid;align-items:start;grid-auto-flow:column;grid-auto-columns:calc((100% - 32px)/3);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-bottom:4px}
 .shelf::-webkit-scrollbar{display:none}
@@ -614,13 +630,29 @@ footer{background:var(--black)}
   .flow.hs .n{margin-bottom:12px}
 }
 /* ===== LIVE / TV の「すべて見る」 ===== */
-details.acc.gigs-more{margin-top:14px;border:0!important}
-details.acc.gigs-more>summary{justify-content:center;gap:10px;min-height:52px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line2);padding:0 26px;width:fit-content;margin:0 auto}
-details.acc.gigs-more>summary .meta{display:none}
-.gigs-more>summary b{font-size:14px}
-.gigs-more[open]>summary{margin-bottom:12px}
-.gigs-more .in{padding:0}
-.gigs-more.filtered>summary{display:none}
+/* 2026-11-05：「すべて見る」は一覧の一番下・まん中。開くと上に残りが伸びて、ボタンは「閉じる」に（北川くん） */
+.more-box{display:grid;grid-template-rows:0fr;transition:grid-template-rows .42s cubic-bezier(.2,.7,.2,1)}
+.more-box.open{grid-template-rows:1fr}
+.more-in{min-height:0;overflow:hidden;visibility:hidden;transition:visibility 0s .42s}
+.more-box.open .more-in{visibility:visible;transition:none}
+.more-in>ul{padding-top:12px!important}
+.recs~.more-box .more-in>ul{padding-top:30px!important}
+.morebtn{display:flex;align-items:center;justify-content:center;gap:12px;min-height:52px;width:fit-content;margin:26px auto 0;padding:0 28px;border:0;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line2);color:var(--ink);font-size:14px;-webkit-tap-highlight-color:transparent;transition:background .2s,box-shadow .2s}
+.morebtn b{font-weight:700}
+.morebtn em{font-style:normal;font:600 12.5px/1 var(--en);color:var(--faint);margin-left:2px}
+.morebtn .m-c{display:none}
+.morebtn[aria-expanded="true"] .m-o{display:none}
+.morebtn[aria-expanded="true"] .m-c{display:inline}
+.morebtn i{width:10px;height:10px;flex:none;border-right:1.5px solid var(--sub);border-bottom:1.5px solid var(--sub);transform:translateY(-3px) rotate(45deg);transition:transform .3s}
+.morebtn[aria-expanded="true"] i{transform:translateY(3px) rotate(-135deg)}
+@media (hover:hover){ .morebtn:hover{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px var(--sub)} }
+.morebtn.filtered{display:none}
+.filters{scroll-margin-top:96px}
+/* スマホ：一覧を横にスワイプして絞り込みを切り替える。指についてくる */
+.fpage{touch-action:pan-y}
+.fpage.slide{transition:transform .2s ease,opacity .2s ease}
+.swipe.fsw{margin:-8px 0 18px}
 details.acc>.in,details.open-card>.in,.faq details>p{overflow:hidden}
 /* ===== 語や単位の途中で折れないように ===== */
 h1,h2,h3,h4,p,b,small,dd,summary,.lede{word-break:auto-phrase;text-wrap:pretty}
@@ -1816,8 +1848,7 @@ form.f .sk-ok span{flex:1;min-width:0}
 .aw-head h4{margin:0;font-size:clamp(18px,1.8vw,22px);font-weight:900;letter-spacing:.04em}
 .aw-head .meta{font:600 11px/1 var(--en);letter-spacing:.22em;color:var(--faint)}
 .allworks2 .filters{margin-bottom:26px}
-.recs-more{margin-top:34px}
-.recs-more .in{padding-top:30px}
+.allworks2 .morebtn{margin-top:34px}
 @media (max-width:820px){ .allworks2:not(.all) #cgrid > li:nth-child(n+5){display:none} .allworks2 .filters{margin-bottom:22px} }
 /* 2026-10-27：曲を鳴らしても下に Spotify の窓は出さない（北川くん）。鳴らせなかったときだけ小さな案内 */
 .sp-host,.sp-host.show{position:fixed;left:-9999px;bottom:0;width:300px;height:80px;opacity:0;pointer-events:none;box-shadow:none}

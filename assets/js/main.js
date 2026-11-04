@@ -35,18 +35,61 @@ document.querySelectorAll('input[name="kind"]').forEach(r => r.addEventListener(
 /* ご依頼主：会社・団体のときだけ会社名を聞く（2026-10-28） */
 const whoVal = () => (document.querySelector('input[name="f_who"]:checked')||{}).value || "";
 document.querySelectorAll('input[name="f_who"]').forEach(r => r.addEventListener("change", () => { const cb = document.getElementById("companyBox"); if(cb) cb.hidden = whoVal() !== "会社・団体"; }));
+/* 「すべて見る」⇔「閉じる」（2026-11-05：ボタンは一覧の一番下。閉じるときは一覧の頭まで戻してからたたむ） */
+const setMore = (box, open) => { if(!box) return; box.classList.toggle("open", open);
+  const btn = document.querySelector(`.morebtn[data-more="${box.id}"]`); if(btn) btn.setAttribute("aria-expanded", open);
+  if(box.id === "cgridMore"){ const cw = document.getElementById("credits"); if(cw) cw.classList.toggle("all", open); } };
+document.querySelectorAll(".morebtn").forEach(btn => btn.addEventListener("click", () => {
+  const box = document.getElementById(btn.dataset.more), open = !box.classList.contains("open");
+  if(!open){ const f = document.querySelector(`.filters[data-grid="${box.id.replace(/More$/,"")}"]`);
+    if(f && f.getBoundingClientRect().top < 0) f.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth", block:"start"}); }
+  setMore(box, open);
+}));
 /* 絞り込みチップ */
-document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e => {
-  const b = e.target.closest(".fchip"); if(!b) return;
-  g.querySelectorAll(".fchip").forEach(x => x.setAttribute("aria-pressed", x===b));
+const applyFilter = (g, b) => {
+  const chips = [...g.querySelectorAll(".fchip")];
+  chips.forEach(x => x.setAttribute("aria-pressed", x===b));
   const all = b.dataset.f==="ALL";
   document.querySelectorAll(`#${g.dataset.grid} > li, #${g.dataset.grid}2 > li`).forEach(li => li.hidden = !(all || li.dataset.k===b.dataset.f));
-  const more = document.getElementById(g.dataset.grid + "More");
-  if(more){ if(!all){ more.dataset.was = more.open ? "1" : ""; more.open = true; more.classList.add("filtered"); } else if(more.classList.contains("filtered")){ more.classList.remove("filtered"); more.open = more.dataset.was === "1"; } }
+  const more = document.getElementById(g.dataset.grid + "More"), btn = more && document.querySelector(`.morebtn[data-more="${more.id}"]`);
+  if(more){ if(!all){ if(!more.classList.contains("filtered")) more.dataset.was = more.classList.contains("open") ? "1" : ""; more.classList.add("filtered"); setMore(more, true); if(btn) btn.classList.add("filtered"); }
+    else if(more.classList.contains("filtered")){ more.classList.remove("filtered"); if(btn) btn.classList.remove("filtered"); setMore(more, more.dataset.was === "1"); } }
+  /* 選んだチップが見えるように横に寄せる・下の点も合わせる */
+  if(g.scrollWidth > g.clientWidth) g.scrollTo({left: b.offsetLeft - (g.clientWidth - b.offsetWidth)/2, behavior:"smooth"});
+  const sw = g.nextElementSibling; if(sw && sw.classList.contains("fsw")) sw.querySelectorAll(".dots i").forEach((d,j) => d.classList.toggle("on", j===chips.indexOf(b)));
+};
+document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e => {
+  const b = e.target.closest(".fchip"); if(b) applyFilter(g, b);
 }));
-/* すべての制作実績：「もっと見る」を開いたら（絞り込んだときも自動で開く）、スマホで隠していた5〜8枚目も出す */
-{ const cm = document.getElementById("cgridMore"), cw = document.getElementById("credits");
-  if(cm && cw) cm.addEventListener("toggle", () => cw.classList.toggle("all", cm.open)); }
+/* スマホ：一覧を横にスワイプすると、すべて → 次の種類 → … と切り替わる（2026-11-05 北川くん）。レコードをつかんでいるときは切り替えない */
+document.querySelectorAll(".filters[data-grid]").forEach(g => {
+  const pg = document.querySelector(`.fpage[data-swipe="${g.dataset.grid}"]`); if(!pg) return;
+  let x0 = 0, y0 = 0, t0 = 0, dx = 0, axis = "", busy = false;
+  const chips = () => [...g.querySelectorAll(".fchip")], cur = () => chips().findIndex(x => x.getAttribute("aria-pressed")==="true");
+  pg.addEventListener("touchstart", e => { if(busy || e.touches.length > 1 || e.target.closest(".vinyl, .morebtn")){ axis = "x-no"; return; }
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = performance.now(); dx = 0; axis = ""; pg.classList.remove("slide"); }, {passive:true});
+  pg.addEventListener("touchmove", e => { if(axis === "x-no" || axis === "y") return;
+    const mx = e.touches[0].clientX - x0, my = e.touches[0].clientY - y0;
+    if(!axis){ if(Math.abs(mx) < 8 && Math.abs(my) < 8) return; axis = Math.abs(mx) > Math.abs(my) * 1.2 ? "x" : "y"; if(axis === "y") return; }
+    e.preventDefault(); dx = mx;
+    const i = cur(), edge = (dx > 0 && i === 0) || (dx < 0 && i === chips().length - 1);
+    const d = edge ? dx * .22 : dx * .55;
+    pg.style.transform = `translateX(${d}px)`; pg.style.opacity = String(1 - Math.min(.45, Math.abs(d) / 600)); }, {passive:false});
+  const end = () => { if(axis !== "x"){ axis = ""; return; } axis = "";
+    const i = cur(), n = chips().length, fast = Math.abs(dx) / Math.max(1, performance.now() - t0) > .45;
+    const j = (Math.abs(dx) > 60 || (fast && Math.abs(dx) > 24)) ? i + (dx < 0 ? 1 : -1) : i;
+    pg.classList.add("slide");
+    if(j === i || j < 0 || j >= n){ pg.style.transform = ""; pg.style.opacity = ""; return; }
+    busy = true; const dir = dx < 0 ? -1 : 1;
+    pg.style.transform = `translateX(${dir * 70}px)`; pg.style.opacity = "0";
+    setTimeout(() => { pg.classList.remove("slide"); applyFilter(g, chips()[j]);
+      pg.style.transform = `translateX(${-dir * 70}px)`;
+      if(g.getBoundingClientRect().top < 0) g.scrollIntoView({block:"start"});
+      void pg.offsetWidth; pg.classList.add("slide"); pg.style.transform = ""; pg.style.opacity = "";
+      setTimeout(() => { busy = false; }, 220); }, 180);
+  };
+  pg.addEventListener("touchend", end); pg.addEventListener("touchcancel", end);
+});
 /* 横スクロールの矢印 */
 document.querySelectorAll(".arw").forEach(b => b.addEventListener("click", () => { const el = document.getElementById(b.dataset.for); el.scrollBy({left: el.clientWidth*.8*Number(b.dataset.dir), behavior:"smooth"}); }));
 /* WORKS のタブ（楽曲／ライブ・TV） */
@@ -157,6 +200,8 @@ document.querySelectorAll(".vrec .vinyl").forEach(v => {
     if(moved){ v.dataset.dragged = "1"; setTimeout(() => delete v.dataset.dragged, 50);
       if(!reduce.matches){ let w = vel * 16; const step = () => { w *= .94; if(Math.abs(w) < .2) return; setRot(rot + w); raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); } } };
   v.addEventListener("pointerup", end); v.addEventListener("pointercancel", end);
+  /* 2026-11-05：スマホでレコードをさわっているあいだは、ページがスクロールしないように（iPhone の Safari 対策で touchmove も止める・北川くん） */
+  v.addEventListener("touchmove", e => { if(e.cancelable) e.preventDefault(); }, {passive:false});
 });
 document.querySelectorAll(".vinyl").forEach(v => v.addEventListener("click", e => { if(v.dataset.dragged){ e.preventDefault(); return; }
   const id = v.dataset.rtrack;

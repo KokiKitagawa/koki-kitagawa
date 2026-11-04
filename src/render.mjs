@@ -140,7 +140,16 @@ export function buildOutputs(files){
   const chip = (t, cls="") => `<span class="chip ${cls}">${t}</span>`;
 
   function profile(){
-    const g = P.gear.groups.map(x => `<li class="gcard"><b>${esc(x.name)}</b>${x.items.map(i=>`<span>${esc(i)}</span>`).join("")}</li>`).join("");
+    /* 2026-11-05：使用機材をスペック表の形に（北川くん）。グループごとに線のアイコン・英字の見出し・数、各機材は メーカー（小さく）＋ モデル名 */
+    const BRANDS = ["Universal Audio","sE Electronics","Fractal Audio","Line 6","Eclipse","Suhr","Gibson Custom Shop","Fender Custom Shop","Gibson","Fender","Bogner","Marshall","Laney"];
+    const split = i => { const b = BRANDS.find(b => i.startsWith(b+" ")); return b ? [b, i.slice(b.length+1)] : ["", i]; };
+    const GI = {
+      "RECORDING":'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M8.5 21h7"/>',
+      "GUITARS":'<path d="M14.5 9.5 20 4M18.5 2.5l3 3"/><path d="M13 11c-1.2-1.6-3.6-1.9-5.2-.6-.9.7-1 1.7-1.9 2.2-1.4.7-3.2.6-3.4 2.8-.2 2.6 3 5.8 5.6 5.6 2.2-.2 2.1-2 2.8-3.4.5-.9 1.5-1 2.2-1.9 1.3-1.6 1-4-.1-4.7Z"/><circle cx="9.3" cy="14.7" r="1.3"/>',
+      "AMPS & CABS":'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18"/><circle cx="12" cy="14" r="3.5"/><path d="M6 6h.01M8.5 6h.01M11 6h.01"/>',
+      "MODELERS":'<rect x="2.5" y="7" width="19" height="11" rx="2"/><circle cx="7" cy="11" r="1.4"/><circle cx="12" cy="11" r="1.4"/><circle cx="17" cy="11" r="1.4"/><path d="M6 15h12"/>'};
+    const g = P.gear.groups.map((x,k) => `<li class="gcard"><div class="gh"><i class="gi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${GI[x.en]||GI.MODELERS}</svg></i><span class="gt"><span class="gen">${String(k+1).padStart(2,"0")} ／ ${esc(x.en||"")}</span><b>${esc(x.name)}</b></span><em>${String(x.items.length).padStart(2,"0")}</em></div>
+              <ul class="gl">${x.items.map(i => { const [b,m] = split(i); return `<li>${b?`<small>${esc(b)}</small>`:""}<span>${esc(m)}</span></li>`; }).join("")}</ul></li>`).join("");
     return `<section class="s sbg" id="profile"><i class="sbg-low" aria-hidden="true"></i><div class="wrap">
       ${sh("01","Profile","プロフィール・経歴")}
       <div class="prof">
@@ -182,6 +191,11 @@ export function buildOutputs(files){
     </div><i class="seam" aria-hidden="true"></i></section>`;
   }
 
+  /* 2026-11-05：「すべて見る」は一覧の一番下に置き、開いたら「閉じる」に変わる（制作もライブも同じ言葉・北川くん）
+     スマホは一覧を横にスワイプすると、絞り込みが すべて→次の種類… と切り替わる（fsw はその案内と点） */
+  const moreBox = (id, inner, n) => `<div class="more-box" id="${id}More"><div class="more-in">${inner}</div></div>
+          <button type="button" class="morebtn" data-more="${id}More" aria-controls="${id}More" aria-expanded="false"><b class="m-o">すべて見る<em>（${n}）</em></b><b class="m-c">閉じる</b><i aria-hidden="true"></i></button>`;
+  const fsw = n => `<div class="swipe fsw"><span aria-hidden="true">横にスワイプで切り替え</span><span class="dots" aria-hidden="true">${Array.from({length:n},(_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span></div>`;
   function works(){
     const kind = t => /SUMMER SONIC|フェス|FESTIVAL|SP-RING/i.test(t) ? "FES" : "LIVE";
     const items = [
@@ -226,17 +240,17 @@ export function buildOutputs(files){
             <button type="button" class="fchip" data-f="compose" aria-pressed="false">作詞・作曲・編曲<em>${comp.length}</em></button>
             <button type="button" class="fchip" data-f="guitar" aria-pressed="false">ギター参加<em>${gtr.length}</em></button>
             <button type="button" class="fchip" data-f="karaoke" aria-pressed="false">カラオケ音源<em>${kara.length}</em></button></div>
-          <ul class="grid4 recs" id="cgrid">${cards.slice(0,N).join("")}</ul>
-          <details class="acc gigs-more recs-more" id="cgridMore"><summary><b>もっと見る</b><span class="meta"><span class="only-pc">+${cards.length-N}</span><span class="only-sp">+${cards.length-4}</span></span></summary>
-            <div class="in"><ul class="grid4 recs" id="cgrid2">${cards.slice(N).join("")}</ul></div></details>
+          ${fsw(4)}
+          <div class="fpage" data-swipe="cgrid"><ul class="grid4 recs" id="cgrid">${cards.slice(0,N).join("")}</ul>
+          ${moreBox("cgrid", `<ul class="grid4 recs" id="cgrid2">${cards.slice(N).join("")}</ul>`, nMusic)}</div>
           </div>`; })()}
       </div>
       <div class="tabp" id="p-stage" role="tabpanel" aria-labelledby="t-stage">
         <figure class="gearshot reveal">${pic("gearWide","ライブ会場のステージ。手前に大きなエフェクターボード、奥にゴールドトップのギターとアンプ")}<figcaption class="cap">ON STAGE</figcaption></figure>
         <div class="filters" role="group" aria-label="種類で絞り込む" data-grid="gigs">${F.map((f,i)=>`<button type="button" class="fchip" data-f="${f[0]}" aria-pressed="${i?"false":"true"}">${f[1]}<em>${f[0]==="ALL"?items.length:items.filter(x=>x.k===f[0]).length}</em></button>`).join("")}</div>
-        <ul class="grid3" id="gigs">${items.slice(0,6).map(gig).join("")}</ul>
-        <details class="acc gigs-more" id="gigsMore"><summary><b>すべて見る（${items.length}）</b><span class="meta">+${items.length-6}</span></summary>
-          <div class="in"><ul class="grid3" id="gigs2">${items.slice(6).map(gig).join("")}</ul></div></details>
+        ${fsw(F.length)}
+        <div class="fpage" data-swipe="gigs"><ul class="grid3" id="gigs">${items.slice(0,6).map(gig).join("")}</ul>
+        ${moreBox("gigs", `<ul class="grid3" id="gigs2">${items.slice(6).map(gig).join("")}</ul>`, items.length)}</div>
       </div>
       <div class="outlinks">
         <a class="ol sp" href="${P.links.spotify}" target="_blank" rel="noopener">${svg("sp")}<span><b>Spotify</b><small>提供曲・参加曲をまとめて聴く</small></span></a>
