@@ -862,6 +862,7 @@ ${css}
         <div class="sk-months" id="skMonths"></div>
         <p class="sk-out" id="skOut" hidden><b>今月の回数は、おしまいです。</b>追加の単発レッスン（60分 ¥${yen(site.lessonPlans.single.price)}）なら、このまま予約できます。<button type="button" class="btn line sm" id="skMore">追加で単発レッスンを予約する</button></p>
         <button type="button" class="btn or sk-go" id="skGo">レッスンを予約する</button>
+        <button type="button" class="btn line sk-same" id="skSame" hidden></button>
       </div>
       <section class="sk-list" id="skListW" hidden>
         <div class="yk-lg">予約中のレッスン</div>
@@ -872,7 +873,7 @@ ${css}
     <form class="f yk sk-wiz" id="yk" novalidate hidden>
       <div class="sk-nav">
         <button type="button" class="sk-back" id="skBack">← 戻る</button>
-        <ol class="sk-dots" aria-label="すすみぐあい"><li data-d="1">受け方</li><li data-d="2">時間</li><li data-d="3">日時</li><li data-d="4">確認</li></ol>
+        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1">受け方</button></li><li><button type="button" data-d="2">時間</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
       </div>
       <div class="sk-left" id="skLeft" aria-live="polite"></div>
 
@@ -882,26 +883,28 @@ ${css}
         <p class="err" hidden></p>
       </fieldset>
 
-      <fieldset class="sk-step opts sk-hours" data-step="2"><legend><span class="yn">2</span>1回に、続けて何時間受けますか<i>1時間＝1回</i></legend><span id="skHours"></span></fieldset>
+      <fieldset class="sk-step opts sk-hours" data-step="2"><legend><span class="yn">2</span>レッスンの長さを選んでください</legend><p class="sk-unit">月の回数は、<b>1時間で1回分</b>使います（2時間なら2回分）</p><span id="skHours"></span></fieldset>
 
       <div class="sk-step yk-when" id="ykWhen" data-step="3">
+        <div class="sk-cond" id="skCond"></div>
         <div class="sk-count" id="skCount" aria-live="polite"></div>
         <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
         <div class="yk-times" id="ykTimes"></div>
         <p class="err" id="ykWhenErr" hidden></p>
         <div class="sk-bar">
           <button type="button" class="btn or sk-dec" id="skDec" disabled>時間を選んでください</button>
-          <button type="button" class="btn line sk-next" id="skNext" hidden></button>
+          <p class="sk-hint" id="skHint" hidden>ほかの日も足すときは、上の日付から選んでください</p>
+          <button type="button" class="btn or sk-next" id="skNext" hidden></button>
         </div>
         <div class="yk-lg sk-pl" id="skPickedL" hidden>決めた日時</div>
         <ol class="yk-picked" id="ykPicked"></ol>
-        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ時間だけ続けて空いている時間です。</p>
+        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ長さだけ続けて空いている時間です。スタジオとオンラインを混ぜたり、日ごとに長さを変えたりするときは、上の「変える」から選び直してください（決めた日時は残ります）。</p>
       </div>
 
       <div class="sk-step" data-step="4">
         <div class="yk-lg"><span class="yn">4</span>この内容でよろしいですか</div>
         <ol class="yk-picked sk-conf" id="skConf"></ol>
-        <button type="button" class="btn line sm sk-add" id="skAdd">＋ ほかの日も足す</button>
+        <div class="sk-adds"><button type="button" class="btn line sm" id="skAdd">＋ 同じ受け方・長さで日を足す</button><button type="button" class="btn line sm" id="skAdd2">＋ 受け方・長さを変えて日を足す</button></div>
         <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>
         <label class="sk-ok" id="skOkW" hidden><input type="checkbox" id="skOk"><span>追加（単発）のレッスンとして申し込みます</span></label>
         <p class="err" id="skOkErr" hidden></p>
