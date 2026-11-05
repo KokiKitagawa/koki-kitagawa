@@ -751,8 +751,6 @@ ${css}
   <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・スタジオで受ける場合は、ギターを借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
   <p class="yk-plan" id="ykPlan" hidden></p>
   <p class="yk-plan" id="ykLine" hidden></p>
-  ${B.lineAdd ? `<a class="dm ln yk-ln" id="ykLineAdd" href="${esc(B.lineAdd)}" target="_blank" rel="noopener"><i>${LINE_ICON}</i><span><b>LINE からも予約できます</b><small>公式LINE を友だち追加して、メニューの「体験レッスンを予約」から。メールの確認なしで決まり、お知らせも LINE に届きます</small></span><em class="ln-add">友だち追加</em></a>` : ""}
-  <ol class="yk-steps" aria-hidden="true"><li data-st="1"><span>1</span>受け方</li><li data-st="2"><span>2</span>日時</li><li data-st="3"><span>3</span>お名前など</li></ol>
 
   <div class="card yk-closed" id="ykClosed" hidden>
     <b>予約ページは、まもなく使えるようになります</b>
@@ -760,64 +758,75 @@ ${css}
     <div class="nf-btns">${B.url ? `<a class="btn or" href="${esc(B.url)}" target="_blank" rel="noopener">予約カレンダーを開く</a>` : ""}<a class="btn line" href="./#contact">お問い合わせフォーム</a></div>
   </div>
 
-  <form class="f yk" id="yk" novalidate>
-    <fieldset class="kinds yk-mode"><legend><span class="yn">1</span>受け方を選んでください<i>必須</i></legend>
-      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店（JR小岩駅から約4分）<br>お部屋は前の日に北川が予約します（小岩が空いていないときは、亀戸・平井などの近くのスタジオ。どこも取れなければ、オンラインか別の日を選べます）<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
-      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし</small></span></label>
+  <!-- 2026-11-05：1画面ずつ（受け方 → 日時 → お名前 → くわしく（任意） → 確認）。生徒さんページと同じ形（北川くん） -->
+  <form class="f yk sk-wiz yk-wiz" id="yk" novalidate>
+    <div class="sk-nav">
+      <button type="button" class="sk-back" id="skBack" hidden>← 戻る</button>
+      <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1">受け方</button></li><li><button type="button" data-d="2">日時</button></li><li><button type="button" data-d="3">お名前</button></li><li><button type="button" data-d="4">くわしく</button></li><li><button type="button" data-d="5">確認</button></li></ol>
+    </div>
+
+    <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>受け方を<wbr>選んでください</legend>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩の<wbr>スタジオ</b><small>サウンドスタジオM小岩店<wbr>（JR小岩駅から<wbr>約4分）<br>お部屋は<wbr>前の<wbr>日に<wbr>北川が<wbr>予約します<wbr>（小岩が<wbr>空いていないときは、<wbr>亀戸・<wbr>平井などの<wbr>近くの<wbr>スタジオ。<wbr>どこも<wbr>取れなければ、<wbr>オンラインか<wbr>別の<wbr>日を<wbr>選べます）<br>ギターは<wbr>借りられます</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・<wbr>スタジオ代なし</small></span></label>
       <p class="err" hidden></p>
     </fieldset>
 
-    <div class="yk-when" id="ykWhen">
-      <div class="yk-lg"><span class="yn">2</span>日時を選んでください<i id="ykHint">先に、受け方を選んでください</i></div>
-      <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から選べます。</p>
-      <p class="small" id="ykLoad" hidden>空いている日時を読み込んでいます…</p>
-      <p class="yk-now" id="ykNow" hidden aria-live="polite"></p>
+    <div class="sk-step yk-when" id="ykWhen" data-step="2">
+      <div class="yk-lg"><span class="yn">2</span>日時を<wbr>選んでください<i id="ykHint"></i></div>
+      <p class="small" id="ykLoad" hidden>空いている<wbr>日時を<wbr>読み込んでいます…</p>
       <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
       <div class="yk-times" id="ykTimes"></div>
-      <ol class="yk-picked" id="ykPicked"></ol>
       <p class="err" id="ykWhenErr" hidden></p>
+      <div class="sk-bar"><button type="button" class="btn or sk-dec" id="ykDec" disabled>時間を<wbr>選んでください</button></div>
+      <p class="small yk-lead">スタジオは<wbr>2日後から、<wbr>オンラインは<wbr>翌日から<wbr>選べます。</p>
     </div>
 
-    <div class="yk-info">
-      <div class="yk-lg"><span class="yn">3</span>お名前など</div>
+    <div class="sk-step yk-info" data-step="3">
+      <div class="yk-lg"><span class="yn">3</span>お名前と<wbr>連絡先</div>
+      <div><label for="y_name">お名前<i>必須</i></label><input id="y_name" autocomplete="name" enterkeyhint="next"><p class="err" hidden></p></div>
+      <div><label for="y_mail">メールアドレス<i>必須</i></label><input id="y_mail" type="email" inputmode="email" autocomplete="email" enterkeyhint="next"><p class="yk-sug" id="ykSug" hidden aria-live="polite"></p><p class="err" hidden></p></div>
       <div class="two">
-        <div><label for="y_name">お名前<i>必須</i></label><input id="y_name" autocomplete="name"><p class="err" hidden></p></div>
-        <div><label for="y_mail">メールアドレス<i>必須</i></label><input id="y_mail" type="email" inputmode="email" autocomplete="email"><p class="yk-sug" id="ykSug" hidden aria-live="polite"></p><p class="err" hidden></p></div>
+        <div><label for="y_kana">ふりがな<i class="opt-i">任意</i></label><input id="y_kana"></div>
+        <div><label for="y_tel">電話番号<i class="opt-i">任意</i></label><input id="y_tel" type="tel" inputmode="tel" autocomplete="tel"></div>
       </div>
-      <details class="yk-more"><summary><b>くわしく書く（任意）</b><small>ギター歴・弾きたい曲・ご質問など。書いてもらえると、体験の準備ができます</small></summary>
-      <div class="yk-more-in">
+      <button type="button" class="btn or yk-next" data-next="4">次へ</button>
+    </div>
+
+    <div class="sk-step yk-info" data-step="4">
+      <div class="yk-lg"><span class="yn">4</span>よければ<wbr>教えてください<i class="opt-i">ぜんぶ任意</i></div>
+      <p class="small yk-lead">書いてもらえると、<wbr>体験の<wbr>準備が<wbr>できます。<wbr>空のままでも<wbr>大丈夫です。</p>
       <div class="two">
-        <div><label for="y_kana">ふりがな</label><input id="y_kana"></div>
-        <div><label for="y_tel">電話番号</label><input id="y_tel" type="tel" inputmode="tel" autocomplete="tel"></div>
-      </div>
-      <div class="two">
-        <div><label for="y_age">レッスンを受ける方</label><select id="y_age">${sel(["大人","高校生","中学生","小学生","小学生より小さいお子さん"])}</select></div>
+        <div><label for="y_age">レッスンを<wbr>受ける方</label><select id="y_age">${sel(["大人","高校生","中学生","小学生","小学生より小さいお子さん"])}</select></div>
         <div><label for="y_level">ギター歴</label><select id="y_level">${sel(["はじめて","1年未満","1〜3年","3年以上"])}</select></div>
       </div>
       <fieldset class="opts"><legend>ギター</legend>${opt("guitar","radio",["アコースティック","エレキ","クラシック","持っていない"])}</fieldset>
       <fieldset class="opts"><legend>どうなりたいですか<i>いくつでもOK</i></legend>${opt("goals","checkbox",["好きな曲を弾けるようになりたい","基礎からしっかり","弾き語りがしたい","バンドで弾きたい","作曲・アレンジも学びたい","プロを目指したい","趣味で楽しく"])}</fieldset>
-      <div><label for="y_song">弾きたい曲・好きなアーティスト</label><input id="y_song" placeholder="例：〇〇の「△△」"></div>
-      <div><label for="y_q">ご質問・ご要望</label><textarea id="y_q" class="sm" placeholder="気になることがあれば、なんでも"></textarea></div>
-            <div><label for="y_from">このページを何で知りましたか</label><select id="y_from">${sel(["Instagram","TikTok","YouTube","X","Google検索","Googleマップ","知り合いの紹介","その他"])}</select></div>
-      </div></details>
+      <div><label for="y_song">弾きたい曲・<wbr>好きな<wbr>アーティスト</label><input id="y_song" placeholder="例：〇〇の「△△」"></div>
+      <div><label for="y_q">ご質問・<wbr>ご要望</label><textarea id="y_q" class="sm" placeholder="気になることがあれば、なんでも"></textarea></div>
+      <div><label for="y_from">このページを<wbr>何で<wbr>知りましたか</label><select id="y_from">${sel(["Instagram","TikTok","YouTube","X","Google検索","Googleマップ","知り合いの紹介","その他"])}</select></div>
+      <button type="button" class="btn or yk-next" data-next="5" id="ykNext4">確認へ進む</button>
     </div>
     <input type="text" name="website" id="y_web" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
 
-    <div class="yk-sum" id="ykSum" hidden></div>
-    <dl class="yk-brief" aria-label="申し込む前に">
-      <dt>料金</dt><dd>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込）</dd>
-      <dt>スタジオ代</dt><dd>スタジオは1時間 約1,500円（当日スタジオで）／オンラインはなし</dd>
-      <dt>お支払い</dt><dd>スタジオ：現金・PayPay（当日レッスンの前に）／オンライン：カード（前日まで）</dd>
-      <dt>キャンセル</dt><dd>3日前 23:59 まではURLから無料。それより後もキャンセル料はかかりません</dd>
-    </dl>
-    <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に同意したものとします。</p>
-    <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
-    <p class="err" id="ykErr" hidden></p>
+    <div class="sk-step yk-conf" data-step="5">
+      <div class="yk-lg"><span class="yn">5</span>この<wbr>内容で<wbr>よろしいですか</div>
+      <dl class="yk-check" id="ykCheck"></dl>
+      <dl class="yk-brief" aria-label="申し込む前に">
+        <dt>料金</dt><dd>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込）</dd>
+        <dt>スタジオ代</dt><dd>スタジオは<wbr>1時間 約1,500円<wbr>（当日スタジオで）／<wbr>オンラインはなし</dd>
+        <dt>お支払い</dt><dd>スタジオ：<wbr>現金・PayPay<wbr>（当日レッスンの前に）／<wbr>オンライン：<wbr>カード（前日まで）</dd>
+        <dt>キャンセル</dt><dd>3日前 23:59 までは<wbr>URLから無料。<wbr>それより後も<wbr>キャンセル料は<wbr>かかりません</dd>
+      </dl>
+      <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に<wbr>同意したものとします。</p>
+      <button class="btn or send" type="submit" id="ykSend">この<wbr>内容で<wbr>申し込む</button>
+      <p class="err" id="ykErr" hidden></p>
+    </div>
   </form>
+  ${B.lineAdd ? `<a class="dm ln yk-ln" id="ykLineAdd" href="${esc(B.lineAdd)}" target="_blank" rel="noopener"><i>${LINE_ICON}</i><span><b>LINE からも予約できます</b><small>公式LINE を友だち追加して、メニューの「体験レッスンを予約」から。メールの確認なしで決まり、お知らせも LINE に届きます</small></span><em class="ln-add">友だち追加</em></a>` : ""}
 
   <div class="card yk-done" id="ykDone" hidden role="status" tabindex="-1"></div>
 
-  <section class="yk-notes">
+  <section class="yk-notes" id="ykNotes">
     <h3>ご案内</h3>
     <table class="hours">
       <tr><th>場所</th><td>${esc(L.place)}<small><a href="https://www.google.com/maps/search/?api=1&amp;query=${encodeURIComponent("サウンドスタジオM小岩店")}" target="_blank" rel="noopener">スタジオの地図を見る</a></small></td></tr>

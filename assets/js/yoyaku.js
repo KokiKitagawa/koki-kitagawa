@@ -2,13 +2,14 @@
    空き枠は Apps Script（Googleカレンダー）から読む。?demo=1 を付けると、見本の空き枠で動きだけ確かめられる（送信はしない）。
    2026-10-25：日時は1つだけ選ぶ（スタジオもオンラインも）。申し込むと「予約を確定する」メールが届き、リンクを開くと確定。
    メールアドレスの打ちまちがい（gmial.com など）は、入れたときに教える。
-   公式LINE のメニューから開いたとき（?l=合言葉）は、メールの確認なしでその場で確定。メールアドレスはなくてもよく、お知らせは LINE に届く。 */
+   公式LINE のメニューから開いたとき（?l=合言葉）は、メールの確認なしでその場で確定。メールアドレスはなくてもよく、お知らせは LINE に届く。
+   2026-11-05：1画面ずつ（1 受け方 → 2 日時 → 3 お名前 → 4 くわしく（任意） → 5 確認）。生徒さんページ（seito.js）と同じ形。
+   スマホの「戻る」でも1つ前の画面に。上の5つのボタンで、行ったことのある画面に移れる（入れた内容は消えない） */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
   const demo = /[?&]demo=1/.test(location.search);
-  const form = $("yk"), days = $("ykDays"), times = $("ykTimes"), picked = $("ykPicked"), hint = $("ykHint"), load = $("ykLoad");
-  const steps = document.querySelectorAll(".yk-steps li");
+  const form = $("yk"), days = $("ykDays"), times = $("ykTimes"), hint = $("ykHint"), load = $("ykLoad"), dec = $("ykDec");
   const TZ = "Asia/Tokyo", W = ["日","月","火","水","木","金","土"];
   const part = (t, o) => new Intl.DateTimeFormat("ja-JP", Object.assign({ timeZone: TZ }, o)).format(new Date(t));
   const dayKey = t => new Date(t + 9 * 3600e3).toISOString().slice(0, 10);
@@ -18,7 +19,7 @@
   const full = t => { const d = new Date(t + 9 * 3600e3); return `${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${wd(t)}）${hm(t)}〜`; };
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
 
-  let slots = null, mode = "", day = "", pick = [], prev = null;
+  let slots = null, mode = "", day = "", pick = [], prev = null, step = 1, seen = 1;
   const lkey = (new URLSearchParams(location.search).get("l") || "").trim();
 
   /* トップの「体験から始める」で来たとき：気になるプランを出して、申し込みの内容にも入れる */
@@ -58,12 +59,37 @@
   }
   const loading = fetchSlots();
 
-  /* 受け方 */
+  /* ---------- 画面の切りかえ ---------- */
+  const mailOk = () => (lkey && !mailEl.value.trim()) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailEl.value.trim());
+  const infoOk = () => !!$("y_name").value.trim() && mailOk() && !sugFix;
+  /* その画面に行けるか（前の画面で決めることが決まっているか） */
+  function reach(d){ return d <= 1 || (d === 2 && !!mode) || (d === 3 && !!mode && pick.length > 0) || (d >= 4 && !!mode && pick.length > 0 && infoOk() && seen >= 4); }
+  function go(n, quiet){
+    step = n; if (n > seen) seen = n;
+    form.querySelectorAll(".sk-step").forEach(x => { x.hidden = Number(x.dataset.step) !== n; });
+    form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.className = d === n ? "on" : reach(d) ? "pa" : ""; b.disabled = !reach(d); if (d === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    $("skBack").hidden = n === 1;
+    const hb = document.querySelector(".yk-back"); if (hb) hb.style.visibility = n === 1 ? "" : "hidden";   // 上の「← 戻る」（レッスンのページへ）は1画面目だけ
+    /* 1画面目だけ：体験の説明・LINE の案内・ご案内の表 */
+    [".yk-trial", "#ykLineAdd", "#ykNotes"].forEach(q => { const el = document.querySelector(q); if (el) el.hidden = n !== 1 || (q === "#ykLineAdd" && !!lkey); });
+    if (n === 2) loading.then(drawDays);
+    if (n === 5) drawCheck();
+    if (window.gtag && !demo && !quiet) gtag("event", "trial_step", { step: n });
+    if (!quiet) { if (!history.state || history.state.yk !== n) history.pushState({ yk: n }, ""); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  }
+  history.replaceState({ yk: 1 }, "");
+  addEventListener("popstate", e => { const n = e.state && e.state.yk ? e.state.yk : 1; go(reach(n) ? n : 1, true); window.scrollTo(0, 0); });
+  $("skBack").addEventListener("click", () => { if (history.state && history.state.yk === step && step > 1) history.back(); else go(Math.max(1, step - 1)); });
+  form.querySelector(".sk-dots").addEventListener("click", e => { const b = e.target.closest("button[data-d]"); if (!b || b.disabled) return; const d = Number(b.dataset.d); if (d !== step) go(d); });
+
+  /* 1 受け方：押したら次へ（前に選んだ受け方をもう一度押しても次へ） */
   form.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => {
-    mode = r.value; pick = []; hideErr(form.querySelector(".yk-mode .err"));
+    if (mode !== r.value) { pick = []; day = ""; }
+    mode = r.value; hideErr(form.querySelector(".yk-mode .err"));
     hint.textContent = "ご都合のよい日時を、1つ選んでください";
-    loading.then(drawDays); mark();
+    setTimeout(() => go(2), 160);
   }));
+  form.querySelectorAll(".yk-mode .kc").forEach(l => l.addEventListener("click", e => { const r = l.querySelector("input"); if (r.checked && step === 1 && e.target === r && mode === r.value) setTimeout(() => go(2), 160); }));
 
   const avail = () => (slots || []).filter(s => mode === "online" ? s.on !== 0 : s.st);
   function drawDays(){
@@ -75,8 +101,14 @@
       return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${new Date(t + 9 * 3600e3).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ 選択中" : by[k].length + "枠"}</i></button>`; }).join("");
     if (slots && !keys.length) times.innerHTML = `<p class="small yk-none">いま予約できる日時がありません。${mode === "studio" ? "オンラインを選ぶか、" : ""}<a href="./#contact">お問い合わせフォーム</a>からご相談ください。</p>`;
     else drawTimes(by[day] || []);
-    drawPicked();
+    drawDec();
   }
+  /* 下の決定ボタン：時間を選ぶと「この日時で次へ」 */
+  function drawDec(){
+    dec.disabled = !pick.length;
+    dec.innerHTML = pick.length ? `<span>${full(pick[0])}</span><b>この日時で次へ</b>` : "時間を<wbr>選んでください";
+  }
+  dec.addEventListener("click", () => { if (pick.length) go(3); });
   function drawTimes(list){
     times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+〜$/, "")}</p><div class="opts">` + list.map(s => { const on = pick.includes(s.s);
       return `<label class="opt${on ? " t1" : ""}"><input type="checkbox" value="${s.s}" ${on ? "checked" : ""}><span>${hm(s.s)}${on ? `<em class="yk-tag">予約</em>` : ""}</span></label>`; }).join("") + "</div>" : "";
@@ -87,14 +119,7 @@
     const t = Number(e.target.value);
     hideErr($("ykWhenErr"));
     pick = e.target.checked ? [t] : [];
-    drawDays(); mark();
-  });
-  function drawPicked(){
-    picked.innerHTML = pick.map(t => `<li><span class="chip gr">予約する日時</span><b>${full(t)}</b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`).join("");
-  }
-  picked.addEventListener("click", e => {
-    const rm = e.target.closest("[data-rm]"); if (!rm) return;
-    pick = []; hideErr($("ykWhenErr")); drawDays(); mark();
+    drawDays();
   });
 
   /* ---------- メールアドレスの打ちまちがい ---------- */
@@ -135,15 +160,47 @@
     if (e.target.closest("[data-fix]")) { mailEl.value = sugFix; sugOk = false; }
     else if (e.target.closest("[data-keep]")) sugOk = true;
     else return;
-    drawSug(); hideErr(mailEl.parentNode.querySelector(".err")); mark();
+    drawSug(); hideErr(mailEl.parentNode.querySelector(".err"));
   });
+  ["y_name","y_mail"].forEach(id => $(id).addEventListener("input", () => hideErr($(id).parentNode.querySelector(".err"))));
 
-  /* 上の 1・2・3 の印 */
-  function mark(){
-    const done = [!!mode, pick.length > 0, !!($("y_name").value.trim() && (lkey || $("y_mail").value.trim()))];
-    steps.forEach((li, i) => li.classList.toggle("ok", done[i]));
+  /* 3 お名前：「次へ」で確かめる。4 くわしく：何も書かなくても次へ */
+  function checkInfo(){
+    drawSug();
+    let bad = null;
+    const need = (ok, el, msg, focus) => { if (!ok) { showErr(el, msg); bad = bad || focus; } else hideErr(el); };
+    need($("y_name").value.trim(), $("y_name").parentNode.querySelector(".err"), "お名前を入れてください。", $("y_name"));
+    need(mailOk() && !sugFix, mailEl.parentNode.querySelector(".err"), mailOk() ? "メールアドレスを確かめてください（下の「直す」か「このままでいい」を押してください）。" : "メールアドレスを確かめてください。", mailEl);
+    if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); bad.focus({ preventScroll: true }); }
+    return !bad;
   }
-  ["y_name","y_mail"].forEach(id => $(id).addEventListener("input", () => { mark(); hideErr($(id).parentNode.querySelector(".err")); }));
+  form.querySelectorAll("[data-next]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset.next);
+    if (n === 4 && !checkInfo()) return;
+    if (n === 4 && seen < 4) seen = 4;
+    go(n);
+  }));
+  /* お名前・メールで「次へ」（改行）を押したとき */
+  $("y_name").addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); mailEl.focus(); } });
+  mailEl.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); mailEl.blur(); } });
+
+  /* 5 確認：選んだ・入れた内容を並べる（押すと、その画面に戻って直せる） */
+  const val = n => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value);
+  function drawCheck(){
+    const row = (k, v, d) => v ? `<div><dt>${k}</dt><dd>${esc(v)}</dd>${d ? `<button type="button" class="yk-fix" data-to="${d}">直す</button>` : ""}</div>` : "";
+    const more = [$("y_age").value, $("y_level").value, val("guitar")[0] || ""].filter(Boolean).join("・");
+    $("ykCheck").innerHTML = row("受け方", mode === "studio" ? "小岩のスタジオ" : "オンライン", 1)
+      + row("日時", pick.length ? full(pick[0]) : "", 2)
+      + row("お名前", $("y_name").value.trim() + ($("y_kana").value.trim() ? `（${$("y_kana").value.trim()}）` : ""), 3)
+      + row("メール", mailEl.value.trim() || (lkey ? "なし（お知らせは LINE に届きます）" : ""), 3)
+      + row("電話番号", $("y_tel").value.trim(), 3)
+      + row("受ける方・ギター", more, 4)
+      + row("どうなりたいか", val("goals").join("・"), 4)
+      + row("弾きたい曲", $("y_song").value.trim(), 4)
+      + row("ご質問", $("y_q").value.trim(), 4)
+      + (myPlan ? row("気になるプラン", myPlan, 0) : "");
+  }
+  $("ykCheck").addEventListener("click", e => { const b = e.target.closest("[data-to]"); if (b && Number(b.dataset.to)) go(Number(b.dataset.to)); });
 
   function showErr(el, msg){ el.textContent = msg; el.hidden = false; }
   function hideErr(el){ if (el) el.hidden = true; }
@@ -151,16 +208,10 @@
   /* 送る */
   form.addEventListener("submit", e => {
     e.preventDefault();
-    drawSug();
-    let bad = null;
-    const need = (ok, el, msg, focus) => { if (!ok) { showErr(el, msg); bad = bad || focus; } else hideErr(el); };
-    need(!!mode, form.querySelector(".yk-mode .err"), "スタジオかオンラインを選んでください。", form.querySelector(".yk-mode"));
-    need(!mode || pick.length > 0, $("ykWhenErr"), "日時を選んでください。", $("ykWhen"));
-    need($("y_name").value.trim(), $("y_name").parentNode.querySelector(".err"), "お名前を入れてください。", $("y_name"));
-    const mailOk = (lkey && !mailEl.value.trim()) || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailEl.value.trim());
-    need(mailOk && !sugFix, mailEl.parentNode.querySelector(".err"), mailOk ? "メールアドレスを確かめてください（下の「直す」か「このままでいい」を押してください）。" : "メールアドレスを確かめてください。", mailEl);
-    if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
-    const val = n => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value);
+    if (step !== 5) return;   // 確認の画面でだけ送る（入力中の改行で送られないように）
+    if (!mode) { go(1); return; }
+    if (!pick.length) { go(2); showErr($("ykWhenErr"), "日時を選んでください。"); return; }
+    if (!infoOk()) { go(3); checkInfo(); return; }
     const data = { mode, slots: pick, name: $("y_name").value, kana: $("y_kana").value, email: mailEl.value.trim(), tel: $("y_tel").value,
       age: $("y_age").value, level: $("y_level").value, guitar: val("guitar")[0] || "", goals: val("goals"), song: $("y_song").value, q: [myPlan ? "【気になるプラン】" + myPlan : "", $("y_q").value].filter(Boolean).join("\n"),
       from: $("y_from").value, website: $("y_web").value, prev, l: lkey };
@@ -170,15 +221,15 @@
       : fetch(cfg.api, { method: "POST", body: JSON.stringify(data) }).then(r => r.json());
     send.then(r => {
       if (!r.ok) {
-        if (r.badMail) { showErr(mailEl.parentNode.querySelector(".err"), r.msg); mailEl.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+        if (r.badMail) { go(3); showErr(mailEl.parentNode.querySelector(".err"), r.msg); mailEl.focus({ preventScroll: true }); return; }
+        if (r.gone) { pick = []; slots = null; go(2); showErr($("ykWhenErr"), r.msg || "その日時は、ちょうど埋まってしまいました。ほかの日時を選んでください。"); fetchSlots().then(drawDays); return; }
         showErr(err, r.msg || "送信できませんでした。");
-        if (r.gone) { pick = []; slots = null; fetchSlots().then(drawDays); }
         return;
       }
       prev = r.rid ? { id: r.rid, k: r.rk } : null;
       finish(data, r);
     }).catch(() => showErr(err, "送信できませんでした。通信の状態を確かめて、もう一度お試しください。うまくいかない場合は、お問い合わせフォームからご連絡ください。"))
-      .finally(() => { btn.disabled = false; btn.textContent = "この内容で申し込む"; });
+      .finally(() => { btn.disabled = false; btn.innerHTML = "この<wbr>内容で<wbr>申し込む"; });
   });
 
   function finish(d, r){
@@ -191,7 +242,7 @@
         + `<ol class="yk-picked">${list}</ol>`
         + `<p class="small">予約の確認・キャンセルは、LINE のメニューの「予約の確認・キャンセル」からできます。${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
         + (cfg.line ? `<a class="btn or" href="${esc(cfg.line)}">LINE のトークにもどる</a>` : "");
-      form.hidden = true; document.querySelector(".yk-steps").hidden = true; $("ykLine").hidden = true; el.hidden = false;
+      form.hidden = true; $("ykLine").hidden = true; el.hidden = false;
       el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
       return;
     }
@@ -200,13 +251,14 @@
       + `<ol class="yk-picked">${list}</ol>`
       + `<p class="small">数分たってもメールが届かないときは<br>・迷惑メールのフォルダも見てください<br>・メールアドレスがまちがっているかもしれません。下のボタンから、アドレスを直してもう一度お申し込みください<br>・携帯会社のメールは、パソコンからのメールが届かない設定のことがあります${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
       + `<button type="button" class="btn line" id="ykAgain">アドレスを直して申し込み直す</button>`;
-    form.hidden = true; document.querySelector(".yk-steps").hidden = true; el.hidden = false;
+    form.hidden = true; el.hidden = false;
     el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
     $("ykAgain").addEventListener("click", () => {
-      el.hidden = true; form.hidden = false; document.querySelector(".yk-steps").hidden = false; sugOk = false;
+      el.hidden = true; form.hidden = false; sugOk = false; go(3);
       /* 自分の申し込み中の枠は、ほかの人には出ないので、手もとで足して選んだままにする */
       slots = null; fetchSlots().then(() => { pick.forEach(t => { if (!slots.some(s => s.s === t)) slots.push({ s: t, st: d.mode === "studio" ? 1 : 0 }); }); slots.sort((a, b) => a.s - b.s); drawDays(); });
-      mailEl.scrollIntoView({ behavior: "smooth", block: "center" }); mailEl.focus({ preventScroll: true });
+      mailEl.focus({ preventScroll: true });
     });
   }
+  go(1, true);
 })();
