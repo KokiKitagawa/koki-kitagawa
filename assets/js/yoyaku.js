@@ -49,7 +49,8 @@
   }
   function fetchSlots(){
     load.hidden = false;
-    const p = demo ? new Promise(r => setTimeout(() => r({ ok: true, slots: demoSlots() }), 400)) : fetch(cfg.api + "?a=slots", { cache: "no-store" }).then(r => r.json());
+    const pre = window.kkPre; window.kkPre = null;   // ページの頭で読みはじめた分（1回目だけ使う）
+    const p = demo ? new Promise(r => setTimeout(() => r({ ok: true, slots: demoSlots() }), 400)) : (pre || fetch(cfg.api + "?a=slots", { cache: "no-store" }).then(r => r.json()));
     return p.then(r => { if (!r.ok) throw 0; slots = r.slots; load.hidden = true; }).catch(() => {
       load.hidden = true; slots = [];
       showErr($("ykWhenErr"), "空いている日時を読み込めませんでした。時間をおいてもう一度開くか、お問い合わせフォームからご連絡ください。");

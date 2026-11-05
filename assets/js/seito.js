@@ -87,8 +87,9 @@
   function bad(t, m){ $("skLoad").hidden = true; $("skMain").hidden = true; $("skBad").hidden = false; if (t) $("skBadT").textContent = t; if (m) $("skBadM").textContent = m; }
   function load(){
     $("skLoad").hidden = false;
+    const pre = window.kkPre; window.kkPre = null;   // ページの頭で読みはじめた分（1回目だけ使う）
     const p = demo ? new Promise(r => setTimeout(() => r(demoMe()), 300))
-      : fetch(cfg.api + "?a=me&k=" + encodeURIComponent(key), { cache: "no-store" }).then(r => r.json());
+      : (pre || fetch(cfg.api + "?a=me&k=" + encodeURIComponent(key), { cache: "no-store" }).then(r => r.json()));
     return p.then(r => {
       if (!r.ok) { bad(r.bad ? "このページのURLが正しくありません" : "いまは予約できません", r.msg); return; }
       if (r.cnt) { const c = r.cnt, st = count(c.base, c.start, c.ls, r.months.map(x => x.m));

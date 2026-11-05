@@ -734,6 +734,9 @@ export function yoyakuPage(files, p, site, url){
 <meta property="og:description" content="小岩のスタジオかオンラインを選んで、空いている日時から申し込めます。体験レッスン60分 ${yen(site.lessonPlans.trial.price)}円。">
 <meta property="og:url" content="${url}yoyaku.html">
 <meta property="og:image" content="${url}${JSON.parse(files["data/images.json"]).paths.ogpLesson}">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+${B.api ? `<script>/* 2026-11-05：空いている日時は、ページを開いたらすぐ読みはじめる（書体を待たない） */try{if(!/[?&]demo=1/.test(location.search))window.kkPre=fetch(${JSON.stringify(B.api).replace(/</g,"\\u003c")}+"?a=slots",{cache:"no-store"}).then(function(r){return r.json()})}catch(e){}</script>` : ""}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@72..118,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -850,6 +853,9 @@ export function seitoPage(files, p, site, url){
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#06080d">
 <title>レッスンのご予約（生徒さん専用） | 北川弘喜</title>
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+${B.api ? `<script>/* 2026-11-05：生徒さんの情報は、ページを開いたらすぐ読みはじめる（書体を待たない） */try{var kq=new URLSearchParams(location.search);if(kq.get("k")&&kq.get("demo")!=="1")window.kkPre=fetch(${JSON.stringify(B.api).replace(/</g,"\\u003c")}+"?a=me&k="+encodeURIComponent(kq.get("k")),{cache:"no-store"}).then(function(r){return r.json()})}catch(e){}</script>` : ""}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@72..118,300..900&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
