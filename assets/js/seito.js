@@ -171,6 +171,7 @@
   /* ---------- 画面の切りかえ（1つ選んだら次の画面へ。スマホの「戻る」でも1つ前に戻る） ---------- */
   function go(n, quiet){
     step = n;
+    document.body.classList.toggle("sk-flow", n > 0);   // 予約の途中は、大きな見出しを出さない（2026-11-05 夜）
     $("skHome").hidden = n !== 0; $("skNotes").hidden = n !== 0; form.hidden = n === 0; $("ykDone").hidden = true;
     form.querySelectorAll(".sk-step").forEach(x => { x.hidden = Number(x.dataset.step) !== n; });
     form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.className = d === n ? "on" : reach(d) ? "pa" : ""; b.disabled = !reach(d); if (d === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
@@ -194,12 +195,23 @@
     const ms = me.months.slice(0, 2).map(x => x.m), st = count(base, start, ls, ms.concat(nextM(ms[ms.length - 1])));
     return ms.map(m => ({ m, left: canGetsu(base, start, ls, m, st[m].left) }));
   }
+  /* 2026-11-05 夜：上の段（画面の上に残る）。ボタンに選んだ中身、その下に「いま何回目か」と残りの回数を1行で */
+  function drawDots(){
+    const lab = { 1: "受け方", 2: "長さ", 3: "日時", 4: "確認" }, val = { 1: mode ? ML(mode) : "", 2: hset ? hours + "時間" : "", 3: pick.length ? pick.length + "日" : "", 4: "" };
+    form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.innerHTML = `<span>${lab[d]}</span><small>${val[d] || "—"}</small>`; });
+  }
   function drawLeft(){
-    const box = $("skLeft"); if (!me || step === 0) { box.innerHTML = ""; return; }
+    const box = $("skLeft"); drawDots(); if (!me || step === 0) { box.innerHTML = ""; return; }
     const L = liveLeft(), sp = split();
-    box.innerHTML = (L ? L.map((x, i) => `<span class="${x.left ? "" : "zero"}">${i ? "来月" : "今月"}（${monName(x.m)}）<b>あと<em>${x.left}</em>回</b></span>`).join("")
-      : `<span>追加（単発）<b>1回 ${yen(me.single)}</b></span>`)
-      + (sp && sp.tan ? `<span class="tan">追加（単発）<b><em>${sp.tan}</em>回</b></span>` : "");
+    let head;
+    if (step === 4) head = `<span class="nth"><small>決めた日時</small><b><em>${pick.length}</em>日（合計${totalH()}時間）</b></span>`;
+    else {
+      const t = cur || (day ? new Date(day + "T12:00:00+09:00").getTime() : (((me.slots || [])[0] || {}).s || Date.now())), x = nthFor(t);
+      head = `<span class="nth"><small>いま選んでいるのは</small><b>${x.n ? `<em>${x.n}</em>回目` : x.getsu ? `${monName(x.m)}の<em>${rng(x.a, x.b)}</em>回目<i>（全${x.of}回）</i>` : `<em class="t">追加</em>（単発）`}</b></span>`;
+    }
+    box.innerHTML = head + `<span class="lf">` + (L ? L.map((x, i) => `<span class="${x.left ? "" : "zero"}">${i ? "来月" : "今月"} あと<b>${x.left}</b>回</span>`).join("")
+      : `<span>追加（単発）1回 ${yen(me.single)}</span>`)
+      + (sp && sp.tan ? `<span class="tan">追加 <b>${sp.tan}</b>回</span>` : "") + `</span>`;
   }
 
   /* ---------- 時間の長さ ---------- */
@@ -235,20 +247,9 @@
     const g = canGetsu(base, start, ls, m, hours), c = count(base, start, ls, [m])[m];
     return { m, getsu: g, tan: hours - g, a: c.used + 1, b: c.used + g, of: c.base + c.carry };
   }
-  function drawCount(){
-    const el = $("skCount"), t = cur || (day ? new Date(day + "T12:00:00+09:00").getTime() : 0);
-    if (!t) { el.innerHTML = ""; return; }
-    const x = nthFor(t), done = pick.length ? `<small class="sk-did">決めた日時：${pick.length}日</small>` : "";
-    if (x.n) { el.innerHTML = `<small>いま選んでいるのは</small><div class="sk-big"><em>${x.n}</em><span>回目</span></div><small>追加（単発）1回 ${yen(me.single)}</small>${done}`; return; }
-    const num = rng(x.a, x.b).replace(/[・〜]/, c => `<i>${c}</i>`);
-    el.innerHTML = `<small>いま選んでいるのは</small>`
-      + (x.getsu ? `<div class="sk-big"><span class="m">${monName(x.m)}の</span><em>${num}</em><span>回目</span></div><small>${monName(x.m)}は全${x.of}回${hours > 1 ? `・この${hours}時間で${x.getsu}回分` : ""}${x.tan ? `　＋ 追加（単発）${x.tan}回` : ""}</small>`
-                 : `<div class="sk-big tan"><em>追加</em><span>（単発）</span></div><small>${monName(x.m)}の回数（全${x.of}回）は使い切っています。1回 ${yen(me.single)}</small>`) + done;
-  }
+  function drawCount(){ $("skCount").innerHTML = ""; drawLeft(); }   // 2026-11-05 夜：何回目は上の段に出す（大きな枠はやめた）
   /* いまの受け方と長さ（ここから変えられる。決めた日時は残る） */
-  function drawCond(){
-    $("skCond").innerHTML = `<span><small>いま選んでいる条件</small><b>${ML(mode)}・${hours}時間</b></span><button type="button" class="sk-chg" data-to="1">受け方を変える</button><button type="button" class="sk-chg" data-to="2">長さを変える</button>`;
-  }
+  function drawCond(){ $("skCond").innerHTML = ""; }   // 2026-11-05 夜：受け方・長さは上の段のボタンから変える
 
   function drawDays(){
     const list = avail(), by = {};
@@ -261,7 +262,11 @@
     else drawTimes(by[day] || []);
     drawCond(); drawPicked(); drawCount(); drawBar(); drawLeft();
     const on = days.querySelector(".on"); if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
+    fade();
   }
+  /* 日付の右に続きがあるときは、右の端を薄くして「まだある」とわかるように */
+  function fade(){ days.classList.toggle("more", days.scrollWidth - days.scrollLeft - days.clientWidth > 4); }
+  days.addEventListener("scroll", fade, { passive: true });
   function drawTimes(list){
     const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
     const ds = list.length ? dayKey(list[0].s) : "", seen = new Set(list.map(s => s.s));
@@ -292,7 +297,7 @@
     const fl = document.createElement("p"); fl.className = "sk-flash";
     fl.textContent = `✓ ${md(t)}（${wd(t)}）${hm(t)}〜${hm(t + hours * H)}（${ML(mode)}）を${x.n ? x.n + "回目" : x.getsu ? rng(x.a, x.b) + "回目" : "追加（単発）"}に決めました`;
     $("skCount").before(fl); setTimeout(() => fl.remove(), 2600);
-    $("skCount").classList.remove("pop"); void $("skCount").offsetWidth; $("skCount").classList.add("pop");
+    const nb = $("skLeft").querySelector(".nth"); if (nb) { nb.classList.remove("pop"); void nb.offsetWidth; nb.classList.add("pop"); }
   });
   $("skNext").addEventListener("click", () => go(4));
   $("skAdd").addEventListener("click", () => { const l = byT().slice(-1)[0]; if (l) { mode = l.mode; hours = l.hours; hset = true; } go(3); });
@@ -418,7 +423,7 @@
       + `<ol class="yk-picked">${list}</ol><p class="small">${parts}${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
       + (left.length ? `<p class="err">${esc(fail)}<br>次の日時は、まだ予約できていません：${left.map(p => esc(span(p.t, p.hours))).join("、")}</p>` : "")
       + `<button type="button" class="btn line" id="skAgain">予約のページに戻る</button>`;
-    form.hidden = true; $("skHome").hidden = true; el.hidden = false; pick = []; history.replaceState({ sk: 0 }, "");
+    form.hidden = true; $("skHome").hidden = true; el.hidden = false; pick = []; document.body.classList.remove("sk-flow"); history.replaceState({ sk: 0 }, "");
     el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
     $("skAgain").addEventListener("click", () => { pick = []; $("y_q").value = ""; $("skOk").checked = false; step = 0; demo ? go(0) : load(); window.scrollTo({ top: 0, behavior: "smooth" }); });
   }

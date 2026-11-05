@@ -2074,3 +2074,40 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 @media (hover:hover){ .yk-fix:hover{background:rgba(255,255,255,.14)} }
 .yk-wiz .send{width:100%}
 
+/* 2026-11-05 夜 生徒さんの予約ページ（北川くん）：予約の途中は大きな見出しを出さない／上の段（受け方・長さ・日時・確認＋何回目・残り）を画面の上に残す／
+   日付は右の端を見切れさせて続きがあるとわかるように */
+.sk-page.sk-flow .ykw>.sh{display:none}
+.sk-page.sk-flow .ykw{padding-top:calc(var(--head) + 20px)}
+.sk-page .sk-top{--fp:clamp(24px,3.4vw,44px);position:sticky;top:var(--head);z-index:6;display:grid;gap:8px;margin:calc(var(--fp) * -1) calc(var(--fp) * -1) 0;padding:14px var(--fp) 10px;border-radius:24px 24px 0 0;
+  background:var(--black);box-shadow:0 1px 0 var(--line),0 12px 20px -14px rgba(0,0,0,.9)}
+.sk-page .sk-nav{display:grid;grid-template-columns:auto minmax(0,1fr);flex-wrap:nowrap;gap:6px;align-items:stretch}
+.sk-page .sk-back{padding:0 8px 0 0;font-size:0;display:grid;place-items:center}
+.sk-page .sk-back::before{content:"←";font-size:20px;line-height:1}
+.sk-page .sk-dots button{min-height:48px;gap:4px;padding:6px 2px}
+.sk-page .sk-dots button::before{content:none}
+.sk-page .sk-dots button span{font-size:11px;font-weight:700;opacity:.75}
+.sk-page .sk-dots button small{font-size:12.5px;font-weight:800;line-height:1.1;white-space:nowrap}
+.sk-page .sk-dots button:disabled small{opacity:.6}
+.sk-page .sk-left{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:10px;min-height:30px}
+.sk-page .sk-left>span{padding:0;background:none;box-shadow:none;border-radius:0}
+.sk-page .sk-left .nth{display:grid;gap:1px;font-size:12px}
+.sk-page .sk-left .nth small{font-size:10.5px;color:var(--faint)}
+.sk-page .sk-left .nth b{font-size:13.5px;color:var(--ink);white-space:nowrap}
+.sk-page .sk-left .nth em{font:900 22px/1 var(--en);font-style:normal;color:var(--or-hi);margin:0 2px}
+.sk-page .sk-left .nth em.t{font:900 16px/1 var(--jp)}
+.sk-page .sk-left .nth i{font-style:normal;font-weight:500;font-size:11px;color:var(--sub);margin-left:2px}
+.sk-page .sk-left .nth.pop{animation:sk-pop .45s cubic-bezier(.2,.8,.3,1.3)}
+.sk-page .sk-left .lf{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 10px;font-size:11.5px;color:var(--sub);text-align:right}
+.sk-page .sk-left .lf span{display:inline;padding:0;border-radius:0;background:none;box-shadow:none;white-space:nowrap}
+.sk-page .sk-wiz{gap:16px}
+.sk-page .sk-count+.yk-days{margin-top:0}
+.sk-page .sk-left .lf b{font:800 15px/1 var(--en);color:var(--ink);margin:0 1px}
+.sk-page .sk-left .lf .zero b{color:var(--faint)} .sk-page .sk-left .lf .tan b{color:var(--or-hi)}
+.sk-page .sk-cond:empty,.sk-page .sk-count:empty{display:none}
+.sk-page .yk-when>.sk-flash{margin:0 0 4px}
+@media (max-width:820px){
+  .sk-page .sk-top{margin:-22px -18px 0;padding:12px 18px 10px}   /* スマホの form.f.yk の余白（22px 18px）に合わせる */
+  .sk-page .yk-day{width:calc((100% - 32px) / 4.4);min-width:60px}
+  .sk-page .yk-days.more{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
+}
+@media (prefers-reduced-motion:reduce){ .sk-page .sk-left .nth.pop{animation:none} }
