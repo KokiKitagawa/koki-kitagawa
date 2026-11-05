@@ -2111,3 +2111,8 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
   .sk-page .yk-days.more{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
 }
 @media (prefers-reduced-motion:reduce){ .sk-page .sk-left .nth.pop{animation:none} }
+/* 2026-11-05 体験の予約ページ：LINE から開いた人の「ご予約中の体験レッスン」（北川くん） */
+.yk-mine{display:grid;gap:4px;padding:20px 22px;margin:0 0 18px}
+.yk-mine .yk-lg{margin-bottom:0}
+.yk-mine .small{margin:10px 0 0}
+.yk-mine .sk-w{white-space:normal}

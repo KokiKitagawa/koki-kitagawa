@@ -22,7 +22,7 @@
 <link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/css/kk-design-system.css?v=69foca">
-<link rel="stylesheet" href="assets/css/site.css?v=146ckn">
+<link rel="stylesheet" href="assets/css/site.css?v=148mine">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5JD2YM6KF8"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date());var kkF={ig:"instagram",x:"x",yt:"youtube",tt:"tiktok",sp:"spotify"}[(new URLSearchParams(location.search).get("from")||"").toLowerCase()];gtag("config","G-5JD2YM6KF8",{page_location:location.origin+location.pathname+(kkF?"?utm_source="+kkF+"&utm_medium=social":""),page_referrer:document.referrer.split("?")[0]});
 document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href")||"",w=location.pathname;if(/line\.me/.test(h))gtag("event","line_click",{place:w});else if(/yoyaku\.html/.test(h))gtag("event","booking_page_click",{place:w});else if(/lesson\.html/.test(h))gtag("event","lesson_page_click",{place:w});},true);</script>
@@ -35,6 +35,8 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
   <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・<wbr>60分・<wbr>スタジオで<wbr>受ける<wbr>場合は、<wbr>ギターを<wbr>借りられます</small></div><div class="p">¥3,500<small>税込</small></div></div>
   <p class="yk-plan" id="ykPlan" hidden></p>
   <p class="yk-plan" id="ykLine" hidden></p>
+  <!-- 2026-11-05：LINE から開いた人に、いまの体験の予約とキャンセル（北川くん） -->
+  <section class="card yk-mine" id="ykMine" hidden aria-live="polite"></section>
 
   <div class="card yk-closed" id="ykClosed" hidden>
     <b>予約ページは、<wbr>まもなく<wbr>使えるようになります</b>
@@ -121,6 +123,6 @@ document.addEventListener("click",function(e){var a=e.target.closest&&e.target.c
 </main>
 <footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
 <script type="application/json" id="ykcfg">{"api":"https://script.google.com/macros/s/AKfycby5bDtbLyKAmUYFXvM5kCBlsdzIqFw126P8803WqGTCRkEivEgTSXqw3pechjk9ozQT/exec","fallback":"","plans":["月2回","月4回","月8回","単発"],"line":"https://line.me/R/oaMessage/@557brylm/"}</script>
-<script src="assets/js/yoyaku.js?v=1t8pd1r" defer></script>
+<script src="assets/js/yoyaku.js?v=1t9mine" defer></script>
 </body>
 </html>

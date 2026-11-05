@@ -38,6 +38,43 @@
     document.querySelector('label[for="y_mail"]').innerHTML = `メールアドレス<i class="opt-i">なくても大丈夫です</i>`;
   }
 
+  /* 2026-11-05：LINE から開いた人に、いまの体験の予約を見せる（ここからキャンセルできる）。予約があるあいだは、申し込みの画面は出さない
+     ?demo=1&mine=1 で見本 */
+  const mineBox = $("ykMine");
+  function drawMine(list){
+    if (!list.length) { mineBox.hidden = true; form.hidden = false; return; }
+    form.hidden = true; mineBox.hidden = false;
+    mineBox.innerHTML = `<div class="yk-lg">ご予約中の<wbr>体験レッスン</div><ol class="yk-picked sk-lessons">` + list.map(x => `<li class="sk-l" data-id="${esc(x.id)}">
+      <span class="chip ${x.state === "確定" ? "gr" : "or"}">${x.state === "確定" ? "確定" : "確定待ち"}</span>
+      <span class="sk-lt"><b><span class="sk-w">${esc(x.when)}（60分）</span></b><small>${esc(x.mode)}・${esc(x.place)}</small></span>
+      ${x.can ? `<button type="button" class="yk-chg" data-cx>キャンセル</button>` : ""}
+      <div class="sk-cx" ${x.can ? "hidden" : ""}>${x.can ? "" : `<p>キャンセルの<wbr>期限（3日前 23:59）を<wbr>過ぎています。<wbr>変更・<wbr>キャンセルは、<wbr>LINE の<wbr>トークで<wbr>ご連絡ください。</p>`}</div></li>`).join("")
+      + `</ol><p class="small">体験レッスンは、<wbr>はじめての方に<wbr>1回だけ<wbr>受けていただいています。<wbr>日時を<wbr>変えたいときは、<wbr>キャンセルしてから<wbr>選び直してください<wbr>（3日前 23:59 までは<wbr>無料）。</p>`;
+  }
+  if (lkey || (demo && /[?&]mine=1/.test(location.search))) {
+    const sample = () => { const t = Date.now() + 5 * 864e5; return { ok: true, list: [{ id: "D1", state: "確定", mode: "スタジオ", when: full(t - t % 3600e3), place: "部屋は前の日に決まります", can: true }] }; };
+    (demo ? Promise.resolve(sample()) : fetch(cfg.api + "?a=tme&l=" + encodeURIComponent(lkey), { cache: "no-store" }).then(r => r.json()))
+      .then(r => { if (r.ok) drawMine(r.list || []); }).catch(() => {});
+  }
+  mineBox.addEventListener("click", e => {
+    const li = e.target.closest(".sk-l"); if (!li) return;
+    const box = li.querySelector(".sk-cx");
+    if (e.target.closest("[data-cx]")) {
+      box.innerHTML = `<p>この体験レッスンを<wbr>キャンセルします。<wbr>お支払いは<wbr>ありません。</p><div class="sk-cxb"><button type="button" class="btn or sm" data-yes>キャンセルする</button><button type="button" class="btn line sm" data-no>やめる</button></div><p class="err" hidden></p>`;
+      box.hidden = false; return;
+    }
+    if (e.target.closest("[data-no]")) { box.hidden = true; return; }
+    const yes = e.target.closest("[data-yes]"); if (!yes) return;
+    yes.disabled = true; yes.textContent = "送っています…";
+    const p = demo ? new Promise(r => setTimeout(() => r({ ok: true, msg: "キャンセルしました（見本なので、実際には送っていません）。" }), 500))
+      : fetch(cfg.api, { method: "POST", body: JSON.stringify({ a: "tcancel", l: lkey, id: li.dataset.id }) }).then(r => r.json());
+    p.then(r => {
+      if (!r.ok) throw r;
+      mineBox.innerHTML = `<p class="sk-done">${esc(r.msg)}</p><p class="small">べつの<wbr>日時で<wbr>受けるときは、<wbr>下から<wbr>選び<wbr>直せます。</p>`;
+      form.hidden = false; fetchSlots();
+    }).catch(r => { const er = box.querySelector(".err"); er.textContent = (r && r.msg) || "うまくいきませんでした。もう一度お試しください。"; er.hidden = false; yes.disabled = false; yes.textContent = "キャンセルする"; });
+  });
+
   /* 空き枠を読む */
   function demoSlots(){
     const out = [], now = Date.now(), start = new Date(dayKey(now) + "T00:00:00+09:00").getTime();
