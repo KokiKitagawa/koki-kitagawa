@@ -119,7 +119,7 @@
   function drawSame(){
     const last = (me.lessons || []).filter(x => x.state !== "仮").slice(-1)[0], b = $("skSame");
     b.hidden = !last || last.hours > (me.max || 4);
-    if (!b.hidden) { b.dataset.mode = last.mode === "オンライン" ? "online" : "studio"; b.dataset.hours = last.hours; b.innerHTML = `前回と同じ<b>（${esc(last.mode)}・${last.hours}時間）</b>で日時を選ぶ`; }
+    if (!b.hidden) { b.dataset.mode = last.mode === "オンライン" ? "online" : "studio"; b.dataset.hours = last.hours; b.innerHTML = `<span>前回と同じ<wbr><b>（${esc(last.mode)}・${last.hours}時間）</b><wbr>で日時を選ぶ</span>`; }
   }
   $("skSame").addEventListener("click", e => { const b = e.currentTarget; mode = b.dataset.mode; hours = Number(b.dataset.hours); hset = true; cur = 0; syncMode(); go(3); });
   function syncMode(){ form.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === mode; }); }

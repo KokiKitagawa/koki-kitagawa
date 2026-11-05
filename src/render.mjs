@@ -379,7 +379,7 @@ export function buildOutputs(files){
       <div class="acc-grid">
         <div class="card acc-card"><i class="acc-pin">${PIN}</i><div>
           <span class="chip or">STUDIO</span><b class="acc-nm">${esc(STUDIO.name)}</b>
-          <p class="acc-way">${esc(STUDIO.way)}</p><p class="acc-ad">${esc(STUDIO.addr)}</p>
+          <p class="acc-way">${esc(STUDIO.way)}</p><p class="acc-ad">${STUDIO.addr.split(" ").map(t => `<span class="nw">${esc(t)}</span>`).join(" ")}</p>
           <ul class="acc-notes"><li>当日はレッスンの5分前に、4階の受付へお越しください</li><li>スタジオ代（1時間 約1,500円）は、当日スタジオでお支払いください</li></ul>
           <div class="acc-btns"><a class="btn or sm" href="${map}" target="_blank" rel="noopener">Googleマップで開く</a><a class="btn line sm" href="${STUDIO.site}" target="_blank" rel="noopener">スタジオのサイト</a></div>
         </div></div>

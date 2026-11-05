@@ -2049,3 +2049,12 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 .yk-times .opt span .yk-tag{white-space:nowrap}
 .sk-cond>span{flex:1 1 100%;margin:0}
 .sk-chg{flex:1 1 0}
+/* 2026-11-05 表示バグ直し（北川くん）：
+   ①生徒さんページ「前回と同じ（…）で日時を選ぶ」が3つに割れてボタンからはみ出した → 1つの文として折り返す
+   ②スタジオの住所が「オ／ルフェウスビル」の途中で折れた → 番地とビル名は、それぞれ途中で折らない
+   ③スタジオ名が .card b に負けて道順より小さくなっていた → 見出しの大きさに戻す */
+.sk-same{white-space:normal;line-height:1.45;padding:10px 22px;text-align:center}
+.sk-same>span{display:block}
+.acc-ad .nw{display:inline-block}
+.acc-card b.acc-nm{font-size:18px;font-weight:900;line-height:1.4}
+@media (max-width:820px){ .acc-card b.acc-nm{font-size:17px} }
