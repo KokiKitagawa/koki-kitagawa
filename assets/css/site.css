@@ -651,7 +651,7 @@ footer{background:var(--black)}
 .filters{scroll-margin-top:96px}
 /* スマホ：一覧を横にスワイプして絞り込みを切り替える。指についてくる */
 .fpage{touch-action:pan-y}
-.fpage.slide{transition:transform .2s ease,opacity .2s ease}
+.fpage.slide{transition:transform .2s ease}
 .swipe.fsw{margin:-8px 0 18px}
 details.acc>.in,details.open-card>.in,.faq details>p{overflow:hidden}
 /* ===== 語や単位の途中で折れないように ===== */

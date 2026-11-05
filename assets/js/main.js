@@ -50,7 +50,9 @@ const applyFilter = (g, b) => {
   const chips = [...g.querySelectorAll(".fchip")];
   chips.forEach(x => x.setAttribute("aria-pressed", x===b));
   const all = b.dataset.f==="ALL";
-  document.querySelectorAll(`#${g.dataset.grid} > li, #${g.dataset.grid}2 > li`).forEach(li => li.hidden = !(all || li.dataset.k===b.dataset.f));
+  document.querySelectorAll(`#${g.dataset.grid} > li, #${g.dataset.grid}2 > li`).forEach(li => { li.hidden = !(all || li.dataset.k===b.dataset.f);
+    /* 2026-11-05 北川くん：切り替えたときは、下からフワッと出さずにそのまま出す */
+    if(!li.hidden && li.classList.contains("rv") && !li.classList.contains("in")){ li.style.transition = "none"; li.style.transitionDelay = ""; li.classList.add("in", "settled"); void li.offsetWidth; li.style.transition = ""; } });
   const more = document.getElementById(g.dataset.grid + "More"), btn = more && document.querySelector(`.morebtn[data-more="${more.id}"]`);
   if(more){ if(!all){ if(!more.classList.contains("filtered")) more.dataset.was = more.classList.contains("open") ? "1" : ""; more.classList.add("filtered"); setMore(more, true); if(btn) btn.classList.add("filtered"); }
     else if(more.classList.contains("filtered")){ more.classList.remove("filtered"); if(btn) btn.classList.remove("filtered"); setMore(more, more.dataset.was === "1"); } }
@@ -64,9 +66,9 @@ document.querySelectorAll(".filters").forEach(g => g.addEventListener("click", e
 /* スマホ：一覧を横にスワイプすると、すべて → 次の種類 → … と切り替わる（2026-11-05 北川くん）。レコードをつかんでいるときは切り替えない */
 document.querySelectorAll(".filters[data-grid]").forEach(g => {
   const pg = document.querySelector(`.fpage[data-swipe="${g.dataset.grid}"]`); if(!pg) return;
-  let x0 = 0, y0 = 0, t0 = 0, dx = 0, axis = "", busy = false;
+  let x0 = 0, y0 = 0, t0 = 0, dx = 0, axis = "";
   const chips = () => [...g.querySelectorAll(".fchip")], cur = () => chips().findIndex(x => x.getAttribute("aria-pressed")==="true");
-  pg.addEventListener("touchstart", e => { if(busy || e.touches.length > 1 || e.target.closest(".vinyl, .morebtn")){ axis = "x-no"; return; }
+  pg.addEventListener("touchstart", e => { if(e.touches.length > 1 || e.target.closest(".vinyl, .morebtn")){ axis = "x-no"; return; }
     x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = performance.now(); dx = 0; axis = ""; pg.classList.remove("slide"); }, {passive:true});
   pg.addEventListener("touchmove", e => { if(axis === "x-no" || axis === "y") return;
     const mx = e.touches[0].clientX - x0, my = e.touches[0].clientY - y0;
@@ -74,19 +76,14 @@ document.querySelectorAll(".filters[data-grid]").forEach(g => {
     e.preventDefault(); dx = mx;
     const i = cur(), edge = (dx > 0 && i === 0) || (dx < 0 && i === chips().length - 1);
     const d = edge ? dx * .22 : dx * .55;
-    pg.style.transform = `translateX(${d}px)`; pg.style.opacity = String(1 - Math.min(.45, Math.abs(d) / 600)); }, {passive:false});
+    pg.style.transform = `translateX(${d}px)`; }, {passive:false});
   const end = () => { if(axis !== "x"){ axis = ""; return; } axis = "";
     const i = cur(), n = chips().length, fast = Math.abs(dx) / Math.max(1, performance.now() - t0) > .45;
     const j = (Math.abs(dx) > 60 || (fast && Math.abs(dx) > 24)) ? i + (dx < 0 ? 1 : -1) : i;
-    pg.classList.add("slide");
-    if(j === i || j < 0 || j >= n){ pg.style.transform = ""; pg.style.opacity = ""; return; }
-    busy = true; const dir = dx < 0 ? -1 : 1;
-    pg.style.transform = `translateX(${dir * 70}px)`; pg.style.opacity = "0";
-    setTimeout(() => { pg.classList.remove("slide"); applyFilter(g, chips()[j]);
-      pg.style.transform = `translateX(${-dir * 70}px)`;
-      if(g.getBoundingClientRect().top < 0) g.scrollIntoView({block:"start"});
-      void pg.offsetWidth; pg.classList.add("slide"); pg.style.transform = ""; pg.style.opacity = "";
-      setTimeout(() => { busy = false; }, 220); }, 180);
+    if(j === i || j < 0 || j >= n){ pg.classList.add("slide"); pg.style.transform = ""; return; }
+    /* 2026-11-05 北川くん：フェードはやめて、次の一覧がそのまま出てくる */
+    pg.classList.remove("slide"); pg.style.transform = ""; applyFilter(g, chips()[j]);
+    if(g.getBoundingClientRect().top < 0) g.scrollIntoView({block:"start"});
   };
   pg.addEventListener("touchend", end); pg.addEventListener("touchcancel", end);
 });
