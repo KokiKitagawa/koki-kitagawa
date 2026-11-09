@@ -148,8 +148,9 @@
      ====================================================================== */
   const C = n => n >= 1 && n <= 20 ? String.fromCharCode(0x245F + n) : `(${n})`;
   const circ = (a, b) => b <= a ? C(a) : b === a + 1 ? C(a) + C(b) : C(a) + "〜" + C(b);
-  const FIELDS = ["mode", "hours", "day", "time"];
-  const FT = { mode: "対面かオンラインか", hours: "レッスンの長さ", day: "日にち", time: "はじまりの時間" };
+  /* 2026-11-10：長さの欄はなくして、時計で塗った時間の数＝長さ（北川くん） */
+  const FIELDS = ["mode", "day", "time"];
+  const FT = { mode: "対面かオンラインか", day: "日にち", time: "時間" };
   const maxDays = () => (me && me.days) || 12;
   let tkM = 0, labMap = {};   // 見ている月（0＝今月、1＝来月）／チケットの番号（確定の画面でも同じ番号を出す）
   const months = () => me.months.slice(0, 2).map(x => x.m);
@@ -159,7 +160,8 @@
   const others = () => ed && ed.orig ? pick.filter(p => p !== ed.orig) : pick;
   function all(){
     const o = others().map(p => Object.assign({}, p));
-    if (ed) o.push({ t: ed.t || monthEnd(ed.m), mode: ed.mode || "studio", hours: ed.hours || 1, ed: true });
+    if (ed) { const ph = pend && pend.f === "time" && pend.v ? pend : null;   // 時計で選んでいる途中も、番号（④⑤）をすぐ変える
+      o.push({ t: (ph ? ph.v : ed.t) || monthEnd(ed.m), mode: ed.mode || "studio", hours: (ph ? ph.h : ed.hours) || 1, ed: true }); }
     return o;
   }
 
@@ -223,9 +225,8 @@
       const nx = sheet || nextField(), cell = (f, v, ph) => `<button type="button" class="fc${v ? " v" : ""}${nx === f ? " on" : ""}" data-f="${f}"${!canOpen(f) ? " aria-disabled=\"true\"" : ""}>${v || ph}</button>`;
       return `<li class="tkt ed${x.tan && !x.getsu ? " add" : ""}"><div class="tk-r"><div class="st"><b>${lab}</b><i>${en}</i></div><div class="fs">`
         + cell("mode", ed.mode ? ML(ed.mode) : "", `<span class="ph2">対面/<br>オンライン</span>`)
-        + cell("hours", ed.hours ? ed.hours + "時間" : "", "長さ")
         + cell("day", ed.day ? `${md(T12(ed.day))}<small>${wd(T12(ed.day))}</small>` : "", "日にち")
-        + cell("time", ed.t ? hm(ed.t) : "", "時間")
+        + cell("time", ed.t ? `<span class="tc">${hm(ed.t)}<small>${ed.hours}時間</small></span>` : "", "時間")
         + `</div><button type="button" class="tk-x" data-edx aria-label="${ed.orig ? "直すのをやめる" : "このチケットをやめる"}">×</button></div></li>`;
     };
     const out = [];
@@ -279,7 +280,7 @@
   function startEdit(m, orig){
     if (!orig && pick.length >= maxDays()) { flash(`1回の申し込みで選べるのは ${maxDays()}日までです。いったん申し込んでから、続けて予約してください。`, true); return; }
     const p = orig ? { mode: orig.mode, hours: orig.hours } : pref();
-    ed = { m, mode: p.mode, hours: p.hours, day: orig ? dayKey(orig.t) : "", t: orig ? orig.t : 0, orig: orig || null };
+    ed = { m, mode: p.mode, hours: orig ? orig.hours : 0, day: orig ? dayKey(orig.t) : "", t: orig ? orig.t : 0, orig: orig || null };
     tkM = Math.max(0, months().indexOf(m));
     hideErr($("ykErr"));
     draw(); openSheet(nextField() || "day");   // 直すときは日にちから（「この回を取り消す」もここ）
@@ -301,7 +302,7 @@
   /* ---------- 空いている日にち・時間 ---------- */
   /* 選んだ長さだけ続けて空いている「始まり」の時間。ほかの書いたチケットと重なるものは除く（受け方がちがうときは前後に移動の時間） */
   function starts(){
-    const mode = ed.mode, hours = ed.hours, os = others();
+    const mode = ed.mode, hours = 1, os = others();   // 1時間ずつ（続けるかは時計で）
     const ok = new Set((me.slots || []).filter(s => mode === "online" ? s.on !== 0 : s.st).map(s => s.s));
     return (me.slots || []).filter(s => { for (let i = 0; i < hours; i++) if (!ok.has(s.s + i * H)) return false; return true; })
       .map(s => s.s).filter(t => !os.some(p => { const g = p.mode === mode ? 0 : MOVE; return t < p.t + p.hours * H + g && p.t < t + hours * H + g; }));
@@ -310,8 +311,8 @@
   /* 前の欄を変えたら、合わなくなった日にち・時間だけ空に戻す */
   function fix(){
     const by = byDay();
-    if (ed.day && !by[ed.day]) { ed.day = ""; ed.t = 0; }
-    if (ed.t && !(by[ed.day] || []).includes(ed.t)) ed.t = 0;
+    if (ed.day && !by[ed.day]) { ed.day = ""; ed.t = 0; ed.hours = 0; }
+    if (ed.t) { const ok = new Set(by[ed.day] || []); for (let i = 0; i < ed.hours; i++) if (!ok.has(ed.t + i * H)) { ed.t = 0; ed.hours = 0; break; } }
   }
 
   /* ---------- 下から出る選ぶところ（シート） ---------- */
@@ -319,41 +320,85 @@
   /* 2026-11-10：どの欄も「決定」を押すまで決まらない（北川くん）。押した選択肢は pend に入れておく */
   let pend = null;
   const V = f => pend && pend.f === f ? pend.v : f === "time" ? ed.t : ed[f];
-  /* 時計（SVG）。12等分＝1時間ずつ。空いている「はじまり」だけ押せる */
+  /* 時計（SVG）。12等分＝1時間ずつ。2026-11-10：押すと塗る・もう一度押すと消す・となりを押すとのびる・なぞると続けて塗れる（北川くん） */
+  const CK = { c: 150, R1: 74, R2: 138, P: Math.PI };
+  CK.RM = (CK.R1 + CK.R2) / 2;
+  const ckAng = h => (h % 12) / 12 * 2 * CK.P - CK.P / 2, ckPt = (a, r) => `${(CK.c + r * Math.cos(a)).toFixed(2)} ${(CK.c + r * Math.sin(a)).toFixed(2)}`;
+  const ckArc = (h0, n) => { const a0 = ckAng(h0) + .02, a1 = ckAng(h0) + n * 2 * CK.P / 12 - .02; return `M${ckPt(a0, CK.RM)}A${CK.RM} ${CK.RM} 0 ${n > 6 ? 1 : 0} 1 ${ckPt(a1, CK.RM)}`; };
+  const selT = () => pend && pend.f === "time" ? pend.v : ed.t, selH = () => pend && pend.f === "time" ? pend.h : ed.hours;
   function clock(d0, ts, os){
-    const sel = V("time");
-    const c = 150, R1 = 74, R2 = 138, RM = (R1 + R2) / 2, P = Math.PI, day0 = d0 - 12 * H;
-    const ang = h => (h % 12) / 12 * 2 * P - P / 2, pt = (a, r) => `${(c + r * Math.cos(a)).toFixed(2)} ${(c + r * Math.sin(a)).toFixed(2)}`;
-    const sec = (h, g) => { const a0 = ang(h) + g, a1 = ang(h) + 2 * P / 12 - g;
-      return `M${pt(a0, R2)}A${R2} ${R2} 0 0 1 ${pt(a1, R2)}L${pt(a1, R1)}A${R1} ${R1} 0 0 0 ${pt(a0, R1)}Z`; };
-    const arc = (h0, n) => { const a0 = ang(h0) + .02, a1 = ang(h0) + n * 2 * P / 12 - .02;
-      return `M${pt(a0, RM)}A${RM} ${RM} 0 ${n > 6 ? 1 : 0} 1 ${pt(a1, RM)}`; };
-    const hrOf = t => (t - day0) / H, set = new Set(ts);
+    const { c, R1, R2, RM, P } = CK, day0 = d0 - 12 * H, set = new Set(ts);
+    const sec = h => { const a0 = ckAng(h) + .012, a1 = ckAng(h) + 2 * P / 12 - .012;
+      return `M${ckPt(a0, R2)}A${R2} ${R2} 0 0 1 ${ckPt(a1, R2)}L${ckPt(a1, R1)}A${R1} ${R1} 0 0 0 ${ckPt(a0, R1)}Z`; };
     let g = "";
-    /* 文字盤の目もり */
     for (let i = 0; i < 60; i++) { const a = i / 60 * 2 * P - P / 2, big = i % 5 === 0; g += `<line class="tk${big ? " b" : ""}" x1="${(c + (big ? 141 : 143) * Math.cos(a)).toFixed(2)}" y1="${(c + (big ? 141 : 143) * Math.sin(a)).toFixed(2)}" x2="${(c + 147 * Math.cos(a)).toFixed(2)}" y2="${(c + 147 * Math.sin(a)).toFixed(2)}"/>`; }
-    /* 12の区切り：空いている＝押せる、書いた回＝しま模様、ほかは暗く */
     for (let h = 12; h < 24; h++) { const t = day0 + h * H, dn = os.some(p => p.t <= t && t < p.t + p.hours * H), av = set.has(t);
-      g += `<path class="sc${av ? " av" : dn ? " dn" : ""}" d="${sec(h, .012)}"${av ? ` data-v="${t}" role="button" tabindex="0" aria-label="${h}時から"` : ""}/>`; }
-    /* 書いた回（同じ日） */
-    os.forEach(p => { g += `<path class="ow" d="${arc(hrOf(p.t), p.hours)}"/>`; });
-    /* 選んだ時間を塗る */
-    if (sel) g += `<path class="fl" pathLength="100" d="${arc(hrOf(sel), ed.hours)}"/>`;
-    for (let h = 12; h < 24; h++) { const t = day0 + h * H, on = sel && t >= sel && t < sel + ed.hours * H, a = ang(h) + P / 12;
-      g += `<text class="hn${set.has(t) ? " av" : ""}${on ? " on" : ""}" x="${(c + RM * Math.cos(a)).toFixed(2)}" y="${(c + RM * Math.sin(a)).toFixed(2)}">${h}<tspan class="tl">〜</tspan></text>`; }   // 「16〜」＝ここからはじまる（北川くん）
-    const mid = sel ? `<text class="c1" x="${c}" y="${c - 14}">${hm(sel)}</text><text class="c2" x="${c}" y="${c + 12}">〜${hm(sel + ed.hours * H)}</text><text class="c3" x="${c}" y="${c + 34}">${ed.hours}時間</text>`
-      : `<text class="c3" x="${c}" y="${c - 6}">昼12時から</text><text class="c3" x="${c}" y="${c + 14}">夜12時まで</text>`;
-    return `<div class="sh-clock"><svg viewBox="0 0 300 300" aria-label="時計">${g}<circle class="ci" cx="${c}" cy="${c}" r="${R1 - 8}"/>${mid}</svg></div>`
-      + `<p class="sh-leg"><span class="la">空いている時間</span><span class="lf">選んだ時間（${ed.hours}時間）</span>${os.length ? `<span class="lw">書いた回</span>` : ""}</p>`;
+      g += `<path class="sc${av ? " av" : dn ? " dn" : ""}" d="${sec(h)}"${av ? ` data-t="${t}" role="button" tabindex="0" aria-label="${h}時から"` : ""}/>`; }
+    os.forEach(p => { g += `<path class="ow" d="${ckArc((p.t - day0) / H, p.hours)}"/>`; });
+    g += `<path class="fl" pathLength="100" d=""/>`;
+    for (let h = 12; h < 24; h++) { const t = day0 + h * H, a = ckAng(h) + P / 12;
+      g += `<text class="hn${set.has(t) ? " av" : ""}" data-t="${t}" x="${(c + RM * Math.cos(a)).toFixed(2)}" y="${(c + RM * Math.sin(a)).toFixed(2)}">${h}<tspan class="tl">〜</tspan></text>`; }   // 「16〜」（北川くん）
+    return `<div class="sh-clock"><svg viewBox="0 0 300 300" aria-label="時計" data-d0="${day0}">${g}<circle class="ci" cx="${c}" cy="${c}" r="${R1 - 8}"/>`
+      + `<text class="c1" x="${c}" y="${c - 14}"></text><text class="c2" x="${c}" y="${c + 12}"></text><text class="c3 c3a" x="${c}" y="${c + 34}"></text></svg></div>`
+      + `<p class="sh-leg"><span class="la">空いている時間</span><span class="lf">選んだ時間</span>${os.length ? `<span class="lw">書いた回</span>` : ""}</p>`;
   }
+  /* 塗るところ・真ん中の文字・決定ボタンを、作り直さずに書きかえる（なぞっている間も切れないように） */
+  function paintClock(first){
+    const svg = shC.querySelector(".sh-clock svg"), t = selT(), n = selH();
+    if (svg) {
+      const day0 = +svg.dataset.d0, fl = svg.querySelector(".fl");
+      fl.setAttribute("d", t && n ? ckArc((t - day0) / H, n) : "");
+      if (!first) fl.classList.add("still");
+      svg.querySelectorAll("text.hn").forEach(x => { const v = +x.dataset.t; x.classList.toggle("on", !!t && v >= t && v < t + n * H); });
+      const [c1, c2, c3] = ["c1", "c2", "c3a"].map(k => svg.querySelector("." + k));
+      if (t && n) { c1.textContent = hm(t); c2.textContent = "〜" + hm(t + n * H); c3.textContent = `${n}時間`; }
+      else { c1.textContent = ""; c2.textContent = ""; c3.textContent = "押す・なぞる"; }
+    } else shC.querySelectorAll(".sh-t[data-t]").forEach(x => { const v = +x.dataset.t; x.classList.toggle("on", !!t && v >= t && v < t + n * H); });
+    const ok = shC.querySelector(".sh-ok");
+    if (ok) { ok.disabled = !(t && n); ok.innerHTML = t && n ? `<span>${hm(t)}〜${hm(t + n * H)}</span>（${n}時間）で決定` : "時間を選んでください"; }
+    drawList();
+  }
+  function setSel(t, n){ pend = { f: "time", v: n > 0 ? t : 0, h: n > 0 ? n : 0 }; paintClock(); }
+  const okHours = () => new Set(byDay()[ed.day] || []), maxH = () => me.max || 4;
+  /* 押したとき：空いていれば塗る／塗ったはしなら消す／となりならのばす／離れていれば選び直し */
+  function tapHour(t){
+    let s0 = selT(), n = selH(); const mx = maxH();
+    if (!s0 || !n) { s0 = t; n = 1; }
+    else if (t >= s0 && t < s0 + n * H) {
+      if (t === s0 + (n - 1) * H) n--; else if (t === s0) { s0 += H; n--; } else n = (t - s0) / H;   // まん中なら、そこから後ろを消す
+    }
+    else if (t === s0 + n * H) { if (n < mx) n++; else return bump(); }
+    else if (t === s0 - H) { if (n < mx) { s0 = t; n++; } else return bump(); }
+    else { s0 = t; n = 1; }
+    setSel(s0, n);
+  }
+  function bump(){ const el = shC.querySelector(".sh-clock"); if (el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); } flash(`続けて選べるのは ${maxH()}時間までです`, true); }
+  /* なぞる：押したところから、指のあるところまで（空いていない時間・上限の手前まで） */
+  let drag = null;
+  shC.addEventListener("pointerdown", e => {
+    const sc = e.target.closest(".sh-clock .sc.av"); if (!sc || sheet !== "time") return;
+    drag = { a: +sc.dataset.t, moved: false, id: e.pointerId };
+    try { e.target.closest("svg").setPointerCapture(e.pointerId); } catch (_) {}
+    e.preventDefault();
+  });
+  shC.addEventListener("pointermove", e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const u = document.elementFromPoint(e.clientX, e.clientY), sc = u && u.closest && u.closest(".sh-clock .sc.av");
+    if (!sc) return;
+    const b = +sc.dataset.t; if (b === drag.a && !drag.moved) return;
+    drag.moved = true;
+    const ok = okHours(), dir = b >= drag.a ? 1 : -1; let end = drag.a;
+    while (end !== b && ok.has(end + dir * H) && Math.abs(end + dir * H - drag.a) / H < maxH()) end += dir * H;
+    setSel(Math.min(drag.a, end), Math.abs(end - drag.a) / H + 1);
+  });
+  const dragEnd = e => { if (!drag || e.pointerId !== drag.id) return; const d = drag; drag = null; if (!d.moved && e.type === "pointerup") tapHour(d.a); };
+  shC.addEventListener("pointerup", dragEnd); shC.addEventListener("pointercancel", dragEnd);
   function shContent(f){
     $("skShT").textContent = FT[f];
     let h = "";
     if (f === "mode") h = `<div class="sh-mo">`
       + `<button type="button" class="${V("mode") === "studio" ? "on" : ""}" data-v="studio"><b>対面<em>小岩のスタジオ</em></b><small>スタジオ代 1時間 約1,500円（当日）。お部屋は前の日に北川が予約します</small></button>`
       + `<button type="button" class="${V("mode") === "online" ? "on" : ""}" data-v="online"><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし</small></button></div>`;
-    else if (f === "hours") h = `<div class="sh-hr">` + Array.from({ length: me.max || 4 }, (_, i) => i + 1).map(n => `<button type="button" class="${V("hours") === n ? "on" : ""}" data-v="${n}"><b>${n}時間</b>${me.base ? `<small>${n}回分</small>` : ""}</button>`).join("") + `</div>`
-      + (me.base ? `<p class="sh-note">月の回数は、1時間で1回分使います</p>` : "");
     else if (f === "day") {
       /* 2026-11-10：カレンダーをおしゃれに（空いている日は枠の数を点で・今日は輪・書いた日は小さな札・選んだ日はオレンジ） */
       const by = byDay(), m = ed.m, y = +m.slice(0, 4), mo = +m.slice(5, 7), dn = new Date(Date.UTC(y, mo, 0)).getUTCDate();
@@ -362,26 +407,27 @@
       for (let d = 1; d <= dn; d++) { const k = `${m}-${String(d).padStart(2, "0")}`, w = (w0 + d - 1) % 7, c = (by[k] || []).length, cl = `w${w}${k === today ? " td" : ""}`;
         cells += c ? `<button type="button" class="${cl}${V("day") === k ? " on" : ""}${mark.has(k) ? " mk" : ""}" data-v="${k}" aria-label="${mo}月${d}日 ${c}枠"><b>${d}</b><i>${"<s></s>".repeat(Math.min(c, 4))}</i></button>`
                    : `<span class="no ${cl}"><b>${d}</b></span>`; }
-      h = `<div class="sh-cap"><p class="sh-mon"><b>${mo}</b>月</p><p class="sh-sub">${ML(ed.mode)}・${ed.hours}時間<br>空いている日 <em>${nd}</em>日</p></div><div class="sh-cal">${cells}</div>`
+      h = `<div class="sh-cap"><p class="sh-mon"><b>${mo}</b>月</p><p class="sh-sub">${ML(ed.mode)}<br>空いている日 <em>${nd}</em>日</p></div><div class="sh-cal">${cells}</div>`
         + `<p class="sh-leg"><span><s></s>空いている枠</span><span class="lt">今日</span>${mark.size ? `<span class="lm">書いた日</span>` : ""}</p>`
-        + (nd ? "" : `<p class="sh-none">${monName(m)}は、${ed.hours > 1 ? ed.hours + "時間続けて" : ""}空いている日がありません。${ed.hours > 1 ? "長さを短くするか、" : ""}${ed.mode === "studio" ? "オンラインにするか、" : ""}${tkM === 0 && months()[1] ? "来月のチケットから選ぶか、" : ""}北川にご相談ください。</p>`);
+        + (nd ? "" : `<p class="sh-none">${monName(m)}は、空いている日がありません。${ed.mode === "studio" ? "オンラインにするか、" : ""}${tkM === 0 && months()[1] ? "来月のチケットから選ぶか、" : ""}北川にご相談ください。</p>`);
     } else {
       /* 時間：昼・夕方・夜に分けて、3列のカードで */
       const ts = byDay()[ed.day] || [], os = others().filter(p => dayKey(p.t) === ed.day), hr = t => J(t).getUTCHours();
       const list = ts.map(t => ({ t })).concat(os.map(p => ({ t: p.t, p }))).sort((a, b) => a.t - b.t);
       const parts = [["昼", 0, 16], ["夕方", 16, 18], ["夜", 18, 24]].map(([n, a, b]) => [n, list.filter(x => hr(x.t) >= a && hr(x.t) < b)]).filter(x => x[1].length);
-      const d0 = T12(ed.day), cap = `<div class="sh-cap"><p class="sh-mon"><b>${md(d0)}</b><small>（${wd(d0)}）</small></p><p class="sh-sub">${ML(ed.mode)}・${ed.hours}時間<br>はじまりの時間を押してください</p></div>`;
+      const d0 = T12(ed.day), cap = `<div class="sh-cap"><p class="sh-mon"><b>${md(d0)}</b><small>（${wd(d0)}）</small></p><p class="sh-sub">${ML(ed.mode)}<br>押す・なぞると塗れます<br>続けて${maxH()}時間まで</p></div>`;
       /* 2026-11-10：時計を塗りつぶす形（北川くんの案）。昼12時〜夜24時を1周に。押したところから、レッスンの長さの分がオレンジで塗られる。
          朝（12時より前）の枠がある日は、前の3列のボタンにする */
       if (list.every(x => hr(x.t) >= 12)) h = cap + clock(d0, ts, os);
       else h = cap + parts.map(([n, xs]) => `<div class="sh-tg"><p class="sh-tl">${n}</p><div class="sh-ts">` + xs.map(x => x.p
             ? `<span class="sh-t dn"><b>${hm(x.t)}</b><small>書いた回</small></span>`
-            : `<button type="button" class="sh-t${V("time") === x.t ? " on" : ""}" data-v="${x.t}"><b>${hm(x.t)}</b><small>〜${hm(x.t + ed.hours * H)}</small></button>`).join("") + `</div></div>`).join("");
+            : `<button type="button" class="sh-t" data-t="${x.t}"><b>${hm(x.t)}</b><small>〜${hm(x.t + H)}</small></button>`).join("") + `</div></div>`).join("");
     }
-    const v = V(f), lab = !v ? "" : f === "mode" ? ML(v) : f === "hours" ? v + "時間" : f === "day" ? `${md(T12(v))}（${wd(T12(v))}）` : `${hm(v)}〜${hm(v + ed.hours * H)}`;
+    const v = V(f), lab = !v ? "" : f === "mode" ? ML(v) : f === "day" ? `${md(T12(v))}（${wd(T12(v))}）` : "";
     h += `<div class="sh-okw"><button type="button" class="btn or sh-ok" data-ok${v ? "" : " disabled"}>${v ? `<span>${lab}</span>で決定` : "選んでください"}</button></div>`;
     if (ed.orig) h += `<button type="button" class="sh-rm" data-rmd>この回を取り消す</button>`;
     shC.innerHTML = h;
+    if (f === "time") paintClock(true);
   }
   let shTimer = 0;
   function openSheet(f){
@@ -429,17 +475,17 @@
       if (!ed || !V(sheet)) return;
       if (pend) { const v = pend.v;
         if (sheet === "mode") { ed.mode = v; fix(); }
-        else if (sheet === "hours") { ed.hours = v; fix(); }
-        else if (sheet === "day") { if (ed.day !== v) ed.t = 0; ed.day = v; }
-        else ed.t = v; }
+        else if (sheet === "day") { if (ed.day !== v) { ed.t = 0; ed.hours = 0; } ed.day = v; }
+        else { ed.t = v; ed.hours = pend.h; } }
       pend = null; afterPick(); return;
     }
+    if (sheet === "time") { const b = e.target.closest(".sh-t[data-t]"); if (b && ed) tapHour(+b.dataset.t); return; }   // 時計は pointer で（ここでは何もしない）
     const b = e.target.closest("[data-v]"); if (!b || !ed) return;
     const v = b.dataset.v;
-    pend = { f: sheet, v: sheet === "hours" || sheet === "time" ? Number(v) : v };
+    pend = { f: sheet, v };
     const pn = sh.querySelector(".sk-shp"), top = pn.scrollTop; shContent(sheet); pn.scrollTop = top;   // 押したものに印（時計は塗られる）
   });
-  sh.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches("[data-v][role=button]")) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent("click", { bubbles: true })); } });
+  sh.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".sc[data-t]")) { e.preventDefault(); tapHour(+e.target.dataset.t); } });
   function afterPick(ms){
     const nx = nextField();
     if (nx) { setTimeout(() => openSheet(nx), ms || 140); return; }
