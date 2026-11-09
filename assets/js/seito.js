@@ -127,24 +127,41 @@
   $("skMore").addEventListener("click", () => { $("skOk").checked = true; go(1); });
   $("skGo").addEventListener("click", () => go(1));
 
-  /* ---------- 予約中のレッスン ---------- */
+  /* ---------- 予約中のレッスン＝チケット（2026-11-10 北川くん） ----------
+     月ごとに、その月の回数の分だけチケットを並べる。予約済みは日時・対面/オンライン・場所、未定は点線のグレーで「予約する」。
+     もう終わった回（使った回）は「使用済み」に1枚でまとめる。2時間のレッスンは「①②」のように2回分。追加（単発）は「追加」のチケット */
+  const C = n => n >= 1 && n <= 20 ? String.fromCharCode(0x245F + n) : `(${n})`;
+  const circ = (a, b) => b <= a ? C(a) : b === a + 1 ? C(a) + C(b) : C(a) + "〜" + C(b);
+  let tkM = 0;   // 見ている月（0＝今月、1＝来月）
   function drawList(){
-    const ls = me.lessons || [];
-    $("skListW").hidden = !ls.length;
-    $("skList").innerHTML = ls.map(x => {
-      const w = t => `<span class="sk-w">${span(t, x.hours)}</span>`;
-      const when = x.state === "仮" ? `<em>第1希望</em>${w(x.s)}${x.s2 ? `<em>第2希望</em>${w(x.s2)}` : ""}` : w(x.s);
-      const parts = [x.getsu ? `月謝 ${x.getsu}回分` : "", x.tan ? `追加（単発）${x.tan}回` : ""].filter(Boolean).join("＋");
-      const room = !x.room ? "" : x.room === "取れず" ? "<i>お部屋が取れませんでした（LINE かメールのお知らせをご覧ください）</i>" : /^(未手配|手配中2?)$/.test(x.room) ? "お部屋は前の日に決まります" : esc(x.room);
-      return `<li class="sk-l" data-id="${esc(x.id)}" data-free="${x.free ? 1 : 0}" data-state="${esc(x.state)}" data-getsu="${x.getsu || 0}" data-tan="${x.tan || 0}">
-        <span class="chip ${x.state === "確定" ? "gr" : "or"}">${x.state === "確定" ? "確定" : "確定待ち"}</span>
-        <span class="sk-lt"><b>${when}</b><small>${esc(MS(x.mode))}・${x.hours}時間・${parts}${room ? `<br>${room}` : ""}</small></span>
-        ${x.past ? "" : `<button type="button" class="yk-chg" data-cx>キャンセル</button>`}
-        <div class="sk-cx" hidden></div></li>`;
-    }).join("");
+    const ls = me.lessons || [], ms = me.months.slice(0, 2);
+    if (tkM >= ms.length) tkM = 0;
+    $("skTabs").innerHTML = ms.map((x, i) => `<button type="button" role="tab" aria-selected="${i === tkM}" class="${i === tkM ? "on" : ""}" data-tm="${i}">${monName(x.m)}<small>${me.base ? `あと${x.left}回` : "単発"}</small></button>`).join("");
+    const mo = ms[tkM], en = monName(mo.m), mine = ls.filter(x => monKey(x.s) === mo.m);
+    const tk = (cls, lab, b, sub, ac, data) => `<li class="tkt ${cls}"${data || ""}><div class="tk-r"><div class="st"><b>${lab}</b><i>${en}</i></div><div class="bd"><b>${b}</b><small>${sub}</small></div><div class="ac">${ac}</div></div><div class="sk-cx" hidden></div></li>`;
+    const one = (x, lab, cls) => {
+      const room = !x.room ? "" : x.room === "取れず" ? "お部屋が取れませんでした" : /^(未手配|手配中2?)$/.test(x.room) ? "お部屋は前の日に決まります" : x.room;
+      const sub = [x.state === "仮" ? "確定待ち" : "", MS(x.mode), x.hours + "時間", x.getsu && x.tan ? `追加${x.tan}回` : "", room].filter(Boolean).join("・");
+      const when = `${md(x.s)}（${wd(x.s)}）${hm(x.s)}〜`;   // 終わりの時間は下の行の「○時間」でわかる（幅に入りきらないので）
+      return tk(cls + (x.state === "仮" ? " wait" : ""), lab, when, esc(sub), x.past ? `<span class="tk-now">受講中</span>` : `<button type="button" class="yk-chg" data-cx>キャンセル</button>`,
+        ` data-id="${esc(x.id)}" data-free="${x.free ? 1 : 0}" data-state="${esc(x.state)}" data-getsu="${x.getsu || 0}" data-tan="${x.tan || 0}"`);
+    };
+    const out = [];
+    if (me.base) {
+      const listed = mine.reduce((a, x) => a + (x.getsu || 0), 0), total = Math.max(mo.used || 0, listed) + mo.left, done = Math.max(0, (mo.used || 0) - listed);
+      let n = 0;
+      if (done) { out.push(tk("done", circ(1, done), "使用済み", "受けたレッスン（1回分のキャンセルもふくむ）", "")); n = done; }
+      mine.filter(x => x.getsu).forEach(x => { out.push(one(x, circ(n + 1, n + x.getsu), "on")); n += x.getsu; });
+      for (; n < total; n++) out.push(tk("free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
+    }
+    mine.filter(x => !x.getsu).forEach(x => out.push(one(x, "追加", "add")));
+    if (!out.length) out.push(`<li class="tk-none">${monName(mo.m)}の予約はまだありません</li>`);
+    $("skList").innerHTML = out.join("");
   }
+  $("skTabs").addEventListener("click", e => { const b = e.target.closest("[data-tm]"); if (!b) return; tkM = Number(b.dataset.tm); drawList(); });
   $("skList").addEventListener("click", e => {
-    const li = e.target.closest(".sk-l"); if (!li) return;
+    if (e.target.closest("[data-go]")) { go(1); return; }   // 未定のチケットの「予約する」
+    const li = e.target.closest("li[data-id]"); if (!li) return;
     const box = li.querySelector(".sk-cx");
     if (e.target.closest("[data-cx]")) {
       const free = li.dataset.free === "1", g = +li.dataset.getsu, t = +li.dataset.tan;
@@ -307,13 +324,13 @@
     const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
     $("skPickedL").hidden = !pick.length;
     picked.innerHTML = byT().map(({ t, mode: m, hours: h }) => { const x = at(t), lab = !x || x.nth == null ? monName(monKey(t)) : nthText(x);
-      const tag = !x ? `<span class="chip gr">${monName(monKey(t))}</span>` : x.getsu ? `<span class="chip gr">月謝</span>` : `<span class="chip or">追加</span>`;
+      const tag = !x ? `<span class="chip gr">${monName(monKey(t))}</span>` : x.getsu ? `<span class="chip gr tkc">${circ(x.nth + 1, x.nth + x.getsu)}</span>` : `<span class="chip or">追加</span>`;
       return `<li>${tag}<b>${span(t, h)}<small class="sk-nth">${ML(m)}・${h}時間・${lab}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
   }
   function drawConf(){
     const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
     $("skConf").innerHTML = byT().map(({ t, mode: m, hours: h }) => { const x = at(t);
-      return `<li><span class="chip ${x && !x.getsu ? "or" : "gr"}">${x && !x.getsu ? "追加" : "月謝"}</span><b>${span(t, h)}<small class="sk-nth">${m === "studio" ? "対面（小岩のスタジオ）" : "オンライン"}・${h}時間${x && x.nth != null ? "・" + nthText(x) : ""}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
+      return `<li><span class="chip ${x && !x.getsu ? "or" : "gr"}${x && x.getsu && x.nth != null ? " tkc" : ""}">${!x ? monName(monKey(t)) : !x.getsu ? "追加" : x.nth != null ? circ(x.nth + 1, x.nth + x.getsu) : monName(x.m)}</span><b>${span(t, h)}<small class="sk-nth">${m === "studio" ? "対面（小岩のスタジオ）" : "オンライン"}・${h}時間${x && x.nth != null ? "・" + nthText(x) : ""}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
   }
   [picked, $("skConf")].forEach(el => el.addEventListener("click", e => {
     const rm = e.target.closest("[data-rm]"); if (!rm) return;
@@ -361,7 +378,7 @@
       return `${monName(m)}：${[g ? `月謝 ${g}回分` : "", t ? `追加 ${t}回` : ""].filter(Boolean).join("＋")}`; }).join("　")}</p>` : "";
     const mix = new Set(s.items.map(x => x.mode + x.hours)).size > 1;
     box.innerHTML = `<small>この予約（${s.items.length}日・合計${totalH()}時間${mix ? "" : `・${ML(s.items[0].mode)}・${s.items[0].hours}時間ずつ`}）</small><div class="sk-sp">`
-      + (s.getsu ? `<span class="chip gr">月謝</span><b>${s.getsu}回分</b>` : "")
+      + (s.getsu ? `<span class="chip gr">月の回数</span><b>${s.getsu}回分</b>` : "")
       + (s.getsu && s.tan ? `<i>＋</i>` : "")
       + (s.tan ? `<span class="chip or">追加（単発）</span><b>${s.tan}回・${yen(me.single * s.tan)}</b>` : "") + `</div>` + per
       + (s.tan ? `<p>${me.base ? "月の回数を使い切るので、" : ""}${s.tan}回は追加の単発レッスン（1回 ${yen(me.single)}・税込）になります。お支払いは、現金かカード（Square）です。</p>` : "");

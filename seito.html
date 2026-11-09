@@ -17,7 +17,7 @@
 <link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/css/kk-design-system.css?v=69foca">
-<link rel="stylesheet" href="assets/css/site.css?v=7wx6m0">
+<link rel="stylesheet" href="assets/css/site.css?v=5hrf27">
 </head>
 <body class="doc yk-page sk-page">
 <header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><span class="yk-back">生徒さん<wbr>専用</span></div></header>
@@ -36,15 +36,13 @@
     <div class="sk-step" data-step="0" id="skHome">
       <div class="card sk-me">
         <div class="sk-hi"><span class="chip or" id="skPlan"></span><b id="skName"></b></div>
-        <div class="sk-months" id="skMonths"></div>
+        <div class="sk-months" id="skMonths" hidden></div>
+        <!-- 2026-11-10：月の回数を「チケット」で並べる（予約済み＝日時入り、未定＝点線のグレー）。北川くん -->
+        <div class="sk-tk" id="skTk"><div class="sk-tabs" id="skTabs" role="tablist" aria-label="月"></div><ol class="sk-tks" id="skList"></ol></div>
         <p class="sk-out" id="skOut" hidden><b>今月の<wbr>回数は、<wbr>おしまいです。</b>追加の<wbr>単発レッスン<wbr>（60分 ¥9,000）なら、<wbr>このまま<wbr>予約できます。<button type="button" class="btn line sm" id="skMore">追加で<wbr>単発レッスンを<wbr>予約する</button></p>
         <button type="button" class="btn or sk-go" id="skGo">レッスンを<wbr>予約する</button>
         <button type="button" class="btn line sk-same" id="skSame" hidden></button>
       </div>
-      <section class="sk-list" id="skListW" hidden>
-        <div class="yk-lg">予約中の<wbr>レッスン</div>
-        <ol class="yk-picked sk-lessons" id="skList"></ol>
-      </section>
     </div>
 
     <form class="f yk sk-wiz" id="yk" novalidate hidden>
@@ -116,6 +114,6 @@
 </main>
 <footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
 <script type="application/json" id="ykcfg">{"api":"https://script.google.com/macros/s/AKfycby5bDtbLyKAmUYFXvM5kCBlsdzIqFw126P8803WqGTCRkEivEgTSXqw3pechjk9ozQT/exec","single":9000}</script>
-<script src="assets/js/seito.js?v=10a7tf7" defer></script>
+<script src="assets/js/seito.js?v=mp8bxd" defer></script>
 </body>
 </html>

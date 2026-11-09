@@ -881,15 +881,13 @@ ${css}
     <div class="sk-step" data-step="0" id="skHome">
       <div class="card sk-me">
         <div class="sk-hi"><span class="chip or" id="skPlan"></span><b id="skName"></b></div>
-        <div class="sk-months" id="skMonths"></div>
+        <div class="sk-months" id="skMonths" hidden></div>
+        <!-- 2026-11-10：月の回数を「チケット」で並べる（予約済み＝日時入り、未定＝点線のグレー）。北川くん -->
+        <div class="sk-tk" id="skTk"><div class="sk-tabs" id="skTabs" role="tablist" aria-label="月"></div><ol class="sk-tks" id="skList"></ol></div>
         <p class="sk-out" id="skOut" hidden><b>今月の回数は、おしまいです。</b>追加の単発レッスン（60分 ¥${yen(site.lessonPlans.single.price)}）なら、このまま予約できます。<button type="button" class="btn line sm" id="skMore">追加で単発レッスンを予約する</button></p>
         <button type="button" class="btn or sk-go" id="skGo">レッスンを予約する</button>
         <button type="button" class="btn line sk-same" id="skSame" hidden></button>
       </div>
-      <section class="sk-list" id="skListW" hidden>
-        <div class="yk-lg">予約中のレッスン</div>
-        <ol class="yk-picked sk-lessons" id="skList"></ol>
-      </section>
     </div>
 
     <form class="f yk sk-wiz" id="yk" novalidate hidden>
