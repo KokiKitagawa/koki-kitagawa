@@ -2404,3 +2404,10 @@ body.sk-hasbar{padding-bottom:84px}
 .sh-clock.bump{animation:kk-bump .3s}
 @keyframes kk-bump{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .sh-t.on{background:linear-gradient(150deg,#ff9a4d,#ff6a00);box-shadow:0 6px 18px rgba(255,116,23,.45)}
+/* 2026-11-10：iPhone の Safari で「申し込む前」のところが右にはみ出した（北川くん）。
+   ページ全体の word-break:keep-all は、<wbr> のない JS の文だと日本語の途中で折れなくなるので、予約の部分だけふつうに折る */
+.sk-page .sk-pre,.sk-page .sk-sh,.sk-page .sk-me>.sk-flash,.sk-page .yk-done,.sk-page .tkt{word-break:normal;overflow-wrap:anywhere;line-break:strict}
+.sk-page .sk-pre>*,.sk-page .sk-pre .sk-split,.sk-page .sk-me{min-width:0;max-width:100%;box-sizing:border-box}
+.sk-page .sk-pre .sk-ok span{flex:1;min-width:0}
+.sk-page .sk-q summary,.sk-page .sk-rules summary{overflow-wrap:anywhere}
+.sk-page .sk-q summary i{display:inline-block}
