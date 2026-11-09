@@ -879,6 +879,16 @@ ${css}
   <div id="skMain" hidden>
     <!-- 2026-11-04：1画面ずつ進む形に（0 はじめ → 1 受け方 → 2 時間 → 3 日時を1回ずつ決める → 4 確認）。北川くん -->
     <div class="sk-step" data-step="0" id="skHome">
+      <!-- 2026-11-10：LINE がまだの人は、最初にこの画面だけ（つながったら自動で次へ。「LINE を使わない」を押した人には、そのスマホでは出さない）。北川くん -->
+      <div class="card sk-gate" id="skGate" hidden>
+        <p class="sk-gn" id="skGateName"></p>
+        <h3>まず LINE を<wbr>つなぎましょう</h3>
+        <p>レッスンの確定や、前の日のお知らせが LINE に届くようになります。最初の1回だけです。</p>
+        <ol class="sk-gs"><li>下のボタンを押すと、LINE が開きます</li><li>入っている文を、そのまま送ってください</li><li>このページに戻ると、自動で次へ進みます</li></ol>
+        <a class="sk-lnb" id="skGateBtn" href="#" target="_blank" rel="noopener"><span>LINE</span>LINE を開く</a>
+        <p class="sk-gw" id="skGateWait" hidden>LINE で送ったら、このページに戻ってきてください。つながったか確かめています…</p>
+        <button type="button" class="sk-skip" id="skSkip">LINE を使わない（メールで受け取る）</button>
+      </div>
       <div class="card sk-me">
         <div class="sk-hi"><span class="chip or" id="skPlan"></span><b id="skName"></b></div>
         <div class="sk-months" id="skMonths" hidden></div>

@@ -95,11 +95,39 @@
       if (r.cnt) { const c = r.cnt, st = count(c.base, c.start, c.ls, r.months.map(x => x.m));
         // 来月に回した分は、今月の残りから引く（実際に月謝で予約できる数）
         r.months = r.months.map(x => Object.assign({}, x, st[x.m], { left: canGetsu(c.base, c.start, c.ls, x.m, st[x.m].left) })); }
+      if (demo && gateWait) r.lineLink = "";   // 見本：戻ってきたら、つながったことにする
+      const linked = gateWait && !r.lineLink;
       me = r; $("skLoad").hidden = true; $("skMain").hidden = false; drawMe(); drawSame(); drawList(); drawHours();
+      if (linked) { gateWait = false; const f = document.createElement("p"); f.className = "sk-flash sk-gok"; f.textContent = "✓ LINE とつながりました。お知らせは LINE に届きます。"; document.querySelector("#skHome .sk-me").prepend(f); setTimeout(() => f.remove(), 5000); }
       if (first) { first = false; history.replaceState({ sk: 0 }, ""); if (qs.get("go") === "yoyaku") go(1); else go(0, true); } else go(step === 4 && !pick.length ? 3 : step, true);
     }).catch(() => bad("読み込めませんでした", "時間をおいてもう一度開いてください。うまくいかないときは、北川にご連絡ください。"));
   }
   if (!demo && (!cfg.api || !key)) { bad(); return; }
+
+  /* ---------- 最初の画面「まず LINE をつなぎましょう」（2026-11-10 北川くん） ----------
+     LINE がまだの人（me.lineLink がある人）にだけ出す。LINE で送ってページに戻ると、読み直してつながったか確かめる（見ている間は4秒ごと、2分まで）。
+     「LINE を使わない」を押したら、そのスマホでは次から出さない（localStorage） */
+  const SKIP = "kkLineSkip:" + (key || "demo");
+  let gateSkip = false, gateWait = false, gateTry = 0, gateTimer = 0;
+  try { gateSkip = localStorage.getItem(SKIP) === "1"; } catch (e) {}
+  function drawGate(){
+    const on = !!(me && me.lineLink) && !gateSkip && step === 0, card = document.querySelector("#skHome .sk-me");
+    $("skGate").hidden = !on; if (card) card.hidden = on;
+    if (step === 0) $("skNotes").hidden = on;
+    if (on) { $("skGateName").textContent = me.name + " 様"; $("skGateBtn").href = me.lineLink; $("skGateWait").hidden = !gateWait; }
+  }
+  function gateCheck(){
+    if (!gateWait || document.hidden) return;
+    if (++gateTry > 30) { clearInterval(gateTimer); return; }
+    load();
+  }
+  $("skGateBtn").addEventListener("click", () => {
+    gateWait = true; gateTry = 0; $("skGateWait").hidden = false;
+    clearInterval(gateTimer); gateTimer = setInterval(() => { if (!gateWait) clearInterval(gateTimer); else gateCheck(); }, 4000);
+  });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && gateWait) setTimeout(gateCheck, 600); });
+  $("skSkip").addEventListener("click", () => { gateSkip = true; gateWait = false; clearInterval(gateTimer); try { localStorage.setItem(SKIP, "1"); } catch (e) {} drawGate(); window.scrollTo(0, 0); });
+
   load();
 
   /* ---------- 上のカード（お名前・残りの回数） ---------- */
@@ -113,7 +141,7 @@
     /* LINE がまだの人に「LINE でお知らせを受け取る」（押すと LINE が開き、文を送るだけで自動でつながる） */
     let ln = $("skLine");
     if (!ln) { ln = document.createElement("div"); ln.id = "skLine"; ln.className = "sk-line"; $("skOut").before(ln); }
-    ln.hidden = !me.lineLink;
+    ln.hidden = true;   // 2026-11-10：最初の画面（skGate）に移した
     if (me.lineLink) ln.innerHTML = `<div><b>お知らせを LINE で受け取る</b><small>ボタンを押すと LINE が開きます。入っている文を、そのまま送ってください。自動でつながります。</small></div>`
       + `<a class="sk-lnb" href="${esc(me.lineLink)}" target="_blank" rel="noopener"><span>LINE</span>LINE を開く</a>`;
   }
@@ -190,6 +218,7 @@
     step = n;
     document.body.classList.toggle("sk-flow", n > 0);   // 予約の途中は、大きな見出しを出さない（2026-11-05 夜）
     $("skHome").hidden = n !== 0; $("skNotes").hidden = n !== 0; form.hidden = n === 0; $("ykDone").hidden = true;
+    drawGate();
     form.querySelectorAll(".sk-step").forEach(x => { x.hidden = Number(x.dataset.step) !== n; });
     form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.className = d === n ? "on" : reach(d) ? "pa" : ""; b.disabled = !reach(d); if (d === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
     if (n === 1) syncMode();
