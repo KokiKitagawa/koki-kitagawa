@@ -877,7 +877,7 @@ ${css}
   </div>
 
   <div id="skMain" hidden>
-    <!-- 2026-11-04：1画面ずつ進む形に（0 はじめ → 1 受け方 → 2 時間 → 3 日時を1回ずつ決める → 4 確認）。北川くん -->
+    <!-- 2026-11-10：1画面目のチケットに書きこんで予約する形に（前の1画面ずつ進む形はやめた）。北川くん -->
     <div class="sk-step" data-step="0" id="skHome">
       <!-- 2026-11-10：LINE がまだの人は、最初にこの画面だけ（つながったら自動で次へ。「LINE を使わない」を押した人には、そのスマホでは出さない）。北川くん -->
       <div class="card sk-gate" id="skGate" hidden>
@@ -894,63 +894,36 @@ ${css}
         <div class="sk-months" id="skMonths" hidden></div>
         <!-- 2026-11-10：月の回数を「チケット」で並べる（予約済み＝日時入り、未定＝点線のグレー）。北川くん -->
         <div class="sk-tk" id="skTk"><div class="sk-tabs" id="skTabs" role="tablist" aria-label="月"></div><ol class="sk-tks" id="skList"></ol></div>
+        <!-- 2026-11-10：チケットに書きこむ予約。書いた回（申し込み前）があるときだけ出す。北川くん -->
+        <div class="sk-pre" id="skPre" hidden>
+          <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>
+          <label class="sk-ok" id="skOkW" hidden><input type="checkbox" id="skOk"><span>追加（単発）のレッスンとして申し込みます</span></label>
+          <p class="err" id="skOkErr" hidden></p>
+          <details class="sk-q"><summary>練習したい曲・伝えたいこと<i>なくても大丈夫です</i></summary><textarea id="y_q" class="sm" placeholder="例：〇〇の「△△」のソロ" aria-label="練習したい曲・伝えたいこと"></textarea></details>
+          <details class="sk-rules"><summary>キャンセル・回数・料金のきまり</summary><dl class="yk-brief" aria-label="申し込む前に">
+            <dt>キャンセル</dt><dd>3日前 23:59 までは無料（その回は次の月まで使えます）。それより後は1回分</dd>
+            <dt>月の回数</dt><dd>使わなかった回は、次の月まで使えます</dd>
+            <dt>追加（単発）</dt><dd>回数を使い切ったあとは 1回 ¥${yen(site.lessonPlans.single.price)}</dd>
+            <dt>スタジオ代</dt><dd>対面は 1時間 約1,500円（当日）</dd>
+          </dl></details>
+          <p class="err" id="ykErr" hidden></p>
+        </div>
         <p class="sk-out" id="skOut" hidden><b>今月の回数は、おしまいです。</b>追加の単発レッスン（60分 ¥${yen(site.lessonPlans.single.price)}）なら、このまま予約できます。<button type="button" class="btn line sm" id="skMore">追加で単発レッスンを予約する</button></p>
         <button type="button" class="btn or sk-go" id="skGo">レッスンを予約する</button>
-        <button type="button" class="btn line sk-same" id="skSame" hidden></button>
       </div>
     </div>
 
-    <form class="f yk sk-wiz" id="yk" novalidate hidden>
-      <div class="sk-top"><!-- 2026-11-05 夜：画面の上に残る（受け方・長さ・何回目・残りの回数）。北川くん -->
-      <div class="sk-nav">
-        <button type="button" class="sk-back" id="skBack">← 戻る</button>
-        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1"><span class="d2">対面/<br>オンライン</span></button></li><li><button type="button" data-d="2">長さ</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
-      </div>
-      <div class="sk-left" id="skLeft" aria-live="polite"></div>
-      </div>
+    <!-- 申し込む（書いた回があるとき、画面の下に残る） -->
+    <div class="sk-bar2" id="skBar" hidden><button type="button" class="btn or" id="ykSend"></button></div>
 
-      <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>対面か<wbr>オンラインか、<wbr>選んでください</legend>
-        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>対面<em>小岩のスタジオ</em></b><small>スタジオ代 1時間 約1,500円（当日）<br>お部屋は前の日に北川が予約します（どこも取れなければ、オンラインか別の日を選べます。回数は減りません）</small></span></label>
-        <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし</small></span></label>
-        <p class="err" hidden></p>
-      </fieldset>
-
-      <fieldset class="sk-step opts sk-hours" data-step="2"><legend><span class="yn">2</span>レッスンの長さを選んでください</legend><p class="sk-unit">月の回数は、<b>1時間で1回分</b>使います（2時間なら2回分）</p><span id="skHours"></span></fieldset>
-
-      <div class="sk-step yk-when" id="ykWhen" data-step="3">
-        <div class="sk-cond" id="skCond"></div>
-        <div class="sk-count" id="skCount" aria-live="polite"></div>
-        <div class="yk-days" id="ykDays" role="tablist" aria-label="日付"></div>
-        <div class="yk-times" id="ykTimes"></div>
-        <p class="err" id="ykWhenErr" hidden></p>
-        <div class="sk-bar">
-          <button type="button" class="btn or sk-dec" id="skDec" disabled>時間を選んでください</button>
-          <p class="sk-hint" id="skHint" hidden>ほかの日も足すときは、上の日付から選んでください</p>
-          <button type="button" class="btn or sk-next" id="skNext" hidden></button>
-        </div>
-        <div class="yk-lg sk-pl" id="skPickedL" hidden>決めた日時</div>
-        <ol class="yk-picked" id="ykPicked"></ol>
-        <p class="small yk-lead">対面は2日後から、オンラインは翌日から、来月の終わりまで選べます。</p>
+    <!-- 下から出る選ぶところ（対面/オンライン・長さ・日にち・時間） -->
+    <div class="sk-sh" id="skSh" hidden>
+      <div class="sk-shb" data-shx></div>
+      <div class="sk-shp" role="dialog" aria-modal="true" aria-labelledby="skShT">
+        <div class="sk-shh"><b id="skShT"></b><button type="button" class="sk-shx" data-shx aria-label="閉じる">×</button></div>
+        <div class="sk-shc" id="skShC"></div>
       </div>
-
-      <div class="sk-step" data-step="4">
-        <div class="yk-lg"><span class="yn">4</span>この内容でよろしいですか</div>
-        <ol class="yk-picked sk-conf" id="skConf"></ol>
-        <div class="sk-adds"><button type="button" class="btn line sm" id="skAdd">＋ 同じ内容で足す</button><button type="button" class="btn line sm" id="skAdd2">＋ 内容を変えて足す</button></div>
-        <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>
-        <label class="sk-ok" id="skOkW" hidden><input type="checkbox" id="skOk"><span>追加（単発）のレッスンとして申し込みます</span></label>
-        <p class="err" id="skOkErr" hidden></p>
-        <div><label for="y_q">練習したい曲・伝えたいこと<i class="opt-i">なくても大丈夫です</i></label><textarea id="y_q" class="sm" placeholder="例：〇〇の「△△」のソロ"></textarea></div>
-        <details class="sk-rules"><summary>キャンセル・回数・料金のきまり</summary><dl class="yk-brief" aria-label="申し込む前に">
-          <dt>キャンセル</dt><dd>3日前 23:59 までは無料（その回は次の月まで使えます）。それより後は1回分</dd>
-          <dt>月の回数</dt><dd>使わなかった回は、次の月まで使えます</dd>
-          <dt>追加（単発）</dt><dd>回数を使い切ったあとは 1回 ¥${yen(site.lessonPlans.single.price)}</dd>
-          <dt>スタジオ代</dt><dd>対面は 1時間 約1,500円（当日）</dd>
-        </dl></details>
-        <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
-        <p class="err" id="ykErr" hidden></p>
-      </div>
-    </form>
+    </div>
 
     <div class="card yk-done" id="ykDone" hidden role="status" tabindex="-1"></div>
 

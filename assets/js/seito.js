@@ -8,7 +8,9 @@
      いま何回目を選んでいるかを大きく出す。残りの回数は選ぶたびに変わる。?go=yoyaku で受け方の画面から開く（LINE のメニュー）。
    2026-11-05：上の「受け方・時間・日時・確認」を押して移れる。スタジオとオンラインを混ぜたり、日ごとに長さを変えたりできる
      （決めた日時は {t, mode, hours} で持つ。送るときは、日付の早い順に、受け方と長さが同じ続きごとに分けて送る＝サーバーと同じ数え方）。
-     「1回に何時間」をやめて「レッスンの長さ（1時間で1回分）」に。「前回と同じ」で日時の画面へ。 */
+     「1回に何時間」をやめて「レッスンの長さ（1時間で1回分）」に。「前回と同じ」で日時の画面へ。
+   2026-11-10：1画面ずつ進む形をやめて、チケットに書きこむ形に（未定のチケットを押す → 対面/オンライン・長さ・日にち・時間を
+     下から出るシートで選ぶ → 「申し込み前」のチケット → 下の「○回分を申し込む」でまとめて申し込む）。北川くん */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
@@ -16,7 +18,6 @@
   const demo = qs.get("demo") === "1", demoOut = qs.get("out") === "1";
   const key = (qs.get("k") || "").trim();
   const H = 3600e3, TZ = "Asia/Tokyo", W = ["日","月","火","水","木","金","土"];
-  const form = $("yk"), days = $("ykDays"), times = $("ykTimes"), picked = $("ykPicked");
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
   const yen = n => "¥" + Number(n).toLocaleString("ja-JP");
   const J = t => new Date(t + 9 * H);
@@ -29,8 +30,8 @@
   const span = (t, h) => `${full(t)}〜${hm(t + h * H)}`;
   const monName = m => Number(m.slice(5, 7)) + "月";
 
-  let me = null, mode = "", hours = 1, hset = false, day = "", pick = [], cur = 0, step = 0, first = true;
-  /* pick は [{ t, mode, hours }]。受け方がちがうレッスンの間は、移動の時間（コード.gs の 設定.移動の分）をあける */
+  let me = null, pick = [], ed = null, sheet = "", lastPref = null, step = 0, first = true;
+  /* pick は [{ t, mode, hours }]（書き終わった「申し込み前」の回）。受け方がちがうレッスンの間は、移動の時間（コード.gs の 設定.移動の分）をあける */
   const MOVE = 60 * 60e3, ML = m => m === "online" ? "オンライン" : "対面", MS = s => s === "スタジオ" ? "対面" : s;   // 2026-11-10：画面では「対面」（裏側は「スタジオ」のまま）
   const rng = (a, b) => a === b ? `${a}` : b === a + 1 ? `${a}・${b}` : `${a}〜${b}`;
   const byT = () => pick.slice().sort((a, b) => a.t - b.t), at0 = t => pick.find(p => p.t === t);
@@ -97,9 +98,9 @@
         r.months = r.months.map(x => Object.assign({}, x, st[x.m], { left: canGetsu(c.base, c.start, c.ls, x.m, st[x.m].left) })); }
       if (demo && gateWait) r.lineLink = "";   // 見本：戻ってきたら、つながったことにする
       const linked = gateWait && !r.lineLink;
-      me = r; $("skLoad").hidden = true; $("skMain").hidden = false; drawMe(); drawSame(); drawList(); drawHours();
+      me = r; $("skLoad").hidden = true; $("skMain").hidden = false; drawMe(); if (ed) fix(); draw(); drawGate();
       if (linked) { gateWait = false; const f = document.createElement("p"); f.className = "sk-flash sk-gok"; f.textContent = "✓ LINE とつながりました。お知らせは LINE に届きます。"; document.querySelector("#skHome .sk-me").prepend(f); setTimeout(() => f.remove(), 5000); }
-      if (first) { first = false; history.replaceState({ sk: 0 }, ""); if (qs.get("go") === "yoyaku") go(1); else go(0, true); } else go(step === 4 && !pick.length ? 3 : step, true);
+      if (first) { first = false; history.replaceState({ sk: 0 }, ""); if (qs.get("go") === "yoyaku" && !(me.lineLink && !gateSkip)) startFirst(); }
     }).catch(() => bad("読み込めませんでした", "時間をおいてもう一度開いてください。うまくいかないときは、北川にご連絡ください。"));
   }
   if (!demo && (!cfg.api || !key)) { bad(); return; }
@@ -128,67 +129,331 @@
   document.addEventListener("visibilitychange", () => { if (!document.hidden && gateWait) setTimeout(gateCheck, 600); });
   $("skSkip").addEventListener("click", () => { gateSkip = true; gateWait = false; clearInterval(gateTimer); try { localStorage.setItem(SKIP, "1"); } catch (e) {} drawGate(); window.scrollTo(0, 0); });
 
-  load();
 
-  /* ---------- 上のカード（お名前・残りの回数） ---------- */
+  /* ---------- 上のカード（お名前） ---------- */
   function drawMe(){
     $("skName").textContent = me.name + " 様";
     $("skPlan").textContent = me.plan;
-    $("skMonths").innerHTML = me.months.slice(0, 2).map((x, i) => me.base
-      ? `<div class="sk-m${x.left ? "" : " zero"}"><small>${i ? "来月" : "今月"}（${monName(x.m)}）</small><b>あと<em>${x.left}</em>回</b><i>${x.carry ? `${x.base}回＋${i ? "今月から" : "先月から"}${x.carry}回` : `${x.base}回のうち`}</i></div>`
-      : `<div class="sk-m"><small>${i ? "来月" : "今月"}（${monName(x.m)}）</small><b>単発で予約</b><i>1回 ${yen(me.single)}</i></div>`).join("");
-    $("skOut").hidden = !(me.base && me.months[0].left === 0);
-    /* LINE がまだの人に「LINE でお知らせを受け取る」（押すと LINE が開き、文を送るだけで自動でつながる） */
-    let ln = $("skLine");
-    if (!ln) { ln = document.createElement("div"); ln.id = "skLine"; ln.className = "sk-line"; $("skOut").before(ln); }
-    ln.hidden = true;   // 2026-11-10：最初の画面（skGate）に移した
-    if (me.lineLink) ln.innerHTML = `<div><b>お知らせを LINE で受け取る</b><small>ボタンを押すと LINE が開きます。入っている文を、そのまま送ってください。自動でつながります。</small></div>`
-      + `<a class="sk-lnb" href="${esc(me.lineLink)}" target="_blank" rel="noopener"><span>LINE</span>LINE を開く</a>`;
+    $("skOut").hidden = true;   // 2026-11-10：回数を使い切ったら「追加」のチケットを出す
+    const ln = $("skLine"); if (ln) ln.hidden = true;
   }
-  function drawSame(){
-    const last = (me.lessons || []).filter(x => x.state !== "仮").slice(-1)[0], b = $("skSame");
-    b.hidden = !last || last.hours > (me.max || 4);
-    if (!b.hidden) { b.dataset.mode = last.mode === "オンライン" ? "online" : "studio"; b.dataset.hours = last.hours; b.innerHTML = `<span>前回と同じ<wbr><b>（${esc(MS(last.mode))}・${last.hours}時間）</b><wbr>で日時を選ぶ</span>`; }
-  }
-  $("skSame").addEventListener("click", e => { const b = e.currentTarget; mode = b.dataset.mode; hours = Number(b.dataset.hours); hset = true; cur = 0; syncMode(); go(3); });
-  function syncMode(){ form.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === mode; }); }
-  $("skMore").addEventListener("click", () => { $("skOk").checked = true; go(1); });
-  $("skGo").addEventListener("click", () => go(1));
 
-  /* ---------- 予約中のレッスン＝チケット（2026-11-10 北川くん） ----------
-     月ごとに、その月の回数の分だけチケットを並べる。予約済みは日時・対面/オンライン・場所、未定は点線のグレーで「予約する」。
-     もう終わった回（使った回）は「使用済み」に1枚でまとめる。2時間のレッスンは「①②」のように2回分。追加（単発）は「追加」のチケット */
+  /* ======================================================================
+     チケットに書きこむ予約（2026-11-10 北川くん）
+     未定のチケットを押すと、そのチケットの中に「対面/オンライン・長さ・日にち・時間」の4つの欄が横一列で出る。
+     欄を押すと画面の下から選ぶところ（シート）が出て、選ぶと閉じて次の欄へ。4つ書けたら「申し込み前」のチケットになる。
+     何枚か書いて、下の「○回分を申し込む」でまとめて申し込む。
+     ed＝いま書いているチケット { m: 月, mode, hours, day, t, orig: 直している申し込み前の回（新しいときは null） }
+     pick＝書き終わった「申し込み前」の回 [{ t, mode, hours }]
+     ====================================================================== */
   const C = n => n >= 1 && n <= 20 ? String.fromCharCode(0x245F + n) : `(${n})`;
   const circ = (a, b) => b <= a ? C(a) : b === a + 1 ? C(a) + C(b) : C(a) + "〜" + C(b);
-  let tkM = 0;   // 見ている月（0＝今月、1＝来月）
+  const FIELDS = ["mode", "hours", "day", "time"];
+  const FT = { mode: "対面かオンラインか", hours: "レッスンの長さ", day: "日にち", time: "はじまりの時間" };
+  const maxDays = () => (me && me.days) || 12;
+  let tkM = 0, labMap = {};   // 見ている月（0＝今月、1＝来月）／チケットの番号（確定の画面でも同じ番号を出す）
+  const months = () => me.months.slice(0, 2).map(x => x.m);
+  const monthEnd = m => new Date(nextM(m) + "-01T00:00:00+09:00").getTime() - 60e3;
+
+  /* いま書いているチケットも、数えるときは1回として入れる（何回目か・残りの回数がすぐ変わるように） */
+  const others = () => ed && ed.orig ? pick.filter(p => p !== ed.orig) : pick;
+  function all(){
+    const o = others().map(p => Object.assign({}, p));
+    if (ed) o.push({ t: ed.t || monthEnd(ed.m), mode: ed.mode || "studio", hours: ed.hours || 1, ed: true });
+    return o;
+  }
+
+  /* ---------- 月謝と追加（単発）の分け方（早い日から順に、その月の回数を使う。足りない分は追加。正しい数はサーバーが数え直す） ---------- */
+  function split(list){
+    list = (list || pick).slice().sort((a, b) => a.t - b.t);
+    if (!list.length || !me) return null;
+    let items;
+    if (me.cnt) {
+      const { base, start } = me.cnt; let ls = me.cnt.ls.slice();
+      items = list.map(p => {
+        const m = monKey(p.t), g = canGetsu(base, start, ls, m, p.hours), c = count(base, start, ls, [m])[m] || { used: 0, base: 0, carry: 0 };
+        ls = ls.concat([{ m, state: "確定", getsu: g }]);
+        return { t: p.t, m, mode: p.mode, hours: p.hours, ed: !!p.ed, getsu: g, tan: p.hours - g, nth: c.used, of: c.base + c.carry };
+      });
+    } else {
+      const left = {};
+      items = list.map(p => {
+        const m = monKey(p.t), q = (me.quota || {})[m] || [0];
+        if (!(m in left)) { const total = list.filter(x => monKey(x.t) === m).reduce((a, x) => a + x.hours, 0); left[m] = q[Math.min(total, q.length - 1)] || 0; }
+        const g = Math.min(p.hours, left[m]); left[m] -= g;
+        return { t: p.t, m, mode: p.mode, hours: p.hours, ed: !!p.ed, getsu: g, tan: p.hours - g, nth: null };
+      });
+    }
+    const sum = k => items.reduce((a, x) => a + x[k], 0);
+    return { items, getsu: sum("getsu"), tan: sum("tan") };
+  }
+  /* 残りの回数（書いたチケットの分を引いたあと） */
+  function liveLeft(list){
+    if (!me.base) return null;
+    if (!me.cnt) return me.months.slice(0, 2).map(x => ({ m: x.m, left: x.left }));
+    const { base, start } = me.cnt, sp = split(list), ls = me.cnt.ls.concat(sp ? sp.items.map(x => ({ m: x.m, state: "確定", getsu: x.getsu })) : []);
+    const ms = months(), st = count(base, start, ls, ms.concat(nextM(ms[ms.length - 1])));
+    return ms.map(m => ({ m, left: canGetsu(base, start, ls, m, st[m].left) }));
+  }
+  function nthText(x){
+    const m = monName(x.m), a = x.nth + 1, b = x.nth + x.getsu;
+    const g = x.getsu ? (x.nth != null ? `${m}の${rng(a, b)}回目` : `月謝 ${x.getsu}回分`) : "";
+    const t = x.tan ? `追加（単発）${x.tan}回・${yen(me.single * x.tan)}` : "";
+    return [g, t].filter(Boolean).join("＋");
+  }
+  /* チケットの番号は、並べた順に数える（n＝その前までの回数） */
+  const labOf = (x, n) => x.getsu ? (me.base ? circ(n + 1, n + x.getsu) : "月謝") + (x.tan ? "＋" : "") : "追加";
+
+  /* ---------- チケットを並べる ---------- */
   function drawList(){
-    const ls = me.lessons || [], ms = me.months.slice(0, 2);
+    const ls = me.lessons || [], ms = me.months.slice(0, 2), A = all(), sp = split(A), L = liveLeft(A);
     if (tkM >= ms.length) tkM = 0;
-    $("skTabs").innerHTML = ms.map((x, i) => `<button type="button" role="tab" aria-selected="${i === tkM}" class="${i === tkM ? "on" : ""}" data-tm="${i}">${monName(x.m)}<small>${me.base ? `あと${x.left}回` : "単発"}</small></button>`).join("");
+    $("skTabs").innerHTML = ms.map((x, i) => `<button type="button" role="tab" aria-selected="${i === tkM}" class="${i === tkM ? "on" : ""}" data-tm="${i}">${monName(x.m)}<small>${me.base ? `あと${L[i].left}回` : "単発"}</small></button>`).join("");
     const mo = ms[tkM], en = monName(mo.m), mine = ls.filter(x => monKey(x.s) === mo.m);
     const tk = (cls, lab, b, sub, ac, data) => `<li class="tkt ${cls}"${data || ""}><div class="tk-r"><div class="st"><b>${lab}</b><i>${en}</i></div><div class="bd"><b>${b}</b><small>${sub}</small></div><div class="ac">${ac}</div></div><div class="sk-cx" hidden></div></li>`;
     const one = (x, lab, cls) => {
       const room = !x.room ? "" : x.room === "取れず" ? "お部屋が取れませんでした" : /^(未手配|手配中2?)$/.test(x.room) ? "お部屋は前の日に決まります" : x.room;
       const sub = [x.state === "仮" ? "確定待ち" : "", MS(x.mode), x.hours + "時間", x.getsu && x.tan ? `追加${x.tan}回` : "", room].filter(Boolean).join("・");
-      const when = `${md(x.s)}（${wd(x.s)}）${hm(x.s)}〜`;   // 終わりの時間は下の行の「○時間」でわかる（幅に入りきらないので）
+      const when = `${md(x.s)}（${wd(x.s)}）${hm(x.s)}〜`;
       return tk(cls + (x.state === "仮" ? " wait" : ""), lab, when, esc(sub), x.past ? `<span class="tk-now">受講中</span>` : `<button type="button" class="yk-chg" data-cx>キャンセル</button>`,
         ` data-id="${esc(x.id)}" data-free="${x.free ? 1 : 0}" data-state="${esc(x.state)}" data-getsu="${x.getsu || 0}" data-tan="${x.tan || 0}"`);
     };
+    /* 書いている途中のチケット：4つの欄を横一列。いま選ぶ欄はオレンジの枠 */
+    const edT = (x, lab) => {
+      const nx = sheet || nextField(), cell = (f, v, ph) => `<button type="button" class="fc${v ? " v" : ""}${nx === f ? " on" : ""}" data-f="${f}"${!canOpen(f) ? " aria-disabled=\"true\"" : ""}>${v || ph}</button>`;
+      return `<li class="tkt ed${x.tan && !x.getsu ? " add" : ""}"><div class="tk-r"><div class="st"><b>${lab}</b><i>${en}</i></div><div class="fs">`
+        + cell("mode", ed.mode ? ML(ed.mode) : "", `<span class="ph2">対面/<br>オンライン</span>`)
+        + cell("hours", ed.hours ? ed.hours + "時間" : "", "長さ")
+        + cell("day", ed.day ? `${md(T12(ed.day))}<small>${wd(T12(ed.day))}</small>` : "", "日にち")
+        + cell("time", ed.t ? hm(ed.t) : "", "時間")
+        + `</div><button type="button" class="tk-x" data-edx aria-label="${ed.orig ? "直すのをやめる" : "このチケットをやめる"}">×</button></div></li>`;
+    };
     const out = [];
+    let n = 0;
     if (me.base) {
-      const listed = mine.reduce((a, x) => a + (x.getsu || 0), 0), total = Math.max(mo.used || 0, listed) + mo.left, done = Math.max(0, (mo.used || 0) - listed);
-      let n = 0;
+      const listed = mine.reduce((a, x) => a + (x.getsu || 0), 0), done = Math.max(0, (mo.used || 0) - listed);
       if (done) { out.push(tk("done", circ(1, done), "使用済み", "受けたレッスン（1回分のキャンセルもふくむ）", "")); n = done; }
       mine.filter(x => x.getsu).forEach(x => { out.push(one(x, circ(n + 1, n + x.getsu), "on")); n += x.getsu; });
-      for (; n < total; n++) out.push(tk("free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
     }
+    /* 書いたチケット（申し込み前）と、書いている途中のチケット */
+    (sp ? sp.items.filter(x => x.m === mo.m) : []).forEach(x => {
+      const lab = labOf(x, n); n += x.getsu; if (!x.ed) labMap[x.t] = lab;
+      if (x.ed) { out.push(edT(x, lab)); return; }
+      out.push(tk("pre" + (x.getsu ? "" : " add"), lab, `${md(x.t)}（${wd(x.t)}）${hm(x.t)}〜`, `申し込み前・${ML(x.mode)}・${x.hours}時間${x.tan ? `・追加 ${yen(me.single * x.tan)}` : ""}`,
+        `<button type="button" class="tk-fix" data-fix="${x.t}">直す</button>`));
+    });
+    const free = L ? L[tkM].left : 0;
+    for (let i = 0; i < free; i++, n++) out.push(tk("free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
     mine.filter(x => !x.getsu).forEach(x => out.push(one(x, "追加", "add")));
-    if (!out.length) out.push(`<li class="tk-none">${monName(mo.m)}の予約はまだありません</li>`);
+    /* 回数を使い切ったら「追加（単発）」のチケット（書いている途中のチケットがこの月にあるときは出さない） */
+    if (!free && !(ed && ed.m === mo.m && !ed.orig))
+      out.push(tk("free more", "追加", "追加（単発）", `${me.base ? "回数を使い切ったあと・" : ""}1回 ${yen(me.single)}`, `<button type="button" class="tk-go" data-go>予約する</button>`));
     $("skList").innerHTML = out.join("");
   }
+  const T12 = d => new Date(d + "T12:00:00+09:00").getTime();
+
+  /* ---------- 申し込む前のところ（下の帯・追加の確認・練習したい曲） ---------- */
+  function drawPre(){
+    const has = pick.length > 0, s = split();
+    document.body.classList.toggle("sk-flow", has || !!ed);   // 書いている間は、大きな見出しを出さない
+    $("skPre").hidden = !has; $("skGo").hidden = has || !!ed;
+    $("skBar").hidden = !has || !!sheet; document.body.classList.toggle("sk-hasbar", has && !sheet);
+    if (!has) return;
+    const N = pick.reduce((a, p) => a + p.hours, 0);
+    $("ykSend").innerHTML = `<span>${pick.length}日・合計${N}時間</span><b>${N}回分を申し込む</b>`;
+    const box = $("skSplit");
+    box.hidden = !s.tan;
+    if (s.tan) box.innerHTML = `<p><b>${s.tan}回は追加の単発レッスン</b>（1回 ${yen(me.single)}・税込）になります。${me.base ? "月の回数を使い切るためです。" : ""}お支払いは、現金かカード（Square）です。</p>`;
+    $("skOkW").hidden = !s.tan;
+    if (!s.tan) hideErr($("skOkErr"));
+  }
+  function draw(){ drawList(); drawPre(); }
+
+  /* ---------- 書きはじめる・直す ---------- */
+  function pref(){
+    const l = pick[pick.length - 1] || lastPref, last = (me.lessons || []).filter(x => x.state !== "仮").slice(-1)[0];
+    if (l) return { mode: l.mode, hours: l.hours };
+    if (last && last.hours <= (me.max || 4)) return { mode: last.mode === "オンライン" ? "online" : "studio", hours: last.hours };
+    return { mode: "", hours: 0 };
+  }
+  function startEdit(m, orig){
+    if (!orig && pick.length >= maxDays()) { flash(`1回の申し込みで選べるのは ${maxDays()}日までです。いったん申し込んでから、続けて予約してください。`, true); return; }
+    const p = orig ? { mode: orig.mode, hours: orig.hours } : pref();
+    ed = { m, mode: p.mode, hours: p.hours, day: orig ? dayKey(orig.t) : "", t: orig ? orig.t : 0, orig: orig || null };
+    tkM = Math.max(0, months().indexOf(m));
+    hideErr($("ykErr"));
+    draw(); openSheet(nextField() || "day");   // 直すときは日にちから（「この回を取り消す」もここ）
+  }
+  /* LINE のメニューの「レッスンを予約する」・大きなボタン：一番上の未定のチケットから */
+  function startFirst(){
+    const L = liveLeft(all()), ms = months();
+    const i = L ? Math.max(0, L.findIndex(x => x.left > 0)) : 0;
+    startEdit(ms[i] || ms[0]);
+  }
+  $("skGo").addEventListener("click", startFirst);
+  $("skMore").addEventListener("click", startFirst);
+  function stopEdit(){ if (ed) lastPref = { mode: ed.mode, hours: ed.hours }; ed = null; closeSheet(); draw(); }
+
+  const filled = f => f === "mode" ? !!ed.mode : f === "hours" ? !!ed.hours : f === "day" ? !!ed.day : !!ed.t;
+  const nextField = () => ed ? (FIELDS.find(f => !filled(f)) || "") : "";
+  const canOpen = f => !!ed && FIELDS.slice(0, FIELDS.indexOf(f)).every(filled);
+
+  /* ---------- 空いている日にち・時間 ---------- */
+  /* 選んだ長さだけ続けて空いている「始まり」の時間。ほかの書いたチケットと重なるものは除く（受け方がちがうときは前後に移動の時間） */
+  function starts(){
+    const mode = ed.mode, hours = ed.hours, os = others();
+    const ok = new Set((me.slots || []).filter(s => mode === "online" ? s.on !== 0 : s.st).map(s => s.s));
+    return (me.slots || []).filter(s => { for (let i = 0; i < hours; i++) if (!ok.has(s.s + i * H)) return false; return true; })
+      .map(s => s.s).filter(t => !os.some(p => { const g = p.mode === mode ? 0 : MOVE; return t < p.t + p.hours * H + g && p.t < t + hours * H + g; }));
+  }
+  function byDay(){ const by = {}; starts().filter(t => monKey(t) === ed.m).forEach(t => { (by[dayKey(t)] = by[dayKey(t)] || []).push(t); }); return by; }
+  /* 前の欄を変えたら、合わなくなった日にち・時間だけ空に戻す */
+  function fix(){
+    const by = byDay();
+    if (ed.day && !by[ed.day]) { ed.day = ""; ed.t = 0; }
+    if (ed.t && !(by[ed.day] || []).includes(ed.t)) ed.t = 0;
+  }
+
+  /* ---------- 下から出る選ぶところ（シート） ---------- */
+  const sh = $("skSh"), shC = $("skShC");
+  /* 時計（SVG）。12等分＝1時間ずつ。空いている「はじまり」だけ押せる */
+  function clock(d0, ts, os){
+    const c = 150, R1 = 74, R2 = 138, RM = (R1 + R2) / 2, P = Math.PI, day0 = d0 - 12 * H;
+    const ang = h => (h % 12) / 12 * 2 * P - P / 2, pt = (a, r) => `${(c + r * Math.cos(a)).toFixed(2)} ${(c + r * Math.sin(a)).toFixed(2)}`;
+    const sec = (h, g) => { const a0 = ang(h) + g, a1 = ang(h) + 2 * P / 12 - g;
+      return `M${pt(a0, R2)}A${R2} ${R2} 0 0 1 ${pt(a1, R2)}L${pt(a1, R1)}A${R1} ${R1} 0 0 0 ${pt(a0, R1)}Z`; };
+    const arc = (h0, n) => { const a0 = ang(h0) + .02, a1 = ang(h0) + n * 2 * P / 12 - .02;
+      return `M${pt(a0, RM)}A${RM} ${RM} 0 ${n > 6 ? 1 : 0} 1 ${pt(a1, RM)}`; };
+    const hrOf = t => (t - day0) / H, set = new Set(ts);
+    let g = "";
+    /* 文字盤の目もり */
+    for (let i = 0; i < 60; i++) { const a = i / 60 * 2 * P - P / 2, big = i % 5 === 0; g += `<line class="tk${big ? " b" : ""}" x1="${(c + (big ? 141 : 143) * Math.cos(a)).toFixed(2)}" y1="${(c + (big ? 141 : 143) * Math.sin(a)).toFixed(2)}" x2="${(c + 147 * Math.cos(a)).toFixed(2)}" y2="${(c + 147 * Math.sin(a)).toFixed(2)}"/>`; }
+    /* 12の区切り：空いている＝押せる、書いた回＝しま模様、ほかは暗く */
+    for (let h = 12; h < 24; h++) { const t = day0 + h * H, dn = os.some(p => p.t <= t && t < p.t + p.hours * H), av = set.has(t);
+      g += `<path class="sc${av ? " av" : dn ? " dn" : ""}" d="${sec(h, .012)}"${av ? ` data-v="${t}" role="button" tabindex="0" aria-label="${h}時から"` : ""}/>`; }
+    /* 書いた回（同じ日） */
+    os.forEach(p => { g += `<path class="ow" d="${arc(hrOf(p.t), p.hours)}"/>`; });
+    /* 選んだ時間を塗る */
+    if (ed.t) g += `<path class="fl" pathLength="100" d="${arc(hrOf(ed.t), ed.hours)}"/>`;
+    for (let h = 12; h < 24; h++) { const t = day0 + h * H, on = ed.t && t >= ed.t && t < ed.t + ed.hours * H, a = ang(h) + P / 12;
+      g += `<text class="hn${set.has(t) ? " av" : ""}${on ? " on" : ""}" x="${(c + RM * Math.cos(a)).toFixed(2)}" y="${(c + RM * Math.sin(a)).toFixed(2)}">${h}<tspan class="tl">〜</tspan></text>`; }   // 「16〜」＝ここからはじまる（北川くん）
+    const mid = ed.t ? `<text class="c1" x="${c}" y="${c - 14}">${hm(ed.t)}</text><text class="c2" x="${c}" y="${c + 12}">〜${hm(ed.t + ed.hours * H)}</text><text class="c3" x="${c}" y="${c + 34}">${ed.hours}時間</text>`
+      : `<text class="c3" x="${c}" y="${c - 6}">昼12時から</text><text class="c3" x="${c}" y="${c + 14}">夜12時まで</text>`;
+    return `<div class="sh-clock"><svg viewBox="0 0 300 300" aria-label="時計">${g}<circle class="ci" cx="${c}" cy="${c}" r="${R1 - 8}"/>${mid}</svg></div>`
+      + `<p class="sh-leg"><span class="la">空いている時間</span><span class="lf">選んだ時間（${ed.hours}時間）</span>${os.length ? `<span class="lw">書いた回</span>` : ""}</p>`;
+  }
+  function shContent(f){
+    $("skShT").textContent = FT[f];
+    let h = "";
+    if (f === "mode") h = `<div class="sh-mo">`
+      + `<button type="button" class="${ed.mode === "studio" ? "on" : ""}" data-v="studio"><b>対面<em>小岩のスタジオ</em></b><small>スタジオ代 1時間 約1,500円（当日）。お部屋は前の日に北川が予約します</small></button>`
+      + `<button type="button" class="${ed.mode === "online" ? "on" : ""}" data-v="online"><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし</small></button></div>`;
+    else if (f === "hours") h = `<div class="sh-hr">` + Array.from({ length: me.max || 4 }, (_, i) => i + 1).map(n => `<button type="button" class="${ed.hours === n ? "on" : ""}" data-v="${n}"><b>${n}時間</b>${me.base ? `<small>${n}回分</small>` : ""}</button>`).join("") + `</div>`
+      + (me.base ? `<p class="sh-note">月の回数は、1時間で1回分使います</p>` : "");
+    else if (f === "day") {
+      /* 2026-11-10：カレンダーをおしゃれに（空いている日は枠の数を点で・今日は輪・書いた日は小さな札・選んだ日はオレンジ） */
+      const by = byDay(), m = ed.m, y = +m.slice(0, 4), mo = +m.slice(5, 7), dn = new Date(Date.UTC(y, mo, 0)).getUTCDate();
+      const w0 = new Date(Date.UTC(y, mo - 1, 1)).getUTCDay(), mark = new Set(others().map(p => dayKey(p.t))), today = dayKey(Date.now()), nd = Object.keys(by).length;
+      let cells = W.map((w, i) => `<span class="wk w${i}">${w}</span>`).join("") + "<span class=\"pad\"></span>".repeat(w0);
+      for (let d = 1; d <= dn; d++) { const k = `${m}-${String(d).padStart(2, "0")}`, w = (w0 + d - 1) % 7, c = (by[k] || []).length, cl = `w${w}${k === today ? " td" : ""}`;
+        cells += c ? `<button type="button" class="${cl}${ed.day === k ? " on" : ""}${mark.has(k) ? " mk" : ""}" data-v="${k}" aria-label="${mo}月${d}日 ${c}枠"><b>${d}</b><i>${"<s></s>".repeat(Math.min(c, 4))}</i></button>`
+                   : `<span class="no ${cl}"><b>${d}</b></span>`; }
+      h = `<div class="sh-cap"><p class="sh-mon"><b>${mo}</b>月</p><p class="sh-sub">${ML(ed.mode)}・${ed.hours}時間<br>空いている日 <em>${nd}</em>日</p></div><div class="sh-cal">${cells}</div>`
+        + `<p class="sh-leg"><span><s></s>空いている枠</span><span class="lt">今日</span>${mark.size ? `<span class="lm">書いた日</span>` : ""}</p>`
+        + (nd ? "" : `<p class="sh-none">${monName(m)}は、${ed.hours > 1 ? ed.hours + "時間続けて" : ""}空いている日がありません。${ed.hours > 1 ? "長さを短くするか、" : ""}${ed.mode === "studio" ? "オンラインにするか、" : ""}${tkM === 0 && months()[1] ? "来月のチケットから選ぶか、" : ""}北川にご相談ください。</p>`);
+    } else {
+      /* 時間：昼・夕方・夜に分けて、3列のカードで */
+      const ts = byDay()[ed.day] || [], os = others().filter(p => dayKey(p.t) === ed.day), hr = t => J(t).getUTCHours();
+      const list = ts.map(t => ({ t })).concat(os.map(p => ({ t: p.t, p }))).sort((a, b) => a.t - b.t);
+      const parts = [["昼", 0, 16], ["夕方", 16, 18], ["夜", 18, 24]].map(([n, a, b]) => [n, list.filter(x => hr(x.t) >= a && hr(x.t) < b)]).filter(x => x[1].length);
+      const d0 = T12(ed.day), cap = `<div class="sh-cap"><p class="sh-mon"><b>${md(d0)}</b><small>（${wd(d0)}）</small></p><p class="sh-sub">${ML(ed.mode)}・${ed.hours}時間<br>はじまりの時間を押してください</p></div>`;
+      /* 2026-11-10：時計を塗りつぶす形（北川くんの案）。昼12時〜夜24時を1周に。押したところから、レッスンの長さの分がオレンジで塗られる。
+         朝（12時より前）の枠がある日は、前の3列のボタンにする */
+      if (list.every(x => hr(x.t) >= 12)) h = cap + clock(d0, ts, os);
+      else h = cap + parts.map(([n, xs]) => `<div class="sh-tg"><p class="sh-tl">${n}</p><div class="sh-ts">` + xs.map(x => x.p
+            ? `<span class="sh-t dn"><b>${hm(x.t)}</b><small>書いた回</small></span>`
+            : `<button type="button" class="sh-t${ed.t === x.t ? " on" : ""}" data-v="${x.t}"><b>${hm(x.t)}</b><small>〜${hm(x.t + ed.hours * H)}</small></button>`).join("") + `</div></div>`).join("");
+    }
+    if (ed.orig) h += `<button type="button" class="sh-rm" data-rmd>この回を取り消す</button>`;
+    shC.innerHTML = h;
+  }
+  let shTimer = 0;
+  function openSheet(f){
+    if (!ed) return;
+    if (!f) { draw(); return; }
+    if (!canOpen(f)) f = nextField();
+    if (sheet === f) return;
+    const was = !!sheet; sheet = f;
+    clearTimeout(shTimer);
+    if (!was) { if (!(history.state && history.state.sh)) history.pushState({ sh: 1 }, ""); shContent(f); sh.hidden = false; void sh.offsetWidth; sh.classList.add("open"); draw(); place(); return; }
+    /* 選んだら、いったん閉じて次の欄へ */
+    sh.classList.remove("open"); draw();
+    shTimer = setTimeout(() => { shContent(f); sh.classList.add("open"); place(); }, 200);
+  }
+  function closeSheet(viaPop){
+    if (!sheet) return;
+    if (!viaPop && history.state && history.state.sh) { history.back(); return; }   // スマホの「戻る」と同じ（popstate でここに戻る）
+    sheet = ""; clearTimeout(shTimer); sh.classList.remove("open"); document.body.style.paddingBottom = "";
+    shTimer = setTimeout(() => { sh.hidden = true; }, 220);
+    draw();
+  }
+  addEventListener("popstate", () => { if (sheet) closeSheet(true); });
+  /* 書いているチケットが、シートの上に見えるように */
+  function place(){
+    requestAnimationFrame(() => {
+      const el = document.querySelector(".tkt.ed"), pn = sh.querySelector(".sk-shp"); if (!el || !pn) return;
+      document.body.style.paddingBottom = pn.offsetHeight + "px";
+      const r = el.getBoundingClientRect(), room = innerHeight - pn.offsetHeight, head = (document.querySelector(".hd") || {}).offsetHeight || 60;
+      if (r.bottom > room - 8 || r.top < head) window.scrollBy({ top: r.top - Math.max(head + 8, room - r.height - 20), behavior: "smooth" });
+    });
+  }
+  sh.addEventListener("click", e => {
+    /* 暗いところを押したとき：その下がチケットの欄なら、その欄を開く（シートを開いたままほかの欄を直せる）。ほかは閉じる */
+    if (e.target.classList.contains("sk-shb")) {
+      sh.style.visibility = "hidden"; const u = document.elementFromPoint(e.clientX, e.clientY); sh.style.visibility = "";
+      const fc = u && u.closest(".tkt.ed [data-f]");
+      if (fc) { openSheet(canOpen(fc.dataset.f) ? fc.dataset.f : nextField()); return; }
+      if (u && u.closest(".tkt.ed [data-edx]")) { stopEdit(); return; }
+    }
+    if (e.target.closest("[data-shx]")) { closeSheet(); return; }
+    if (e.target.closest("[data-rmd]")) { const o = ed.orig; pick = pick.filter(p => p !== o); ed = null; closeSheet(); draw(); flash("取り消しました"); return; }
+    const b = e.target.closest("[data-v]"); if (!b || !ed) return;
+    const v = b.dataset.v;
+    if (sheet === "mode") { ed.mode = v; fix(); }
+    else if (sheet === "hours") { ed.hours = Number(v); fix(); }
+    else if (sheet === "day") { if (ed.day !== v) ed.t = 0; ed.day = v; }
+    else if (sheet === "time") { ed.t = Number(v); shContent("time"); afterPick(700); return; }   // 塗られるのを見せてから
+    b.classList.add("on"); afterPick();
+  });
+  shC.addEventListener("change", e => { if (e.target.name !== "skt" || !ed) return; ed.t = Number(e.target.value); afterPick(); });
+  sh.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches("[data-v][role=button]")) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent("click", { bubbles: true })); } });
+  function afterPick(ms){
+    const nx = nextField();
+    if (nx) { setTimeout(() => openSheet(nx), ms || 140); return; }
+    setTimeout(commit, ms || 140);
+  }
+  /* 4つ書けたら「申し込み前」のチケットに */
+  function commit(){
+    if (!ed || nextField()) return;
+    const p = { t: ed.t, mode: ed.mode, hours: ed.hours };
+    pick = others().concat(p).sort((a, b) => a.t - b.t);
+    lastPref = { mode: p.mode, hours: p.hours };
+    const was = ed.orig; ed = null; closeSheet(); draw();
+    flash(`✓ ${md(p.t)}（${wd(p.t)}）${hm(p.t)}〜${hm(p.t + p.hours * H)}（${ML(p.mode)}）を${was ? "直しました" : "書きました"}`);
+  }
+  function flash(msg, err){
+    document.querySelectorAll(".sk-me>.sk-flash").forEach(x => x.remove());
+    const fl = document.createElement("p"); fl.className = "sk-flash" + (err ? " sk-ferr" : ""); fl.textContent = msg;
+    $("skTk").before(fl); setTimeout(() => fl.remove(), err ? 5000 : 2600);
+  }
+
+  /* ---------- チケットを押したとき ---------- */
   $("skTabs").addEventListener("click", e => { const b = e.target.closest("[data-tm]"); if (!b) return; tkM = Number(b.dataset.tm); drawList(); });
   $("skList").addEventListener("click", e => {
-    if (e.target.closest("[data-go]")) { go(1); return; }   // 未定のチケットの「予約する」
+    if (e.target.closest("[data-go]")) { startEdit(months()[tkM]); return; }   // 未定のチケットの「予約する」
+    const fc = e.target.closest("[data-f]"); if (fc) { openSheet(canOpen(fc.dataset.f) ? fc.dataset.f : nextField()); return; }
+    if (e.target.closest("[data-edx]")) { stopEdit(); return; }
+    const fx = e.target.closest("[data-fix]"); if (fx) { const o = pick.find(p => p.t === Number(fx.dataset.fix)); if (o) startEdit(monKey(o.t), o); return; }
     const li = e.target.closest("li[data-id]"); if (!li) return;
     const box = li.querySelector(".sk-cx");
     if (e.target.closest("[data-cx]")) {
@@ -213,208 +478,6 @@
     }).catch(r => { const er = box.querySelector(".err"); er.textContent = (r && r.msg) || "うまくいきませんでした。もう一度お試しください。"; er.hidden = false; yes.disabled = false; yes.textContent = "キャンセルする"; });
   });
 
-  /* ---------- 画面の切りかえ（1つ選んだら次の画面へ。スマホの「戻る」でも1つ前に戻る） ---------- */
-  function go(n, quiet){
-    step = n;
-    document.body.classList.toggle("sk-flow", n > 0);   // 予約の途中は、大きな見出しを出さない（2026-11-05 夜）
-    $("skHome").hidden = n !== 0; $("skNotes").hidden = n !== 0; form.hidden = n === 0; $("ykDone").hidden = true;
-    drawGate();
-    form.querySelectorAll(".sk-step").forEach(x => { x.hidden = Number(x.dataset.step) !== n; });
-    form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.className = d === n ? "on" : reach(d) ? "pa" : ""; b.disabled = !reach(d); if (d === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
-    if (n === 1) syncMode();
-    if (n === 2) drawHours();
-    if (n === 3) { cur = 0; drawDays(); }
-    if (n === 4) { drawConf(); drawSplit(); }
-    drawLeft();
-    if (!quiet) { if (!history.state || history.state.sk !== n) history.pushState({ sk: n }, ""); window.scrollTo({ top: 0, behavior: "smooth" }); }
-  }
-  /* 上の「受け方・時間・日時・確認」：押すと、その画面へ（まだ選べないところは押せない） */
-  function reach(d){ return d <= 1 || (d === 2 && !!mode) || (d === 3 && !!mode && hset) || (d === 4 && pick.length > 0); }
-  form.querySelector(".sk-dots").addEventListener("click", e => { const b = e.target.closest("button[data-d]"); if (!b || b.disabled) return; const d = Number(b.dataset.d); if (d !== step) go(d); });
-  addEventListener("popstate", e => { const n = e.state && e.state.sk != null ? e.state.sk : 0; if (me) go(n, true); window.scrollTo(0, 0); });
-  $("skBack").addEventListener("click", () => { if (history.state && history.state.sk === step && step > 0) history.back(); else go(Math.max(0, step - 1)); });
-
-  /* ---------- 残りの回数（選ぶたびに変わる） ---------- */
-  function liveLeft(){
-    if (!me.cnt || !me.base) return null;
-    const { base, start } = me.cnt, sp = split(), ls = me.cnt.ls.concat(sp ? sp.items.map(x => ({ m: x.m, state: "確定", getsu: x.getsu })) : []);
-    const ms = me.months.slice(0, 2).map(x => x.m), st = count(base, start, ls, ms.concat(nextM(ms[ms.length - 1])));
-    return ms.map(m => ({ m, left: canGetsu(base, start, ls, m, st[m].left) }));
-  }
-  /* 2026-11-05 夜：上の段（画面の上に残る）。ボタンに選んだ中身、その下に「いま何回目か」と残りの回数を1行で */
-  function drawDots(){
-    const lab = { 1: "", 2: "長さ", 3: "日時", 4: "確認" }, val = { 1: mode ? ML(mode) : "", 2: hset ? hours + "時間" : "", 3: pick.length ? pick.length + "日" : "", 4: "" };
-    /* 2026-11-10：1つ目は「対面/オンライン」。選んだら、選んだ方だけ出す */
-    form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.innerHTML = d === 1 ? (mode ? `<small>${val[1]}</small>` : `<span class="d2">対面/<br>オンライン</span>`) : `<span>${lab[d]}</span><small>${val[d] || "—"}</small>`; });
-  }
-  function drawLeft(){
-    const box = $("skLeft"); drawDots(); if (!me || step === 0) { box.innerHTML = ""; return; }
-    const L = liveLeft(), sp = split();
-    let head;
-    if (step === 4) head = `<span class="nth"><small>決めた日時</small><b><em>${pick.length}</em>日（合計${totalH()}時間）</b></span>`;
-    else {
-      const t = cur || (day ? new Date(day + "T12:00:00+09:00").getTime() : (((me.slots || [])[0] || {}).s || Date.now())), x = nthFor(t);
-      head = `<span class="nth"><small>いま選んでいるのは</small><b>${x.n ? `<em>${x.n}</em>回目` : x.getsu ? `${monName(x.m)}の<em>${rng(x.a, x.b)}</em>回目<i>（全${x.of}回）</i>` : `<em class="t">追加</em>（単発）`}</b></span>`;
-    }
-    box.innerHTML = head + `<span class="lf">` + (L ? L.map((x, i) => `<span class="${x.left ? "" : "zero"}">${i ? "来月" : "今月"} あと<b>${x.left}</b>回</span>`).join("")
-      : `<span>追加（単発）1回 ${yen(me.single)}</span>`)
-      + (sp && sp.tan ? `<span class="tan">追加 <b>${sp.tan}</b>回</span>` : "") + `</span>`;
-  }
-
-  /* ---------- 時間の長さ ---------- */
-  function drawHours(){
-    const max = me.max || 4;
-    $("skHours").innerHTML = Array.from({ length: max }, (_, i) => i + 1).map(n => `<label class="opt"><input type="radio" name="hours" value="${n}" ${n === hours && hset ? "checked" : ""}><span>${n}時間${me.base ? `<small>${n}回分</small>` : ""}</span></label>`).join("");
-  }
-  $("skHours").addEventListener("change", e => { hours = Number(e.target.value); hset = true; cur = 0; setTimeout(() => go(3), 160); });
-
-  /* ---------- 受け方 ---------- */
-  form.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => {
-    mode = r.value; cur = 0; hideErr(form.querySelector(".yk-mode .err"));
-    setTimeout(() => go(2), 160);
-  }));
-  /* 1画面目に戻ったら、選んでいた受け方にもう一度押せるように（押すと次へ） */
-  form.querySelectorAll(".yk-mode .kc").forEach(l => l.addEventListener("click", e => { const r = l.querySelector("input"); if (r.checked && step === 1 && e.target === r) setTimeout(() => go(2), 160); }));
-  form.querySelectorAll(".sk-hours").forEach(f => f.addEventListener("click", e => { const r = e.target.closest("input"); if (r && r.checked && Number(r.value) === hours && step === 2) setTimeout(() => go(3), 160); }));
-
-  /* 選んだ時間だけ続けて空いている「始まり」の時間 */
-  function avail(){
-    const ok = new Set((me.slots || []).filter(s => mode === "online" ? s.on !== 0 : s.st).map(s => s.s));
-    return (me.slots || []).filter(s => { for (let i = 0; i < hours; i++) if (!ok.has(s.s + i * H)) return false; return true; });
-  }
-  const maxDays = () => (me && me.days) || 12;
-  /* 決めた時間と重なる（受け方がちがうときは、前後に移動の時間もいる） */
-  const clash = t => pick.some(p => { if (p.t === t) return false; const g = p.mode === mode ? 0 : MOVE; return t < p.t + p.hours * H + g && p.t < t + hours * H + g; });
-
-  /* ---------- いま何回目を選んでいるか（大きく） ---------- */
-  function nthFor(t){   // t の日に、次の1回を足したら何回目になるか
-    if (!me.cnt || !me.base) return { tan: hours, n: pick.length + 1 };
-    const { base, start } = me.cnt, sp = split(), m = monKey(t);
-    const ls = me.cnt.ls.concat(sp ? sp.items.map(x => ({ m: x.m, state: "確定", getsu: x.getsu })) : []);
-    const g = canGetsu(base, start, ls, m, hours), c = count(base, start, ls, [m])[m];
-    return { m, getsu: g, tan: hours - g, a: c.used + 1, b: c.used + g, of: c.base + c.carry };
-  }
-  function drawCount(){ $("skCount").innerHTML = ""; drawLeft(); }   // 2026-11-05 夜：何回目は上の段に出す（大きな枠はやめた）
-  /* いまの受け方と長さ（ここから変えられる。決めた日時は残る） */
-  function drawCond(){ $("skCond").innerHTML = ""; }   // 2026-11-05 夜：受け方・長さは上の段のボタンから変える
-
-  function drawDays(){
-    const list = avail(), by = {};
-    list.forEach(s => { (by[dayKey(s.s)] = by[dayKey(s.s)] || []).push(s); });
-    const keys = Object.keys(by).filter(k => by[k].length).sort();
-    if (!keys.includes(day)) day = keys[0] || "";
-    days.innerHTML = keys.map(k => { const t = by[k][0].s, n = pick.filter(p => dayKey(p.t) === k).length;
-      return `<button type="button" role="tab" class="yk-day ${k === day ? "on" : ""} w${J(t).getUTCDay()}" data-day="${k}" aria-selected="${k === day}"><small>${wd(t)}</small><b>${md(t)}</b><i>${n ? "✓ 決定" : by[k].length + "枠"}</i></button>`; }).join("");
-    if (!keys.length) times.innerHTML = `<p class="small yk-none">いま${hours > 1 ? hours + "時間続けて" : ""}予約できる日時がありません。${hours > 1 ? "時間を短くするか、" : ""}${mode === "studio" ? "オンラインを選ぶか、" : ""}北川にご相談ください。</p>`;
-    else drawTimes(by[day] || []);
-    drawCond(); drawPicked(); drawCount(); drawBar(); drawLeft();
-    const on = days.querySelector(".on"); if (on) on.scrollIntoView({ block: "nearest", inline: "nearest" });
-    fade();
-  }
-  /* 日付の右に続きがあるときは、右の端を薄くして「まだある」とわかるように */
-  function fade(){ days.classList.toggle("more", days.scrollWidth - days.scrollLeft - days.clientWidth > 4); }
-  days.addEventListener("scroll", fade, { passive: true });
-  function drawTimes(list){
-    const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
-    const ds = list.length ? dayKey(list[0].s) : "", seen = new Set(list.map(s => s.s));
-    /* 別の受け方・長さで決めた日時も、この日の一覧に出す */
-    list = list.concat(pick.filter(p => dayKey(p.t) === ds && !seen.has(p.t)).map(p => ({ s: p.t }))).sort((a, b) => a.s - b.s);
-    times.innerHTML = list.length ? `<p class="yk-dh">${full(list[0].s).replace(/\d+:\d+$/, "")}</p><div class="opts">` + list.map(s => { const p = at0(s.s), done = !!p, off = !done && clash(s.s), x = done && at(s.s), h = p ? p.hours : hours;
-      return `<label class="opt${s.s === cur ? " t1" : ""}${done ? " dn" : ""}${off ? " dis" : ""}"><input type="radio" name="t" value="${s.s}" ${s.s === cur ? "checked" : ""} ${off || done ? "disabled" : ""}><span>${hm(s.s)}${h > 1 || done ? `<small class="sk-to">〜${hm(s.s + h * H)}</small>` : ""}${done ? `<em class="yk-tag">${p.mode !== mode ? ML(p.mode) + "・" : ""}${x && x.getsu ? rng(x.nth + 1, x.nth + x.getsu) + "回目" : "追加"}</em>` : ""}</span></label>`; }).join("") + "</div>" : "";
-  }
-  function drawBar(){
-    const d = $("skDec"), nx = $("skNext");
-    /* 時間を選んでいる → 「決定」。決めたあと → 「確認へ進む」（ほかの日も足せることは小さく添える） */
-    const wait = !cur && pick.length > 0;
-    d.hidden = wait; nx.hidden = !wait; $("skHint").hidden = !wait;
-    if (cur) { const x = nthFor(cur); d.disabled = false; d.innerHTML = `<span>${md(cur)}（${wd(cur)}）${hm(cur)}〜${hm(cur + hours * H)} を</span><b>${x.n ? x.n + "回目" : x.getsu ? rng(x.a, x.b) + "回目" : "追加（単発）"}に決定</b>`; }
-    else if (!wait) { d.disabled = true; d.textContent = "時間を選んでください"; }
-    nx.innerHTML = `<span>決めた日時：${pick.length}日（合計${totalH()}時間）</span><b>確認へ進む →</b>`;
-  }
-  $("skCond").addEventListener("click", e => { const b = e.target.closest("[data-to]"); if (b) go(Number(b.dataset.to)); });
-  days.addEventListener("click", e => { const b = e.target.closest("[data-day]"); if (!b) return; day = b.dataset.day; cur = 0; drawDays(); });
-  times.addEventListener("change", e => { cur = Number(e.target.value); hideErr($("ykWhenErr")); drawTimes(avail().filter(s => dayKey(s.s) === day)); drawCount(); drawBar(); });
-  /* 決定：その1回を決めて、次の回へ */
-  $("skDec").addEventListener("click", () => {
-    if (!cur) return;
-    if (pick.length >= maxDays()) { showErr($("ykWhenErr"), `1回の申し込みで選べるのは ${maxDays()}日までです。いったん申し込んでから、続けて予約してください。`); return; }
-    const t = cur, x = nthFor(t); pick = pick.concat({ t, mode, hours }).sort((a, b) => a.t - b.t); cur = 0;
-    drawDays();
-    form.querySelectorAll(".sk-flash").forEach(x => x.remove());
-    const fl = document.createElement("p"); fl.className = "sk-flash";
-    fl.textContent = `✓ ${md(t)}（${wd(t)}）${hm(t)}〜${hm(t + hours * H)}（${ML(mode)}）を${x.n ? x.n + "回目" : x.getsu ? rng(x.a, x.b) + "回目" : "追加（単発）"}に決めました`;
-    $("skCount").before(fl); setTimeout(() => fl.remove(), 2600);
-    const nb = $("skLeft").querySelector(".nth"); if (nb) { nb.classList.remove("pop"); void nb.offsetWidth; nb.classList.add("pop"); }
-  });
-  $("skNext").addEventListener("click", () => go(4));
-  $("skAdd").addEventListener("click", () => { const l = byT().slice(-1)[0]; if (l) { mode = l.mode; hours = l.hours; hset = true; } go(3); });
-  $("skAdd2").addEventListener("click", () => go(1));
-  function drawPicked(){
-    const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
-    $("skPickedL").hidden = !pick.length;
-    picked.innerHTML = byT().map(({ t, mode: m, hours: h }) => { const x = at(t), lab = !x || x.nth == null ? monName(monKey(t)) : nthText(x);
-      const tag = !x ? `<span class="chip gr">${monName(monKey(t))}</span>` : x.getsu ? `<span class="chip gr tkc">${circ(x.nth + 1, x.nth + x.getsu)}</span>` : `<span class="chip or">追加</span>`;
-      return `<li>${tag}<b>${span(t, h)}<small class="sk-nth">${ML(m)}・${h}時間・${lab}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
-  }
-  function drawConf(){
-    const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
-    $("skConf").innerHTML = byT().map(({ t, mode: m, hours: h }) => { const x = at(t);
-      return `<li><span class="chip ${x && !x.getsu ? "or" : "gr"}${x && x.getsu && x.nth != null ? " tkc" : ""}">${!x ? monName(monKey(t)) : !x.getsu ? "追加" : x.nth != null ? circ(x.nth + 1, x.nth + x.getsu) : monName(x.m)}</span><b>${span(t, h)}<small class="sk-nth">${m === "studio" ? "対面（小岩のスタジオ）" : "オンライン"}・${h}時間${x && x.nth != null ? "・" + nthText(x) : ""}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
-  }
-  [picked, $("skConf")].forEach(el => el.addEventListener("click", e => {
-    const rm = e.target.closest("[data-rm]"); if (!rm) return;
-    pick = pick.filter(x => x.t !== Number(rm.dataset.rm));
-    hideErr($("ykWhenErr"));
-    if (step === 4) { if (!pick.length) go(3); else { drawConf(); drawSplit(); drawLeft(); } } else drawDays();
-  }));
-
-  /* ---------- 月謝と追加（単発）の分け方 ---------- */
-  /* 早い日から順に、その月の回数（月謝）を使う。足りない分は追加（単発）。正しい数はサーバーが数え直す */
-  /* 「12月の5回目」「12月の5・6回目」「追加（単発）」 */
-  function nthText(x){
-    const m = monName(x.m), a = x.nth + 1, b = x.nth + x.getsu;
-    const g = x.getsu ? `${m}の${rng(a, b)}回目（全${x.of}回）` : "";
-    const t = x.tan ? `追加（単発）${x.tan}回・${yen(me.single * x.tan)}` : "";
-    return [g, t].filter(Boolean).join("＋");
-  }
-  function split(){
-    if (!pick.length || !me) return null;
-    if (me.cnt) {   // サーバーと同じ順番（早い日から）で数える
-      const { base, start } = me.cnt; let ls = me.cnt.ls.slice();
-      const items = byT().map(({ t, mode: md0, hours: h }) => {
-        const m = monKey(t), g = canGetsu(base, start, ls, m, h), c = count(base, start, ls, [m])[m] || { used: 0, base: 0, carry: 0 };
-        ls = ls.concat([{ m, state: "確定", getsu: g }]);
-        return { t, m, mode: md0, hours: h, getsu: g, tan: h - g, nth: c.used, of: c.base + c.carry };
-      });
-      const sum = k => items.reduce((a, x) => a + x[k], 0);
-      return { items, getsu: sum("getsu"), tan: sum("tan") };
-    }
-    const left = {}, items = byT().map(({ t, mode: md0, hours: h }) => {
-      const m = monKey(t), q = (me.quota || {})[m] || [0];
-      if (!(m in left)) { const total = pick.filter(p => monKey(p.t) === m).reduce((a, p) => a + p.hours, 0); left[m] = q[Math.min(total, q.length - 1)] || 0; }
-      const g = Math.min(h, left[m]); left[m] -= g;
-      return { t, m, mode: md0, hours: h, getsu: g, tan: h - g };
-    });
-    const sum = k => items.reduce((a, x) => a + x[k], 0);
-    return { items, getsu: sum("getsu"), tan: sum("tan") };
-  }
-  function drawSplit(){
-    const s = split(), box = $("skSplit");
-    if (!s) { box.hidden = true; $("skOkW").hidden = true; return; }
-    box.hidden = false;
-    const months = [...new Set(s.items.map(x => x.m))];
-    const per = months.length > 1 ? `<p>${months.map(m => { const xs = s.items.filter(x => x.m === m), g = xs.reduce((a, x) => a + x.getsu, 0), t = xs.reduce((a, x) => a + x.tan, 0);
-      return `${monName(m)}：${[g ? `月謝 ${g}回分` : "", t ? `追加 ${t}回` : ""].filter(Boolean).join("＋")}`; }).join("　")}</p>` : "";
-    const mix = new Set(s.items.map(x => x.mode + x.hours)).size > 1;
-    box.innerHTML = `<small>この予約（${s.items.length}日・合計${totalH()}時間${mix ? "" : `・${ML(s.items[0].mode)}・${s.items[0].hours}時間ずつ`}）</small><div class="sk-sp">`
-      + (s.getsu ? `<span class="chip gr">月の回数</span><b>${s.getsu}回分</b>` : "")
-      + (s.getsu && s.tan ? `<i>＋</i>` : "")
-      + (s.tan ? `<span class="chip or">追加（単発）</span><b>${s.tan}回・${yen(me.single * s.tan)}</b>` : "") + `</div>` + per
-      + (s.tan ? `<p>${me.base ? "月の回数を使い切るので、" : ""}${s.tan}回は追加の単発レッスン（1回 ${yen(me.single)}・税込）になります。お支払いは、現金かカード（Square）です。</p>` : "");
-    $("skOkW").hidden = !s.tan;
-    if (!s.tan) hideErr($("skOkErr"));
-  }
-
   function showErr(el, msg){ el.textContent = msg; el.hidden = false; }
   function hideErr(el){ if (el) el.hidden = true; }
 
@@ -425,15 +488,13 @@
     byT().forEach(p => { const l = out[out.length - 1]; if (l && l.mode === p.mode && l.hours === p.hours) l.slots.push(p.t); else out.push({ mode: p.mode, hours: p.hours, slots: [p.t] }); });
     return out;
   }
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    let bad = null;
-    const need = (ok, el, msg, focus) => { if (!ok) { showErr(el, msg); bad = bad || focus; } else hideErr(el); };
+  $("ykSend").addEventListener("click", () => {
+    if (!pick.length) return;
     const s = split();
-    if (!pick.length) { go(3); return; }
-    need(!s || !s.tan || $("skOk").checked, $("skOkErr"), "追加（単発）になる分があります。よろしければ、チェックを入れてください。", $("skOkW"));
-    if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
-    const btn = $("ykSend"), err = $("ykErr"), rs = runs(), done = [];
+    if (s.tan && !$("skOk").checked) { showErr($("skOkErr"), "追加（単発）になる分があります。よろしければ、チェックを入れてください。"); $("skOkW").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    hideErr($("skOkErr"));
+    const btn = $("ykSend"), err = $("ykErr"), rs = runs(), done = [], keep = btn.innerHTML;
+    const keepTk = tkM; doneLab = {}; months().forEach((m, i) => { tkM = i; drawList(); Object.assign(doneLab, labMap); }); tkM = keepTk; drawList();
     btn.disabled = true; btn.textContent = "送っています…"; hideErr(err);
     const one = g => demo
       ? new Promise(r => setTimeout(() => { const xs = s.items.filter(x => g.slots.includes(x.t)); r({ ok: true, mode: g.mode, getsu: xs.reduce((a, x) => a + x.getsu, 0), tan: xs.reduce((a, x) => a + x.tan, 0), items: xs.map(x => ({ s: x.t, getsu: x.getsu, tan: x.tan })) }); }, 400))
@@ -444,7 +505,7 @@
         try { r = await one(g); } catch (_) { r = { ok: false, msg: "送信できませんでした。通信の状態を確かめて、もう一度お試しください。" }; }
         if (!r.ok) {
           if (done.length) { finish(done, r.msg || "送信できませんでした。"); return; }   // 途中まで決まったときは、決まった分を見せる
-          showErr(err, r.msg || "送信できませんでした。");
+          showErr(err, r.msg || "送信できませんでした。"); err.scrollIntoView({ behavior: "smooth", block: "center" });
           if (r.needOk) { $("skOkW").hidden = false; }
           if (r.gone) { pick = []; load(); }
           return;
@@ -452,14 +513,17 @@
         done.push(Object.assign({}, r, { mode: g.mode, hours: g.hours }));
       }
       finish(done);
-    })().finally(() => { btn.disabled = false; btn.textContent = "この内容で申し込む"; });
+    })().finally(() => { btn.disabled = false; if (btn.textContent === "送っています…") btn.innerHTML = keep; });
   });
 
+  let doneLab = {};
   function finish(rs, fail){
     const el = $("ykDone");
     const items = [].concat(...rs.map(r => (r.items || []).map(x => Object.assign({ mode: r.mode, hours: r.hours }, x)))).sort((a, b) => a.s - b.s);
     const sum = k => rs.reduce((a, r) => a + (r[k] || 0), 0), line = rs.some(r => r.line);
-    const list = items.map(x => `<li><span class="chip gr">確定</span><b>${span(x.s, x.hours)}<small class="sk-nth">${ML(x.mode)}・${x.hours}時間</small></b></li>`).join("");
+    /* 2026-11-10：確定したレッスンもチケットで（北川くん） */
+    const list = items.map((x, i) => { const lab = doneLab[x.s] || (x.getsu ? "確定" : "追加");
+      return `<li class="tkt on${lab === "追加" ? " add" : ""}" style="--i:${i}"><div class="tk-r"><div class="st"><b>${lab}</b><i>${monName(monKey(x.s))}</i></div><div class="bd"><b>${md(x.s)}（${wd(x.s)}）${hm(x.s)}〜</b><small>${ML(x.mode)}・${x.hours}時間</small></div><div class="ac"><span class="tk-ok">確定</span></div></div></li>`; }).join("");
     const parts = [sum("getsu") ? `月謝 ${sum("getsu")}回分` : "", sum("tan") ? `追加（単発）${sum("tan")}回` : ""].filter(Boolean).join("＋");
     const st = items.some(x => x.mode === "studio"), on = items.some(x => x.mode === "online"), via = line ? "LINE" : "メール";
     const left = fail ? pick.filter(p => !items.some(x => x.s === p.t)) : [];
@@ -467,11 +531,17 @@
       + `<p>確定のお知らせを${via}でお送りしました${rs.length > 1 ? `（対面/オンライン・長さごとに${rs.length}通）` : ""}。`
       + (st ? `<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を${via}でお知らせします。` : "")
       + (on ? `オンラインの入り口（Google Meet のリンク）も、${via}でお送りしています。` : "") + `</p>`
-      + `<ol class="yk-picked">${list}</ol><p class="small">${parts}${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
+      + `<ol class="sk-tks sk-dtk">${list}</ol><p class="small">${parts}${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
       + (left.length ? `<p class="err">${esc(fail)}<br>次の日時は、まだ予約できていません：${left.map(p => esc(span(p.t, p.hours))).join("、")}</p>` : "")
       + `<button type="button" class="btn line" id="skAgain">予約のページに戻る</button>`;
-    form.hidden = true; $("skHome").hidden = true; el.hidden = false; pick = []; document.body.classList.remove("sk-flow"); history.replaceState({ sk: 0 }, "");
+    $("skHome").hidden = true; $("skNotes").hidden = true; $("skBar").hidden = true; el.hidden = false; pick = []; ed = null;
+    document.body.classList.remove("sk-flow", "sk-hasbar"); history.replaceState({ sk: 0 }, "");
     el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
-    $("skAgain").addEventListener("click", () => { pick = []; $("y_q").value = ""; $("skOk").checked = false; step = 0; demo ? go(0) : load(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    $("skAgain").addEventListener("click", () => {
+      $("y_q").value = ""; $("skOk").checked = false; el.hidden = true; $("skHome").hidden = false; $("skNotes").hidden = false;
+      if (demo) draw(); else load();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   }
+  load();
 })();
