@@ -2383,3 +2383,14 @@ body.sk-hasbar{padding-bottom:84px}
 .tkt .tk-ok::before{content:"✓"}
 @media (prefers-reduced-motion:reduce){ .sk-dtk .tkt{animation:none} }
 .sh-clock .hn .tl{font:700 11px var(--jp);opacity:.8}
+/* 2026-11-10：どの欄にも「決定」ボタン・キャンセルは下から出るところで（北川くん） */
+.sh-okw{position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom));margin:14px -18px calc(-18px - env(safe-area-inset-bottom));padding:12px 18px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--t1) 75%,rgba(17,26,44,0));z-index:2}
+.sh-ok{width:100%;min-height:54px;font-size:15px}
+.sh-ok span{font-family:var(--en);font-weight:800}
+.sh-ok:disabled{background:rgba(255,255,255,.08);color:var(--faint);box-shadow:none;cursor:default}
+.sh-rm{margin-top:4px}
+.sh-cxt{margin:0 0 12px}
+.sh-cxm{margin:0 0 14px;font-size:13.5px;line-height:1.7;color:var(--sub)}
+.sh-cxb{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.sh-cxb .btn{min-height:50px}
+.sh-cxb .btn:only-child{grid-column:1/-1}
