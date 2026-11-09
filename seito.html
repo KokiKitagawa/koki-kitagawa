@@ -17,7 +17,7 @@
 <link rel="icon" href="assets/favicon-48.png" sizes="48x48" type="image/png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="assets/css/kk-design-system.css?v=69foca">
-<link rel="stylesheet" href="assets/css/site.css?v=yjq1w6">
+<link rel="stylesheet" href="assets/css/site.css?v=7wx6m0">
 </head>
 <body class="doc yk-page sk-page">
 <header class="hd solid"><div class="wrap"><a class="logo" href="./">KOKI KITAGAWA<small>GUITARIST / COMPOSER</small></a><span class="yk-back">生徒さん<wbr>専用</span></div></header>
@@ -51,14 +51,14 @@
       <div class="sk-top"><!-- 2026-11-05 夜：画面の上に残る（受け方・長さ・何回目・残りの回数）。北川くん -->
       <div class="sk-nav">
         <button type="button" class="sk-back" id="skBack">← 戻る</button>
-        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1">受け方</button></li><li><button type="button" data-d="2">長さ</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
+        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1"><span class="d2">対面/<br>オンライン</span></button></li><li><button type="button" data-d="2">長さ</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
       </div>
       <div class="sk-left" id="skLeft" aria-live="polite"></div>
       </div>
 
-      <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>受け方を<wbr>選んでください</legend>
-        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩の<wbr>スタジオ</b><small>サウンドスタジオM小岩店<br>選んだ<wbr>日で、<wbr>その<wbr>場で<wbr>予約が<wbr>決まります<br>お部屋は<wbr>前の<wbr>日に<wbr>北川が<wbr>予約します<wbr>（小岩が<wbr>空いていないときは、<wbr>亀戸・<wbr>平井などの<wbr>近くの<wbr>スタジオ。<wbr>どこも<wbr>取れなければ、<wbr>オンラインか<wbr>別の<wbr>日を<wbr>選べます。<wbr>回数は<wbr>減りません）<br>スタジオ代：<wbr>1時間 約1,500円<wbr>（当日スタジオで）</small></span></label>
-        <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・<wbr>スタジオ代なし<br>その<wbr>場で<wbr>予約が<wbr>決まります</small></span></label>
+      <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>対面か<wbr>オンラインか、<wbr>選んでください</legend>
+        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>対面<em>小岩の<wbr>スタジオ</em></b><small>スタジオ代 1時間 約1,500円<wbr>（当日）<br>お部屋は<wbr>前の<wbr>日に<wbr>北川が<wbr>予約します<wbr>（どこも<wbr>取れなければ、<wbr>オンラインか<wbr>別の<wbr>日を<wbr>選べます。<wbr>回数は<wbr>減りません）</small></span></label>
+        <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし</small></span></label>
         <p class="err" hidden></p>
       </fieldset>
 
@@ -77,23 +77,23 @@
         </div>
         <div class="yk-lg sk-pl" id="skPickedL" hidden>決めた<wbr>日時</div>
         <ol class="yk-picked" id="ykPicked"></ol>
-        <p class="small yk-lead">スタジオは<wbr>2日後から、<wbr>オンラインは<wbr>翌日から、<wbr>来月の<wbr>終わりまで<wbr>選べます。<wbr>出ているのは、<wbr>選んだ<wbr>長さだけ<wbr>続けて<wbr>空いている<wbr>時間です。<wbr>スタジオと<wbr>オンラインを<wbr>混ぜたり、<wbr>日ごとに<wbr>長さを<wbr>変えたりするときは、<wbr>上の<wbr>「受け方」<wbr>「長さ」から<wbr>選び<wbr>直してください<wbr>（決めた<wbr>日時は<wbr>残ります）。</p>
+        <p class="small yk-lead">対面は<wbr>2日後から、<wbr>オンラインは<wbr>翌日から、<wbr>来月の<wbr>終わりまで<wbr>選べます。</p>
       </div>
 
       <div class="sk-step" data-step="4">
         <div class="yk-lg"><span class="yn">4</span>この<wbr>内容でよろしいですか</div>
         <ol class="yk-picked sk-conf" id="skConf"></ol>
-        <div class="sk-adds"><button type="button" class="btn line sm" id="skAdd">＋ 同じ<wbr>受け方・<wbr>長さで<wbr>日を<wbr>足す</button><button type="button" class="btn line sm" id="skAdd2">＋ 受け方・<wbr>長さを<wbr>変えて<wbr>日を<wbr>足す</button></div>
+        <div class="sk-adds"><button type="button" class="btn line sm" id="skAdd">＋ 同じ<wbr>内容で<wbr>足す</button><button type="button" class="btn line sm" id="skAdd2">＋ 内容を<wbr>変えて<wbr>足す</button></div>
         <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>
         <label class="sk-ok" id="skOkW" hidden><input type="checkbox" id="skOk"><span>追加<wbr>（単発）の<wbr>レッスンとして<wbr>申し込みます</span></label>
         <p class="err" id="skOkErr" hidden></p>
         <div><label for="y_q">練習したい<wbr>曲・<wbr>伝えたいこと<i class="opt-i">なくても<wbr>大丈夫です</i></label><textarea id="y_q" class="sm" placeholder="例：〇〇の「△△」のソロ"></textarea></div>
-        <dl class="yk-brief" aria-label="申し込む前に">
-          <dt>キャンセル</dt><dd>3日前 23:59 まではこの<wbr>ページから<wbr>無料。<wbr>キャンセルした<wbr>回は<wbr>次の<wbr>月まで<wbr>使えます。<wbr>それより<wbr>後は<wbr>1回分</dd>
-          <dt>月の<wbr>回数</dt><dd>使わなかった<wbr>回は、<wbr>次の<wbr>月まで<wbr>使えます<wbr>（キャンセルしなくても<wbr>来月に<wbr>回せます）</dd>
-          <dt>追加<wbr>（単発）</dt><dd>回数を<wbr>使い<wbr>切ったあとは、<wbr>1回 ¥9,000<wbr>（税込）</dd>
-          <dt>スタジオ代</dt><dd>1時間 約1,500円<wbr>（当日スタジオで）／<wbr>オンラインはなし</dd>
-        </dl>
+        <details class="sk-rules"><summary>キャンセル・<wbr>回数・<wbr>料金のきまり</summary><dl class="yk-brief" aria-label="申し込む前に">
+          <dt>キャンセル</dt><dd>3日前 23:59 までは<wbr>無料<wbr>（その<wbr>回は<wbr>次の<wbr>月まで<wbr>使えます）。<wbr>それより<wbr>後は<wbr>1回分</dd>
+          <dt>月の<wbr>回数</dt><dd>使わなかった<wbr>回は、<wbr>次の<wbr>月まで<wbr>使えます</dd>
+          <dt>追加<wbr>（単発）</dt><dd>回数を<wbr>使い<wbr>切ったあとは 1回 ¥9,000</dd>
+          <dt>スタジオ代</dt><dd>対面は 1時間 約1,500円<wbr>（当日）</dd>
+        </dl></details>
         <button class="btn or send" type="submit" id="ykSend">この<wbr>内容で<wbr>申し込む</button>
         <p class="err" id="ykErr" hidden></p>
       </div>
@@ -116,6 +116,6 @@
 </main>
 <footer class="yk-ft"><div class="wrap"><small>© 2026 Koki Kitagawa　<a href="./">トップへ</a>　<a href="privacy.html">プライバシーポリシー</a></small></div></footer>
 <script type="application/json" id="ykcfg">{"api":"https://script.google.com/macros/s/AKfycby5bDtbLyKAmUYFXvM5kCBlsdzIqFw126P8803WqGTCRkEivEgTSXqw3pechjk9ozQT/exec","single":9000}</script>
-<script src="assets/js/seito.js?v=ycosro" defer></script>
+<script src="assets/js/seito.js?v=10a7tf7" defer></script>
 </body>
 </html>

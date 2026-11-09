@@ -716,7 +716,7 @@ export function yoyakuPage(files, p, site, url){
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const yen = n => Number(n).toLocaleString("ja-JP");
   const planNames = [...site.lessonPlans.monthly.map(m => m.name), "単発"];
-  const cfg = JSON.stringify({api: B.api || "", fallback: B.url || "", plans: planNames, line: B.lineChat || ""}).replace(/</g,"\\u003c");
+  const cfg = JSON.stringify({api: B.api || "", fallback: B.url || "", plans: planNames, line: B.lineChat || "", price: site.lessonPlans.trial.price}).replace(/</g,"\\u003c");
   const opt = (name, type, list) => list.map(x => `<label class="opt"><input type="${type}" name="${name}" value="${esc(x)}"><span>${esc(x)}</span></label>`).join("");
   const sel = list => `<option value="">選んでください</option>` + list.map(x => `<option>${esc(x)}</option>`).join("");
   return `<!doctype html>
@@ -748,7 +748,7 @@ ${css}
 <main class="wrap docw ykw">
   <div class="sh"><span class="no">—</span><h2>Booking</h2><p>体験レッスンのご予約</p></div>
 
-  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・スタジオで受ける場合は、ギターを借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
+  <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>はじめての方・1回だけ・60分</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
   <p class="yk-plan" id="ykPlan" hidden></p>
   <p class="yk-plan" id="ykLine" hidden></p>
   <!-- 2026-11-05：LINE から開いた人に、いまの体験の予約とキャンセル（北川くん） -->
@@ -764,12 +764,12 @@ ${css}
   <form class="f yk sk-wiz yk-wiz" id="yk" novalidate>
     <div class="sk-nav">
       <button type="button" class="sk-back" id="skBack" hidden>← 戻る</button>
-      <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1">受け方</button></li><li><button type="button" data-d="2">日時</button></li><li><button type="button" data-d="3">お名前</button></li><li><button type="button" data-d="4">くわしく</button></li><li><button type="button" data-d="5">確認</button></li></ol>
+      <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1"><span class="d2">対面/<br>オンライン</span></button></li><li><button type="button" data-d="2">日時</button></li><li><button type="button" data-d="3">お名前</button></li><li><button type="button" data-d="4">くわしく</button></li><li><button type="button" data-d="5">確認</button></li></ol>
     </div>
 
-    <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>受け方を<wbr>選んでください</legend>
-      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩の<wbr>スタジオ</b><small>サウンドスタジオM小岩店<wbr>（JR小岩駅から<wbr>約4分）<br>お部屋は<wbr>前の<wbr>日に<wbr>北川が<wbr>予約します<wbr>（小岩が<wbr>空いていないときは、<wbr>亀戸・<wbr>平井などの<wbr>近くの<wbr>スタジオ。<wbr>どこも<wbr>取れなければ、<wbr>オンラインか<wbr>別の<wbr>日を<wbr>選べます）<br>ギターは<wbr>借りられます</small></span></label>
-      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・<wbr>スタジオ代なし<br>ギターを<wbr>お持ちの方<wbr>向けです</small></span></label>
+    <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>対面か<wbr>オンラインか、<wbr>選んでください</legend>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>対面<em>小岩のスタジオ</em></b><small>JR小岩駅から<wbr>歩いて<wbr>約4分・<wbr>ギターは<wbr>借りられます</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし・<wbr>ギターを<wbr>お持ちの方<wbr>向けです</small></span></label>
       <p class="err" hidden></p>
     </fieldset>
 
@@ -780,7 +780,6 @@ ${css}
       <div class="yk-times" id="ykTimes"></div>
       <p class="err" id="ykWhenErr" hidden></p>
       <div class="sk-bar"><button type="button" class="btn or sk-dec" id="ykDec" disabled>時間を<wbr>選んでください</button></div>
-      <p class="small yk-lead">スタジオは<wbr>2日後から、<wbr>オンラインは<wbr>翌日から<wbr>選べます。</p>
     </div>
 
     <div class="sk-step yk-info" data-step="3">
@@ -796,16 +795,13 @@ ${css}
 
     <div class="sk-step yk-info" data-step="4">
       <div class="yk-lg"><span class="yn">4</span>よければ<wbr>教えてください<i class="opt-i">ぜんぶ任意</i></div>
-      <p class="small yk-lead">書いてもらえると、<wbr>体験の<wbr>準備が<wbr>できます。<wbr>空のままでも<wbr>大丈夫です。</p>
+      <p class="small yk-lead">書いてもらえると、<wbr>体験の<wbr>準備が<wbr>できます。</p>
       <div class="two">
-        <div><label for="y_age">レッスンを<wbr>受ける方</label><select id="y_age">${sel(["大人","高校生","中学生","小学生","小学生より小さいお子さん"])}</select></div>
         <div><label for="y_level">ギター歴</label><select id="y_level">${sel(["はじめて","1年未満","1〜3年","3年以上"])}</select></div>
+        <div><label for="y_from">何で<wbr>知りましたか</label><select id="y_from">${sel(["Instagram","TikTok","YouTube","X","Google検索","Googleマップ","知り合いの紹介","その他"])}</select></div>
       </div>
       <fieldset class="opts"><legend>ギター</legend>${opt("guitar","radio",["アコースティック","エレキ","クラシック","持っていない"])}</fieldset>
-      <fieldset class="opts"><legend>どうなりたいですか<i>いくつでもOK</i></legend>${opt("goals","checkbox",["好きな曲を弾けるようになりたい","基礎からしっかり","弾き語りがしたい","バンドで弾きたい","作曲・アレンジも学びたい","プロを目指したい","趣味で楽しく"])}</fieldset>
       <div><label for="y_song">弾きたい曲・<wbr>好きな<wbr>アーティスト</label><input id="y_song" placeholder="例：〇〇の「△△」"></div>
-      <div><label for="y_q">ご質問・<wbr>ご要望</label><textarea id="y_q" class="sm" placeholder="気になることがあれば、なんでも"></textarea></div>
-      <div><label for="y_from">このページを<wbr>何で<wbr>知りましたか</label><select id="y_from">${sel(["Instagram","TikTok","YouTube","X","Google検索","Googleマップ","知り合いの紹介","その他"])}</select></div>
       <button type="button" class="btn or yk-next" data-next="5" id="ykNext4">確認へ進む</button>
     </div>
     <input type="text" name="website" id="y_web" tabindex="-1" autocomplete="off" class="sr" aria-hidden="true">
@@ -813,12 +809,7 @@ ${css}
     <div class="sk-step yk-conf" data-step="5">
       <div class="yk-lg"><span class="yn">5</span>この<wbr>内容で<wbr>よろしいですか</div>
       <dl class="yk-check" id="ykCheck"></dl>
-      <dl class="yk-brief" aria-label="申し込む前に">
-        <dt>料金</dt><dd>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込）</dd>
-        <dt>スタジオ代</dt><dd>スタジオは<wbr>1時間 約1,500円<wbr>（当日スタジオで）／<wbr>オンラインはなし</dd>
-        <dt>お支払い</dt><dd>スタジオ：<wbr>現金・PayPay<wbr>（当日レッスンの前に）／<wbr>オンライン：<wbr>カード（前日まで）</dd>
-        <dt>キャンセル</dt><dd>いつでも無料。<wbr>3日前 23:59 までは<wbr>届いたリンクから、<wbr>それより後は<wbr>LINE（LINE をお使いでない方は<wbr>メール）で<wbr>ご連絡ください</dd>
-      </dl>
+      <dl class="yk-brief" id="ykBrief" aria-label="申し込む前に"></dl><!-- 2026-11-10：対面・オンラインで変わるので yoyaku.js で書く -->
       <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に<wbr>同意したものとします。</p>
       <button class="btn or send" type="submit" id="ykSend">この<wbr>内容で<wbr>申し込む</button>
       <p class="err" id="ykErr" hidden></p>
@@ -905,14 +896,14 @@ ${css}
       <div class="sk-top"><!-- 2026-11-05 夜：画面の上に残る（受け方・長さ・何回目・残りの回数）。北川くん -->
       <div class="sk-nav">
         <button type="button" class="sk-back" id="skBack">← 戻る</button>
-        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1">受け方</button></li><li><button type="button" data-d="2">長さ</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
+        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1"><span class="d2">対面/<br>オンライン</span></button></li><li><button type="button" data-d="2">長さ</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
       </div>
       <div class="sk-left" id="skLeft" aria-live="polite"></div>
       </div>
 
-      <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>受け方を選んでください</legend>
-        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店<br>選んだ日で、その場で予約が決まります<br>お部屋は前の日に北川が予約します（小岩が空いていないときは、亀戸・平井などの近くのスタジオ。どこも取れなければ、オンラインか別の日を選べます。回数は減りません）<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
-        <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・スタジオ代なし<br>その場で予約が決まります</small></span></label>
+      <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>対面か<wbr>オンラインか、<wbr>選んでください</legend>
+        <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>対面<em>小岩のスタジオ</em></b><small>スタジオ代 1時間 約1,500円（当日）<br>お部屋は前の日に北川が予約します（どこも取れなければ、オンラインか別の日を選べます。回数は減りません）</small></span></label>
+        <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし</small></span></label>
         <p class="err" hidden></p>
       </fieldset>
 
@@ -931,23 +922,23 @@ ${css}
         </div>
         <div class="yk-lg sk-pl" id="skPickedL" hidden>決めた日時</div>
         <ol class="yk-picked" id="ykPicked"></ol>
-        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ長さだけ続けて空いている時間です。スタジオとオンラインを混ぜたり、日ごとに長さを変えたりするときは、上の「受け方」「長さ」から選び直してください（決めた日時は残ります）。</p>
+        <p class="small yk-lead">対面は2日後から、オンラインは翌日から、来月の終わりまで選べます。</p>
       </div>
 
       <div class="sk-step" data-step="4">
         <div class="yk-lg"><span class="yn">4</span>この内容でよろしいですか</div>
         <ol class="yk-picked sk-conf" id="skConf"></ol>
-        <div class="sk-adds"><button type="button" class="btn line sm" id="skAdd">＋ 同じ受け方・長さで日を足す</button><button type="button" class="btn line sm" id="skAdd2">＋ 受け方・長さを変えて日を足す</button></div>
+        <div class="sk-adds"><button type="button" class="btn line sm" id="skAdd">＋ 同じ内容で足す</button><button type="button" class="btn line sm" id="skAdd2">＋ 内容を変えて足す</button></div>
         <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>
         <label class="sk-ok" id="skOkW" hidden><input type="checkbox" id="skOk"><span>追加（単発）のレッスンとして申し込みます</span></label>
         <p class="err" id="skOkErr" hidden></p>
         <div><label for="y_q">練習したい曲・伝えたいこと<i class="opt-i">なくても大丈夫です</i></label><textarea id="y_q" class="sm" placeholder="例：〇〇の「△△」のソロ"></textarea></div>
-        <dl class="yk-brief" aria-label="申し込む前に">
-          <dt>キャンセル</dt><dd>3日前 23:59 まではこのページから無料。キャンセルした回は次の月まで使えます。それより後は1回分</dd>
-          <dt>月の回数</dt><dd>使わなかった回は、次の月まで使えます（キャンセルしなくても来月に回せます）</dd>
-          <dt>追加（単発）</dt><dd>回数を使い切ったあとは、1回 ¥${yen(site.lessonPlans.single.price)}（税込）</dd>
-          <dt>スタジオ代</dt><dd>1時間 約1,500円（当日スタジオで）／オンラインはなし</dd>
-        </dl>
+        <details class="sk-rules"><summary>キャンセル・回数・料金のきまり</summary><dl class="yk-brief" aria-label="申し込む前に">
+          <dt>キャンセル</dt><dd>3日前 23:59 までは無料（その回は次の月まで使えます）。それより後は1回分</dd>
+          <dt>月の回数</dt><dd>使わなかった回は、次の月まで使えます</dd>
+          <dt>追加（単発）</dt><dd>回数を使い切ったあとは 1回 ¥${yen(site.lessonPlans.single.price)}</dd>
+          <dt>スタジオ代</dt><dd>対面は 1時間 約1,500円（当日）</dd>
+        </dl></details>
         <button class="btn or send" type="submit" id="ykSend">この内容で申し込む</button>
         <p class="err" id="ykErr" hidden></p>
       </div>

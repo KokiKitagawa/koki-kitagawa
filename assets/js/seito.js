@@ -31,7 +31,7 @@
 
   let me = null, mode = "", hours = 1, hset = false, day = "", pick = [], cur = 0, step = 0, first = true;
   /* pick は [{ t, mode, hours }]。受け方がちがうレッスンの間は、移動の時間（コード.gs の 設定.移動の分）をあける */
-  const MOVE = 60 * 60e3, ML = m => m === "online" ? "オンライン" : "スタジオ";
+  const MOVE = 60 * 60e3, ML = m => m === "online" ? "オンライン" : "対面", MS = s => s === "スタジオ" ? "対面" : s;   // 2026-11-10：画面では「対面」（裏側は「スタジオ」のまま）
   const rng = (a, b) => a === b ? `${a}` : b === a + 1 ? `${a}・${b}` : `${a}〜${b}`;
   const byT = () => pick.slice().sort((a, b) => a.t - b.t), at0 = t => pick.find(p => p.t === t);
   const totalH = () => pick.reduce((a, p) => a + p.hours, 0);
@@ -120,7 +120,7 @@
   function drawSame(){
     const last = (me.lessons || []).filter(x => x.state !== "仮").slice(-1)[0], b = $("skSame");
     b.hidden = !last || last.hours > (me.max || 4);
-    if (!b.hidden) { b.dataset.mode = last.mode === "オンライン" ? "online" : "studio"; b.dataset.hours = last.hours; b.innerHTML = `<span>前回と同じ<wbr><b>（${esc(last.mode)}・${last.hours}時間）</b><wbr>で日時を選ぶ</span>`; }
+    if (!b.hidden) { b.dataset.mode = last.mode === "オンライン" ? "online" : "studio"; b.dataset.hours = last.hours; b.innerHTML = `<span>前回と同じ<wbr><b>（${esc(MS(last.mode))}・${last.hours}時間）</b><wbr>で日時を選ぶ</span>`; }
   }
   $("skSame").addEventListener("click", e => { const b = e.currentTarget; mode = b.dataset.mode; hours = Number(b.dataset.hours); hset = true; cur = 0; syncMode(); go(3); });
   function syncMode(){ form.querySelectorAll('input[name="mode"]').forEach(r => { r.checked = r.value === mode; }); }
@@ -138,7 +138,7 @@
       const room = !x.room ? "" : x.room === "取れず" ? "<i>お部屋が取れませんでした（LINE かメールのお知らせをご覧ください）</i>" : /^(未手配|手配中2?)$/.test(x.room) ? "お部屋は前の日に決まります" : esc(x.room);
       return `<li class="sk-l" data-id="${esc(x.id)}" data-free="${x.free ? 1 : 0}" data-state="${esc(x.state)}" data-getsu="${x.getsu || 0}" data-tan="${x.tan || 0}">
         <span class="chip ${x.state === "確定" ? "gr" : "or"}">${x.state === "確定" ? "確定" : "確定待ち"}</span>
-        <span class="sk-lt"><b>${when}</b><small>${esc(x.mode)}・${x.hours}時間・${parts}${room ? `<br>${room}` : ""}</small></span>
+        <span class="sk-lt"><b>${when}</b><small>${esc(MS(x.mode))}・${x.hours}時間・${parts}${room ? `<br>${room}` : ""}</small></span>
         ${x.past ? "" : `<button type="button" class="yk-chg" data-cx>キャンセル</button>`}
         <div class="sk-cx" hidden></div></li>`;
     }).join("");
@@ -197,8 +197,9 @@
   }
   /* 2026-11-05 夜：上の段（画面の上に残る）。ボタンに選んだ中身、その下に「いま何回目か」と残りの回数を1行で */
   function drawDots(){
-    const lab = { 1: "受け方", 2: "長さ", 3: "日時", 4: "確認" }, val = { 1: mode ? ML(mode) : "", 2: hset ? hours + "時間" : "", 3: pick.length ? pick.length + "日" : "", 4: "" };
-    form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.innerHTML = `<span>${lab[d]}</span><small>${val[d] || "—"}</small>`; });
+    const lab = { 1: "", 2: "長さ", 3: "日時", 4: "確認" }, val = { 1: mode ? ML(mode) : "", 2: hset ? hours + "時間" : "", 3: pick.length ? pick.length + "日" : "", 4: "" };
+    /* 2026-11-10：1つ目は「対面/オンライン」。選んだら、選んだ方だけ出す */
+    form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.innerHTML = d === 1 ? (mode ? `<small>${val[1]}</small>` : `<span class="d2">対面/<br>オンライン</span>`) : `<span>${lab[d]}</span><small>${val[d] || "—"}</small>`; });
   }
   function drawLeft(){
     const box = $("skLeft"); drawDots(); if (!me || step === 0) { box.innerHTML = ""; return; }
@@ -312,7 +313,7 @@
   function drawConf(){
     const sp = split(), at = t => sp && sp.items.find(x => x.t === t);
     $("skConf").innerHTML = byT().map(({ t, mode: m, hours: h }) => { const x = at(t);
-      return `<li><span class="chip ${x && !x.getsu ? "or" : "gr"}">${x && !x.getsu ? "追加" : "月謝"}</span><b>${span(t, h)}<small class="sk-nth">${m === "studio" ? "小岩のスタジオ" : "オンライン"}・${h}時間${x && x.nth != null ? "・" + nthText(x) : ""}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
+      return `<li><span class="chip ${x && !x.getsu ? "or" : "gr"}">${x && !x.getsu ? "追加" : "月謝"}</span><b>${span(t, h)}<small class="sk-nth">${m === "studio" ? "対面（小岩のスタジオ）" : "オンライン"}・${h}時間${x && x.nth != null ? "・" + nthText(x) : ""}</small></b><button type="button" class="yk-x" data-rm="${t}" aria-label="取り消す">×</button></li>`; }).join("");
   }
   [picked, $("skConf")].forEach(el => el.addEventListener("click", e => {
     const rm = e.target.closest("[data-rm]"); if (!rm) return;
@@ -417,7 +418,7 @@
     const st = items.some(x => x.mode === "studio"), on = items.some(x => x.mode === "online"), via = line ? "LINE" : "メール";
     const left = fail ? pick.filter(p => !items.some(x => x.s === p.t)) : [];
     el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました（${items.length}日）</h3>`
-      + `<p>確定のお知らせを${via}でお送りしました${rs.length > 1 ? `（受け方・長さごとに${rs.length}通）` : ""}。`
+      + `<p>確定のお知らせを${via}でお送りしました${rs.length > 1 ? `（対面/オンライン・長さごとに${rs.length}通）` : ""}。`
       + (st ? `<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を${via}でお知らせします。` : "")
       + (on ? `オンラインの入り口（Google Meet のリンク）も、${via}でお送りしています。` : "") + `</p>`
       + `<ol class="yk-picked">${list}</ol><p class="small">${parts}${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`

@@ -2116,3 +2116,74 @@ body{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
 .yk-mine .yk-lg{margin-bottom:0}
 .yk-mine .small{margin:10px 0 0}
 .yk-mine .sk-w{white-space:normal}
+
+/* 2026-11-10 予約ページ（体験・生徒さん）（北川くん）：
+   ①体験も、予約の途中は大きな見出しを出さない ②「受け方」→「対面/オンライン」 ③スマホで下の帯がカードから左右に 6px はみ出していた
+   ④スマホ（ふつうの iPhone）でスクロールせずに予約を終えられるよう、すき間と文を詰める */
+.sk-dots button .d2{display:block;font-size:10.5px;font-weight:700;line-height:1.25;text-align:center;white-space:nowrap;opacity:1}
+.kc b em{font-style:normal;font-size:.72em;font-weight:500;color:var(--sub);margin-left:8px;letter-spacing:.02em}
+.yk-page.sk-flow .ykw>.sh{display:none}
+.yk-page.sk-flow .ykw{padding-top:calc(var(--head) + 16px)}
+@media (max-width:820px){
+  .sk-bar{margin:12px -18px 0;padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+  .yk-page.sk-flow .yk-ft,.sk-page.sk-flow .yk-ft{display:none}
+  .yk-page .ykw{padding-top:calc(var(--head) + 14px);padding-bottom:28px}
+  .yk-page.sk-flow .ykw{padding-top:calc(var(--head) + 10px)}
+  .sk-page.sk-flow .ykw{padding-top:calc(var(--head) + 12px);padding-bottom:20px}
+  .yk-page .ykw>.sh{margin-bottom:12px}
+  .yk-page .ykw>.sh h2{font-size:30px}
+  .yk-page .ykw>.sh p{font-size:12px}
+  .yk-trial{padding:10px 14px;margin:0 0 10px;align-items:center}
+  .yk-trial .chip{display:none}
+  .yk-trial b{font-size:14px}
+  .yk-trial small{font-size:11.5px}
+  .yk-trial .p{font-size:22px}
+  form.f.yk{gap:14px}
+  form.f.yk.yk-wiz{padding:14px 18px 16px}
+  .yk-wiz .sk-nav{gap:8px}
+  .yk-wiz .sk-dots button{min-height:44px;font-size:12px}
+  .yk-wiz .sk-step{gap:12px}
+  .sk-step legend{margin-bottom:10px}
+  .sk-step.kinds .kc span,.yk-wiz .yk-mode .kc span{padding:14px 16px 12px}
+  .sk-step.kinds .kc b,.yk-wiz .yk-mode .kc b{font-size:17px}
+  .sk-step.kinds .kc small,.yk-wiz .yk-mode .kc small{font-size:12px;line-height:1.6;margin-top:4px}
+  .yk-wiz .yk-lg i{margin-top:2px}
+  .yk-times{margin-top:8px}
+  .yk-dh{margin-bottom:8px}
+  .yk-times .opts{gap:6px}
+  .yk-times .opt span{min-height:38px}
+  .yk-wiz .yk-lead{margin:-4px 0 0}
+  .yk-wiz .yk-info>div>label,.yk-wiz .opts legend{margin-bottom:6px}
+  .yk-wiz .yk-info input,.yk-wiz .yk-info select{min-height:44px}
+  .yk-wiz .yk-info .opt span{min-height:38px;padding:0 13px;font-size:13px}
+  .yk-wiz .yk-info .opts{gap:6px}
+  .yk-check>div{grid-template-columns:4.4em minmax(0,1fr) auto;gap:8px;padding:8px 10px 8px 12px}
+  .yk-check dt{grid-column:1;grid-row:1;font-size:11.5px}
+  .yk-check dd{grid-column:2;grid-row:1;font-size:13.5px;white-space:normal}
+  .yk-check .yk-fix{min-height:30px;padding:0 10px;font-size:11.5px}
+  .yk-check .yk-fix{grid-column:3;grid-row:1;justify-self:end}
+  .yk-brief{gap:3px 10px;margin:0;padding:10px 12px;font-size:12px;line-height:1.5}
+  .yk-wiz .note{margin:0;font-size:11.5px}
+  .sk-page .sk-wiz{gap:12px}
+  .sk-page .sk-step.yk-when{gap:10px}
+  .sk-page .sk-adds{gap:6px}
+  .sk-page #skConf li{padding:10px 12px}
+  .sk-page #y_q{min-height:40px;height:40px}
+  .yk-wiz .yk-info .two{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+  .yk-wiz [data-step="4"] .yk-lead{display:none}
+  .yk-wiz .yk-info input,.yk-wiz .yk-info select{min-height:42px}
+  .sk-page .sk-adds{display:flex;flex-wrap:wrap}
+  .sk-page .sk-adds .btn{font-size:12px;padding:0 12px;min-height:36px}
+  .sk-page #skConf li b{font-size:14px}
+  .sk-page .sk-step[data-step="4"]{gap:8px}
+  .sk-page #skConf{margin-top:0}
+  .sk-page #skSplit{padding:8px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+  .sk-page #skSplit>small{flex-basis:100%;margin:0}
+  .sk-page #skSplit .sk-sp{margin:0}
+  /* 次へ・申し込むのボタンは、画面の下に残す（下まで動かさなくても押せる） */
+  .yk-wiz .yk-next,.yk-wiz .send,.sk-page .sk-wiz .send{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom));z-index:4;box-shadow:0 -6px 18px 6px rgba(6,8,13,.85)}
+}
+.sk-rules{border:1px solid var(--line2);border-radius:12px}
+.sk-rules summary{cursor:pointer;padding:10px 14px;font-size:12.5px;font-weight:700;color:var(--sub)}
+.sk-rules[open] summary{padding-bottom:4px}
+.sk-rules .yk-brief{border:0;margin:0}

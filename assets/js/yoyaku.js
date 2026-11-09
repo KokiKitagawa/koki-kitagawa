@@ -20,6 +20,8 @@
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]);
 
   let slots = null, mode = "", day = "", pick = [], prev = null, step = 1, seen = 1;
+  const v = id => { const e = $(id); return e ? e.value : ""; };   // 2026-11-10：任意の質問をしぼった（ない欄は空で送る）
+  const MS = s => s === "スタジオ" ? "対面" : s;   // 裏側は「スタジオ」と返す。画面では「対面」
   const lkey = (new URLSearchParams(location.search).get("l") || "").trim();
 
   /* トップの「体験から始める」で来たとき：気になるプランを出して、申し込みの内容にも入れる */
@@ -46,7 +48,7 @@
     form.hidden = true; mineBox.hidden = false;
     mineBox.innerHTML = `<div class="yk-lg">ご予約中の<wbr>体験レッスン</div><ol class="yk-picked sk-lessons">` + list.map(x => `<li class="sk-l" data-id="${esc(x.id)}">
       <span class="chip ${x.state === "確定" ? "gr" : "or"}">${x.state === "確定" ? "確定" : "確定待ち"}</span>
-      <span class="sk-lt"><b><span class="sk-w">${esc(x.when)}（60分）</span></b><small>${esc(x.mode)}・${esc(x.place)}</small></span>
+      <span class="sk-lt"><b><span class="sk-w">${esc(x.when)}（60分）</span></b><small>${esc(MS(x.mode))}・${esc(x.place)}</small></span>
       ${x.can ? `<button type="button" class="yk-chg" data-cx>キャンセル</button>` : ""}
       <div class="sk-cx" ${x.can ? "hidden" : ""}>${x.can ? "" : `<p>キャンセルの<wbr>期限（3日前 23:59）を<wbr>過ぎています。<wbr>変更・<wbr>キャンセルは、<wbr>LINE の<wbr>トークで<wbr>ご連絡ください。</p>`}</div></li>`).join("")
       + `</ol><p class="small">体験レッスンは、<wbr>はじめての方に<wbr>1回だけ<wbr>受けていただいています。<wbr>日時を<wbr>変えたいときは、<wbr>キャンセルしてから<wbr>選び直してください<wbr>（キャンセルは<wbr>いつでも無料です）。</p>`;
@@ -106,6 +108,8 @@
     form.querySelectorAll(".sk-step").forEach(x => { x.hidden = Number(x.dataset.step) !== n; });
     form.querySelectorAll(".sk-dots button").forEach(b => { const d = Number(b.dataset.d); b.className = d === n ? "on" : reach(d) ? "pa" : ""; b.disabled = !reach(d); if (d === n) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
     $("skBack").hidden = n === 1;
+    document.body.classList.toggle("sk-flow", n > 1);   // 2026-11-10：予約の途中は、大きな見出しを出さない（生徒さんページと同じ）
+    const d1 = form.querySelector('.sk-dots [data-d="1"]'); d1.innerHTML = mode ? (mode === "studio" ? "対面" : "オンライン") : '<span class="d2">対面/<br>オンライン</span>';
     const hb = document.querySelector(".yk-back"); if (hb) hb.style.visibility = n === 1 ? "" : "hidden";   // 上の「← 戻る」（レッスンのページへ）は1画面目だけ
     /* 1画面目だけ：体験の説明・LINE の案内・ご案内の表 */
     [".yk-trial", "#ykLineAdd", "#ykNotes"].forEach(q => { const el = document.querySelector(q); if (el) el.hidden = n !== 1 || (q === "#ykLineAdd" && !!lkey); });
@@ -123,7 +127,7 @@
   form.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => {
     if (mode !== r.value) { pick = []; day = ""; }
     mode = r.value; hideErr(form.querySelector(".yk-mode .err"));
-    hint.textContent = "ご都合のよい日時を、1つ選んでください";
+    hint.textContent = mode === "studio" ? "1つ選んでください（対面は2日後から）" : "1つ選んでください（オンラインは翌日から）";
     setTimeout(() => go(2), 160);
   }));
   form.querySelectorAll(".yk-mode .kc").forEach(l => l.addEventListener("click", e => { const r = l.querySelector("input"); if (r.checked && step === 1 && e.target === r && mode === r.value) setTimeout(() => go(2), 160); }));
@@ -225,8 +229,8 @@
   const val = n => [...form.querySelectorAll(`input[name="${n}"]:checked`)].map(x => x.value);
   function drawCheck(){
     const row = (k, v, d) => v ? `<div><dt>${k}</dt><dd>${esc(v)}</dd>${d ? `<button type="button" class="yk-fix" data-to="${d}">直す</button>` : ""}</div>` : "";
-    const more = [$("y_age").value, $("y_level").value, val("guitar")[0] || ""].filter(Boolean).join("・");
-    $("ykCheck").innerHTML = row("受け方", mode === "studio" ? "小岩のスタジオ" : "オンライン", 1)
+    const more = [v("y_age"), v("y_level"), val("guitar")[0] || ""].filter(Boolean).join("・");
+    $("ykCheck").innerHTML = row("レッスン", mode === "studio" ? "対面（小岩のスタジオ）" : "オンライン", 1)
       + row("日時", pick.length ? full(pick[0]) : "", 2)
       + row("お名前", $("y_name").value.trim() + ($("y_kana").value.trim() ? `（${$("y_kana").value.trim()}）` : ""), 3)
       + row("メール", mailEl.value.trim() || (lkey ? "なし（お知らせは LINE に届きます）" : ""), 3)
@@ -234,8 +238,13 @@
       + row("受ける方・ギター", more, 4)
       + row("どうなりたいか", val("goals").join("・"), 4)
       + row("弾きたい曲", $("y_song").value.trim(), 4)
-      + row("ご質問", $("y_q").value.trim(), 4)
+      + row("ご質問", v("y_q").trim(), 4)
       + (myPlan ? row("気になるプラン", myPlan, 0) : "");
+    /* 2026-11-10：申し込む前のご案内は、選んだ方（対面・オンライン）のことだけ */
+    const yen = n => Number(n).toLocaleString("ja-JP"), b = (k, x) => `<dt>${k}</dt><dd>${x}</dd>`;
+    $("ykBrief").innerHTML = mode === "studio"
+      ? b("料金", `¥${yen(cfg.price)}（税込）＋スタジオ代 約1,500円`) + b("お支払い", "当日レッスンの前に、現金か PayPay") + b("お部屋", "前の日に北川が取って、お知らせします") + b("キャンセル", "いつでも無料")
+      : b("料金", `¥${yen(cfg.price)}（税込）`) + b("お支払い", "前日までにカード（リンクをお送りします）") + b("キャンセル", "いつでも無料");
   }
   $("ykCheck").addEventListener("click", e => { const b = e.target.closest("[data-to]"); if (b && Number(b.dataset.to)) go(Number(b.dataset.to)); });
 
@@ -250,7 +259,7 @@
     if (!pick.length) { go(2); showErr($("ykWhenErr"), "日時を選んでください。"); return; }
     if (!infoOk()) { go(3); checkInfo(); return; }
     const data = { mode, slots: pick, name: $("y_name").value, kana: $("y_kana").value, email: mailEl.value.trim(), tel: $("y_tel").value,
-      age: $("y_age").value, level: $("y_level").value, guitar: val("guitar")[0] || "", goals: val("goals"), song: $("y_song").value, q: [myPlan ? "【気になるプラン】" + myPlan : "", $("y_q").value].filter(Boolean).join("\n"),
+      age: v("y_age"), level: v("y_level"), guitar: val("guitar")[0] || "", goals: val("goals"), song: $("y_song").value, q: [myPlan ? "【気になるプラン】" + myPlan : "", v("y_q")].filter(Boolean).join("\n"),
       from: $("y_from").value, website: $("y_web").value, prev, l: lkey };
     const btn = $("ykSend"), err = $("ykErr");
     btn.disabled = true; btn.textContent = "送っています…"; hideErr(err);
@@ -272,7 +281,7 @@
   function finish(d, r){
     const el = $("ykDone"), min = r.min || 30;
     if (window.gtag && !demo) gtag("event", "trial_booking", { mode: d.mode, via: r.line ? "line" : "mail" });
-    const list = d.slots.map(t => `<li><span class="chip or">${d.mode === "studio" ? "スタジオ" : "オンライン"}</span><b>${full(t)}</b></li>`).join("");
+    const list = d.slots.map(t => `<li><span class="chip or">${d.mode === "studio" ? "対面" : "オンライン"}</span><b>${full(t)}</b></li>`).join("");
     if (r.line) {   // LINE から：その場で確定
       el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました</h3>`
         + `<p>LINE に、確定のお知らせを送りました。${d.mode === "studio" ? "<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を LINE でお知らせします。" : "当日の入り口（Google Meet のリンク）も、LINE のお知らせに入っています。"}</p>`
