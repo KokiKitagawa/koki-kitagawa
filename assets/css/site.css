@@ -2411,3 +2411,21 @@ body.sk-hasbar{padding-bottom:84px}
 .sk-page .sk-pre .sk-ok span{flex:1;min-width:0}
 .sk-page .sk-q summary,.sk-page .sk-rules summary{overflow-wrap:anywhere}
 .sk-page .sk-q summary i{display:inline-block}
+
+/* 2026-11-10：レッスンのページの「講師」 */
+section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
+.lteach-in{display:grid;grid-template-columns:minmax(0,240px) 1fr;column-gap:clamp(24px,4vw,52px);row-gap:6px;max-width:880px;align-items:start}
+.lteach .photo{grid-row:1 / span 2;aspect-ratio:1/1;border-radius:18px}
+.lteach .photo img{object-position:50% 20%}
+.lteach .tag{margin:6px 0 12px;font:700 12px/1 var(--en);letter-spacing:.24em;color:var(--or-hi)}
+.lteach h2{margin:0 0 6px;font-size:clamp(21px,2.4vw,27px);font-weight:800;letter-spacing:.04em}
+.lteach-b p{margin:0 0 8px;font-size:15px;line-height:1.95}
+.lteach-b .cred{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--sub)}
+.lteach-b .more{display:inline-block;padding:6px 0;font-size:13.5px;color:var(--or-hi)}
+@media (max-width:820px){
+  .lteach-in{grid-template-columns:84px 1fr;column-gap:16px;align-items:center}
+  .lteach .photo{grid-row:auto;border-radius:50%}
+  .lteach .photo img{object-position:22% 8%;transform:scale(1.25);transform-origin:30% 15%}
+  .lteach-b{grid-column:1 / -1;margin-top:10px}
+  .lteach-b p{font-size:14.5px}
+}

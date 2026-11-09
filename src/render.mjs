@@ -308,7 +308,7 @@ export function buildOutputs(files){
             <tr><th>月・火</th><td>18〜23時</td></tr>
             <tr><th>お支払い</th><td>${payLines("")}</td></tr>
             <tr><th>キャンセル・振替</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
-            <p class="small" style="margin-top:12px">予約ページに出ている時間が、いま予約できる時間です。月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
+            <p class="small" style="margin-top:12px">予約ページに出ている時間が、いま予約できる時間です。</p></div></details>
         </div>
       </div>
       ${solo ? access() : ""}
@@ -373,6 +373,15 @@ export function buildOutputs(files){
   const STUDIO = {name:"サウンドスタジオM小岩店", addr:"東京都江戸川区西小岩1-27-16 オルフェウスビル4F", way:"JR小岩駅 北口から歩いて約4分", site:"https://orpheusrecords.jp/ssm/koiwa/"};
   const PIN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>`;
   const PC_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="11.5" rx="1.6"/><path d="M9 20h6M12 16.5V20"/></svg>`;
+  /* 2026-11-10：レッスンのページに「講師」（北川くん：A＋実績を1行）。文は data/profile.json の lesson.teacher */
+  function teacher(){
+    const T = P.lesson.teacher; if(!T || !(T.lines||[]).length) return "";
+    return `<section class="s lteach" id="teacher" aria-label="講師"><div class="wrap"><div class="lteach-in">
+      <div class="photo">${pic("profile","椅子に座ってギターを弾く北川弘喜")}</div>
+      <div class="lteach-h"><p class="tag">TEACHER</p><h2>講師　${esc(T.name)}</h2></div>
+      <div class="lteach-b">${T.lines.map(l=>`<p>${esc(l)}</p>`).join("")}${T.credit?`<p class="cred">${esc(T.credit)}</p>`:""}<a class="more" href="./#profile">くわしいプロフィール →</a></div>
+    </div></div></section>`;
+  }
   function access(){
     const map = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(STUDIO.name + " " + STUDIO.addr);
     return `<div class="acc-wrap reveal" id="access"><h3><span>ACCESS</span>スタジオへの行き方</h3>
@@ -534,7 +543,7 @@ export function buildOutputs(files){
 
   const bookModal = D.booking && !D.yoyaku ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
   const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lessonTeaser()+contact()+bookModal;
-  const lessonMain = lessonHero()+lesson("01", true);
+  const lessonMain = lessonHero()+teacher()+lesson("01", true);
 
   const url = p.siteUrl;
   const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="ギターを弾く北川弘喜。書けるギタリスト、弾ける作曲家。">`;
