@@ -49,7 +49,7 @@
       <span class="sk-lt"><b><span class="sk-w">${esc(x.when)}（60分）</span></b><small>${esc(x.mode)}・${esc(x.place)}</small></span>
       ${x.can ? `<button type="button" class="yk-chg" data-cx>キャンセル</button>` : ""}
       <div class="sk-cx" ${x.can ? "hidden" : ""}>${x.can ? "" : `<p>キャンセルの<wbr>期限（3日前 23:59）を<wbr>過ぎています。<wbr>変更・<wbr>キャンセルは、<wbr>LINE の<wbr>トークで<wbr>ご連絡ください。</p>`}</div></li>`).join("")
-      + `</ol><p class="small">体験レッスンは、<wbr>はじめての方に<wbr>1回だけ<wbr>受けていただいています。<wbr>日時を<wbr>変えたいときは、<wbr>キャンセルしてから<wbr>選び直してください<wbr>（3日前 23:59 までは<wbr>無料）。</p>`;
+      + `</ol><p class="small">体験レッスンは、<wbr>はじめての方に<wbr>1回だけ<wbr>受けていただいています。<wbr>日時を<wbr>変えたいときは、<wbr>キャンセルしてから<wbr>選び直してください<wbr>（キャンセルは<wbr>いつでも無料です）。</p>`;
   }
   if (lkey || (demo && /[?&]mine=1/.test(location.search))) {
     const sample = () => { const t = Date.now() + 5 * 864e5; return { ok: true, list: [{ id: "D1", state: "確定", mode: "スタジオ", when: full(t - t % 3600e3), place: "部屋は前の日に決まります", can: true }] }; };

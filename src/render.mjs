@@ -303,12 +303,12 @@ export function buildOutputs(files){
             ${pick("単発")}${GL}</li></ul>${swipe(L.monthly.length+1)}
           <p class="small" style="margin:14px 0 0">料金はすべて税込です。スタジオで受ける場合、スタジオ代（1時間 約1,500円）が別にかかります。オンラインはかかりません。</p>
           <details class="acc open-card les-info"><summary><b>受付の時間・お支払い・キャンセル</b></summary><div class="in">
-            <table class="hours"><tr><th>水・木・金</th><td>16〜23時<small>前月20日を過ぎてからのご予約は 22〜23時</small></td></tr>
-            <tr><th>土・日</th><td>12〜23時<small>前月20日を過ぎてからのご予約は 21〜23時</small></td></tr>
+            <table class="hours"><tr><th>水・木・金</th><td>16〜23時</td></tr>
+            <tr><th>土・日</th><td>12〜23時</td></tr>
             <tr><th>月・火</th><td>18〜23時</td></tr>
             <tr><th>お支払い</th><td>${payLines("")}</td></tr>
             <tr><th>キャンセル・振替</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
-            <p class="small" style="margin-top:12px">月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
+            <p class="small" style="margin-top:12px">予約ページに出ている時間が、いま予約できる時間です。月謝の方は、毎月20日までに翌月分をご予約ください。</p></div></details>
         </div>
       </div>
       ${solo ? access() : ""}
@@ -751,6 +751,8 @@ ${css}
   <div class="card yk-trial"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・スタジオで受ける場合は、ギターを借りられます</small></div><div class="p">¥${yen(site.lessonPlans.trial.price)}<small>税込</small></div></div>
   <p class="yk-plan" id="ykPlan" hidden></p>
   <p class="yk-plan" id="ykLine" hidden></p>
+  <!-- 2026-11-05：LINE から開いた人に、いまの体験の予約とキャンセル（北川くん） -->
+  <section class="card yk-mine" id="ykMine" hidden aria-live="polite"></section>
 
   <div class="card yk-closed" id="ykClosed" hidden>
     <b>予約ページは、まもなく使えるようになります</b>
@@ -767,7 +769,7 @@ ${css}
 
     <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>受け方を<wbr>選んでください</legend>
       <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩の<wbr>スタジオ</b><small>サウンドスタジオM小岩店<wbr>（JR小岩駅から<wbr>約4分）<br>お部屋は<wbr>前の<wbr>日に<wbr>北川が<wbr>予約します<wbr>（小岩が<wbr>空いていないときは、<wbr>亀戸・<wbr>平井などの<wbr>近くの<wbr>スタジオ。<wbr>どこも<wbr>取れなければ、<wbr>オンラインか<wbr>別の<wbr>日を<wbr>選べます）<br>ギターは<wbr>借りられます</small></span></label>
-      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・<wbr>スタジオ代なし</small></span></label>
+      <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン</b><small>Google Meet・<wbr>スタジオ代なし<br>ギターを<wbr>お持ちの方<wbr>向けです</small></span></label>
       <p class="err" hidden></p>
     </fieldset>
 
@@ -815,7 +817,7 @@ ${css}
         <dt>料金</dt><dd>体験レッスン 60分 ¥${yen(site.lessonPlans.trial.price)}（税込）</dd>
         <dt>スタジオ代</dt><dd>スタジオは<wbr>1時間 約1,500円<wbr>（当日スタジオで）／<wbr>オンラインはなし</dd>
         <dt>お支払い</dt><dd>スタジオ：<wbr>現金・PayPay<wbr>（当日レッスンの前に）／<wbr>オンライン：<wbr>カード（前日まで）</dd>
-        <dt>キャンセル</dt><dd>3日前 23:59 までは<wbr>URLから無料。<wbr>それより後も<wbr>キャンセル料は<wbr>かかりません</dd>
+        <dt>キャンセル</dt><dd>いつでも無料。<wbr>3日前 23:59 までは<wbr>届いたリンクから、<wbr>それより後は<wbr>LINE（LINE をお使いでない方は<wbr>メール）で<wbr>ご連絡ください</dd>
       </dl>
       <p class="note">送信すると、<a href="privacy.html">プライバシーポリシー</a>に<wbr>同意したものとします。</p>
       <button class="btn or send" type="submit" id="ykSend">この<wbr>内容で<wbr>申し込む</button>
@@ -900,11 +902,13 @@ ${css}
     </div>
 
     <form class="f yk sk-wiz" id="yk" novalidate hidden>
+      <div class="sk-top"><!-- 2026-11-05 夜：画面の上に残る（受け方・長さ・何回目・残りの回数）。北川くん -->
       <div class="sk-nav">
         <button type="button" class="sk-back" id="skBack">← 戻る</button>
-        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1">受け方</button></li><li><button type="button" data-d="2">時間</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
+        <ol class="sk-dots" aria-label="すすみぐあい（押すと、その画面に移れます）"><li><button type="button" data-d="1">受け方</button></li><li><button type="button" data-d="2">長さ</button></li><li><button type="button" data-d="3">日時</button></li><li><button type="button" data-d="4">確認</button></li></ol>
       </div>
       <div class="sk-left" id="skLeft" aria-live="polite"></div>
+      </div>
 
       <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>受け方を選んでください</legend>
         <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>小岩のスタジオ</b><small>サウンドスタジオM小岩店<br>選んだ日で、その場で予約が決まります<br>お部屋は前の日に北川が予約します（小岩が空いていないときは、亀戸・平井などの近くのスタジオ。どこも取れなければ、オンラインか別の日を選べます。回数は減りません）<br>スタジオ代：1時間 約1,500円（当日スタジオで）</small></span></label>
@@ -927,7 +931,7 @@ ${css}
         </div>
         <div class="yk-lg sk-pl" id="skPickedL" hidden>決めた日時</div>
         <ol class="yk-picked" id="ykPicked"></ol>
-        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ長さだけ続けて空いている時間です。スタジオとオンラインを混ぜたり、日ごとに長さを変えたりするときは、上の「変える」から選び直してください（決めた日時は残ります）。</p>
+        <p class="small yk-lead">スタジオは2日後から、オンラインは翌日から、来月の終わりまで選べます。出ているのは、選んだ長さだけ続けて空いている時間です。スタジオとオンラインを混ぜたり、日ごとに長さを変えたりするときは、上の「受け方」「長さ」から選び直してください（決めた日時は残ります）。</p>
       </div>
 
       <div class="sk-step" data-step="4">
