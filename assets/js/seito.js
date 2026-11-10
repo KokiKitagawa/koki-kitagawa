@@ -76,12 +76,13 @@
     const m1 = n === 12 ? (y + 1) + "-01" : y + "-" + String(n + 1).padStart(2, "0"), sl = demoSlots().filter(s => s.st);
     return { ok: true, name: "山田 花子", plan: "月4回", base: 4, single: cfg.single, max: 4, days: 12,
       months: demoOut ? [{ m: m0, base: 4, carry: 0, used: 4, left: 0 }, { m: m1, base: 4, carry: 0, used: 0, left: 4 }]
-                      : [{ m: m0, base: 4, carry: 1, used: 3, left: 2 }, { m: m1, base: 4, carry: 0, used: 0, left: 4 }],
-      quota: demoOut ? { [m0]: Array(25).fill(0), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) } : { [m0]: Array.from({ length: 25 }, (_, n) => Math.min(n, 2)), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) },
+                      : [{ m: m0, base: 4, carry: 1, used: 4, left: 1 }, { m: m1, base: 4, carry: 0, used: 0, left: 4 }],
+      quota: demoOut ? { [m0]: Array(25).fill(0), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) } : { [m0]: Array.from({ length: 25 }, (_, n) => Math.min(n, 1)), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) },
       lessons: [{ id: "L1", state: "確定", mode: "スタジオ", hours: 2, s: sl[2].s, s2: 0, getsu: 2, tan: 0, free: true, room: "サウンドスタジオM小岩店" },
                 { id: "L2", state: "確定", mode: "スタジオ", hours: 1, s: sl[9].s, s2: 0, getsu: 1, tan: 0, free: true, room: "未手配" },
                 { id: "L3", state: "確定", mode: "オンライン", hours: 1, s: sl[11].s, s2: 0, getsu: 0, tan: 1, free: true, room: "" }],
-      slots: demoSlots(), lineLink: "https://line.me/R/oaMessage/%40557brylm/", cnt: { base: 4, start: m0, ls: [{ m: m0, state: "確定", getsu: demoOut ? 4 : 2 }] } };
+      done: demoOut || T12(m0 + "-02") > now ? [] : [{ m: m0, s: T12(m0 + "-02") + 7 * 3600000, mode: "スタジオ", hours: 1, getsu: 1, tan: 0 }],
+      slots: demoSlots(), lineLink: "https://line.me/R/oaMessage/%40557brylm/", cnt: { base: 4, start: m0, ls: [{ m: m0, state: "確定", getsu: demoOut ? 4 : 4 }] } };
   }
 
   /* ---------- 読み込み ---------- */
@@ -229,12 +230,17 @@
         + cell("time", ed.t ? `<span class="tc">${hm(ed.t)}<small>${ed.hours}時間</small></span>` : "", "時間")
         + `</div><button type="button" class="tk-x" data-edx aria-label="${ed.orig ? "直すのをやめる" : "このチケットをやめる"}">×</button></div></li>`;
     };
+    /* 2026-11-10：終わった回は1回ずつ「済」のチケット（グレー＋済のハンコ）。北川くん */
+    const dn = (me.done || []).filter(x => x.m === mo.m).map(x => Object.assign({ zumi: 1 }, x));
+    const zumi = (x, lab) => tk("done", lab, `${md(x.s)}（${wd(x.s)}）${hm(x.s)}〜`,
+      esc([x.late ? "直前のキャンセル（1回分）" : "", MS(x.mode), x.hours + "時間", x.getsu && x.tan ? `追加${x.tan}回` : ""].filter(Boolean).join("・")), `<span class="tk-zm">済</span>`);
     const out = [];
     let n = 0;
     if (me.base) {
-      const listed = mine.reduce((a, x) => a + (x.getsu || 0), 0), done = Math.max(0, (mo.used || 0) - listed);
-      if (done) { out.push(tk("done", circ(1, done), "使用済み", "受けたレッスン（1回分のキャンセルもふくむ）", "")); n = done; }
-      mine.filter(x => x.getsu).forEach(x => { out.push(one(x, circ(n + 1, n + x.getsu), "on")); n += x.getsu; });
+      const both = dn.filter(x => x.getsu).concat(mine.filter(x => x.getsu)).sort((a, b) => a.s - b.s);
+      const listed = both.reduce((a, x) => a + (x.getsu || 0), 0), rest = Math.max(0, (mo.used || 0) - listed);
+      if (rest) { out.push(tk("done", circ(1, rest), "使用済み", "受けたレッスン（1回分のキャンセルもふくむ）", "")); n = rest; }
+      both.forEach(x => { out.push(x.zumi ? zumi(x, circ(n + 1, n + x.getsu)) : one(x, circ(n + 1, n + x.getsu), "on")); n += x.getsu; });
     }
     /* 書いたチケット（申し込み前）と、書いている途中のチケット */
     (sp ? sp.items.filter(x => x.m === mo.m) : []).forEach(x => {
@@ -245,6 +251,7 @@
     });
     const free = L ? L[tkM].left : 0;
     for (let i = 0; i < free; i++, n++) out.push(tk("free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
+    dn.filter(x => !x.getsu).forEach(x => out.push(zumi(x, "追加")));
     mine.filter(x => !x.getsu).forEach(x => out.push(one(x, "追加", "add")));
     /* 回数を使い切ったら「追加（単発）」のチケット（書いている途中のチケットがこの月にあるときは出さない） */
     if (!free && !(ed && ed.m === mo.m && !ed.orig))
