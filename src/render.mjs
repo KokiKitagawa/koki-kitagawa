@@ -777,7 +777,7 @@ ${css}
     </div>
 
     <fieldset class="sk-step kinds yk-mode" data-step="1"><legend><span class="yn">1</span>対面か<wbr>オンラインか、<wbr>選んでください</legend>
-      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>対面<em>小岩のスタジオ</em></b><small>JR小岩駅から<wbr>歩いて<wbr>約4分・<wbr>ギターは<wbr>借りられます</small></span></label>
+      <label class="kc or"><input type="radio" name="mode" value="studio"><span><b>対面<em>小岩のスタジオ</em></b><small>JR小岩駅から<wbr>歩いて<wbr>約4分・<wbr>ギターは<wbr>借りられます</small><i class="kc-fee">＋スタジオ代 約1,500円（当日払い）</i></span></label>
       <label class="kc"><input type="radio" name="mode" value="online"><span><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし・<wbr>ギターを<wbr>お持ちの方<wbr>向けです</small></span></label>
       <p class="err" hidden></p>
     </fieldset>

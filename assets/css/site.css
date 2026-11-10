@@ -2472,3 +2472,6 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 .tkt.kr .tk-r{--tc:#ec5f93;--tt:#fff}
 .tkt.free.kr .tk-r{outline-color:rgba(236,95,147,.45)}
 .tkt.free.kr .st{background:rgba(236,95,147,.08);color:#f38fb4;border-right-color:rgba(236,95,147,.35)}
+
+/* 2026-11-10：体験の予約ページ・対面を選ぶところに、スタジオ代（約1,500円・当日スタジオで）を出す。北川くん */
+.yk-mode .kc-fee{display:block;margin:6px 0 0;padding:0;text-indent:0;font-feature-settings:"palt";font-style:normal;font-size:12.5px;font-weight:800;color:var(--or-hi);line-height:1.5}
