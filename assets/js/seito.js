@@ -153,6 +153,7 @@
   const FIELDS = ["mode", "day", "time"];
   const FT = { mode: "対面かオンラインか", day: "日にち", time: "時間" };
   const maxDays = () => (me && me.days) || 12;
+  let foldOpen = false;   // 繰り越し分を開いているか（描き直しても開いたまま）
   let tkM = 0, labMap = {};   // 見ている月（0＝今月、1＝来月）／チケットの番号（確定の画面でも同じ番号を出す）
   const months = () => me.months.slice(0, 2).map(x => x.m);
   const monthEnd = m => new Date(nextM(m) + "-01T00:00:00+09:00").getTime() - 60e3;
@@ -250,7 +251,11 @@
         `<button type="button" class="tk-fix" data-fix="${x.t}">直す</button>`));
     });
     const free = L ? L[tkM].left : 0;
-    for (let i = 0; i < free; i++, n++) out.push(tk("free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
+    /* 2026-11-10 北川くん：月の回数（月8回なら⑧）より先の「未定」＝先月からの繰り越し分は、見出しをつけてたたむ。未定がぜんぶ繰り越し分のときは、たたまずに出す */
+    const shown = [], fold = [];
+    for (let i = 0; i < free; i++, n++) (me.base && n + 1 > me.base ? fold : shown).push(tk("free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
+    if (fold.length && shown.length) out.push(...shown, `<li class="tkfold"><details${foldOpen ? " open" : ""}><summary><b>先月からの繰り越し ${fold.length}回</b><span>${en}中に使えます</span><i><em class="o1">見る</em><em class="o2">とじる</em></i></summary><ol class="sk-tks">${fold.join("")}</ol></details></li>`);
+    else out.push(...shown, ...fold);
     dn.filter(x => !x.getsu).forEach(x => out.push(zumi(x, "追加")));
     mine.filter(x => !x.getsu).forEach(x => out.push(one(x, "追加", "add")));
     /* 回数を使い切ったら「追加（単発）」のチケット（書いている途中のチケットがこの月にあるときは出さない） */
@@ -548,6 +553,7 @@
   }
 
   /* ---------- チケットを押したとき ---------- */
+  $("skList").addEventListener("toggle", e => { if (e.target.closest && e.target.closest(".tkfold")) foldOpen = e.target.open; }, true);
   $("skTabs").addEventListener("click", e => { const b = e.target.closest("[data-tm]"); if (!b) return; tkM = Number(b.dataset.tm); drawList(); });
   $("skList").addEventListener("click", e => {
     if (e.target.closest("[data-go]")) { startEdit(months()[tkM]); return; }   // 未定のチケットの「予約する」
