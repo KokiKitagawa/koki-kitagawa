@@ -2436,3 +2436,15 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 .yk-page .ykw{max-width:100%;overflow-x:clip}
 .yk-page .ykw form,.yk-page .ykw fieldset,.yk-page #ykCheck,.yk-page #ykCheck>div,.yk-page #ykCheck dd,.yk-page .yk-brief,.yk-page .yk-brief dd{min-width:0;max-width:100%;box-sizing:border-box}
 .yk-page fieldset{min-inline-size:0}
+
+/* 2026-11-10：体験の予約ページ：メールで申し込んだ人に「LINE で予約を確定する」（生徒さんページの「まず LINE をつなぎましょう」と同じ形） */
+.yk-done .yk-lgate{margin:0;padding:0;box-shadow:none;background:none}
+.yk-done .yk-lgate h3{margin:4px 0 0;color:#3ddc84}
+.yk-done .yk-lgate .yk-picked{margin:0}
+.yk-done .yk-lgate .small{margin:0;font-size:12.5px;color:var(--faint)}
+
+.yk-done .yk-lgate>.chip{justify-self:start}
+/* 2026-11-10：生徒さんページのカレンダー（北川くんの iPhone 8）：「今日」の札が2行に折れて日にちにかぶっていた → 1行に・小さく上へ */
+.sh-cal .td::before{white-space:nowrap;word-break:keep-all;top:-6px;padding:1px 4px}
+.sh-okw .sh-rm{margin:10px auto 0}
+.sk-shp{overscroll-behavior:contain}

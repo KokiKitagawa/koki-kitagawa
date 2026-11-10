@@ -263,7 +263,7 @@
       from: $("y_from").value, website: $("y_web").value, prev, l: lkey };
     const btn = $("ykSend"), err = $("ykErr");
     btn.disabled = true; btn.textContent = "送っています…"; hideErr(err);
-    const send = demo ? new Promise(r => setTimeout(() => r(lkey ? { ok: true, line: true, mode } : { ok: true, pending: true, mode, min: 30, rid: "demo", rk: "demo" }), 700))
+    const send = demo ? new Promise(r => setTimeout(() => r(lkey ? { ok: true, line: true, mode } : { ok: true, pending: true, mode, min: 30, rid: "demo", rk: "demo", lineOk: "https://line.me/R/oaMessage/%40557brylm/" }), 700))
       : fetch(cfg.api, { method: "POST", body: JSON.stringify(data) }).then(r => r.json());
     send.then(r => {
       if (!r.ok) {
@@ -286,10 +286,39 @@
       el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました</h3>`
         + `<p>LINE に、確定のお知らせを送りました。${d.mode === "studio" ? "<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を LINE でお知らせします。" : "当日の入り口（Google Meet のリンク）も、LINE のお知らせに入っています。"}</p>`
         + `<ol class="yk-picked">${list}</ol>`
-        + `<p class="small">予約の確認・キャンセルは、LINE のメニューの「予約の確認・キャンセル」からできます。${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
+        + `<p class="small">予約の確認・キャンセルは、LINE のメニューの「体験レッスンの予約・確認・キャンセル」からできます。${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
         + (cfg.line ? `<a class="btn or" href="${esc(cfg.line)}">LINE のトークにもどる</a>` : "");
       form.hidden = true; $("ykLine").hidden = true; el.hidden = false;
       el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
+      return;
+    }
+    /* 2026-11-10：メールで申し込んだ人にも、まず「LINE で予約を確定する」を大きく（北川くん）。送るとその場で確定して、お知らせは LINE に届く。
+       LINE を使わない人は、下の小さいボタンから今までどおりメールで確定 */
+    if (r.lineOk && !r.mailWay) {
+      el.innerHTML = `<div class="sk-gate yk-lgate"><span class="chip or">あと1つ</span><h3>LINE で予約を<wbr>確定しましょう</h3>`
+        + `<p>確定のお知らせや、前の日のお知らせ・お部屋の場所が LINE に届きます。</p>`
+        + `<ol class="yk-picked">${list}</ol>`
+        + `<ol class="sk-gs"><li>下のボタンを押すと、LINE が開きます</li><li>入っている文を、そのまま送ってください</li><li>その場で予約が確定します</li></ol>`
+        + `<a class="sk-lnb" id="ykLnOk" href="${esc(r.lineOk)}" target="_blank" rel="noopener"><span>LINE</span>LINE で予約を確定する</a>`
+        + `<p class="sk-gw" id="ykLnWait" hidden>LINE で送ったら、このページに戻ってきてください。確定したか確かめています…</p>`
+        + `<p class="small">${min}分以内に送ってください。公式LINE を友だち追加していない方は、追加してから送るとお知らせが届きます。</p>`
+        + `<button type="button" class="sk-skip" id="ykMailWay">LINE を使わない（メールで確定する）</button></div>`;
+      form.hidden = true; $("ykLine").hidden = true; el.hidden = false;
+      el.scrollIntoView({ behavior: "smooth", block: "start" }); el.focus({ preventScroll: true });
+      let wait = false, tries = 0, timer = 0;
+      const check = () => {
+        if (!wait || document.hidden) return;
+        if (++tries > 30) { clearInterval(timer); return; }
+        const q = demo ? new Promise(res => setTimeout(() => res({ ok: true, state: tries > 1 ? "確定" : "確認待ち", line: tries > 1 }), 300))
+          : fetch(cfg.api + "?a=tst&id=" + encodeURIComponent(r.rid) + "&k=" + encodeURIComponent(r.rk), { cache: "no-store" }).then(x => x.json());
+        q.then(x => { if (wait && x && x.ok && x.state === "確定") { wait = false; clearInterval(timer); finish(d, { ok: true, line: true, mode: d.mode }); } }).catch(() => {});
+      };
+      $("ykLnOk").addEventListener("click", () => {
+        wait = true; tries = 0; $("ykLnWait").hidden = false;
+        clearInterval(timer); timer = setInterval(check, 4000);
+      });
+      document.addEventListener("visibilitychange", () => { if (!document.hidden && wait) setTimeout(check, 600); });
+      $("ykMailWay").addEventListener("click", () => { wait = false; clearInterval(timer); finish(d, Object.assign({}, r, { mailWay: true })); });
       return;
     }
     el.innerHTML = `<span class="chip or">あと1つ</span><h3>メールのリンクを開くと、予約が確定します</h3>`

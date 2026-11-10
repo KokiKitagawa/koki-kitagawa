@@ -393,6 +393,11 @@
   });
   const dragEnd = e => { if (!drag || e.pointerId !== drag.id) return; const d = drag; drag = null; if (!d.moved && e.type === "pointerup") tapHour(d.a); };
   shC.addEventListener("pointerup", dragEnd); shC.addEventListener("pointercancel", dragEnd);
+  /* 2026-11-10：時計を指でなぞると、LINE のブラウザごと下に引っぱられたり、シートがスクロールしたりしていた（北川くんの iPhone 8 の動画）。
+     時計に触れているあいだは、画面のスクロール・引っぱりを止める（古い Safari は touch-action だけでは止まらない） */
+  const holdTouch = e => { if (sheet === "time" && e.target.closest && e.target.closest(".sh-clock svg")) e.preventDefault(); };
+  shC.addEventListener("touchstart", holdTouch, { passive: false });
+  shC.addEventListener("touchmove", holdTouch, { passive: false });
   function shContent(f){
     $("skShT").textContent = FT[f];
     let h = "";
@@ -424,8 +429,9 @@
             : `<button type="button" class="sh-t" data-t="${x.t}"><b>${hm(x.t)}</b><small>〜${hm(x.t + H)}</small></button>`).join("") + `</div></div>`).join("");
     }
     const v = V(f), lab = !v ? "" : f === "mode" ? ML(v) : f === "day" ? `${md(T12(v))}（${wd(T12(v))}）` : "";
-    h += `<div class="sh-okw"><button type="button" class="btn or sh-ok" data-ok${v ? "" : " disabled"}>${v ? `<span>${lab}</span>で決定` : "選んでください"}</button></div>`;
-    if (ed.orig) h += `<button type="button" class="sh-rm" data-rmd>この回を取り消す</button>`;
+    /* 2026-11-10：「この回を取り消す」は決定ボタンの下（同じ枠の中）に。前は下に残るボタンの裏にかくれていた（北川くんの iPhone 8） */
+    h += `<div class="sh-okw"><button type="button" class="btn or sh-ok" data-ok${v ? "" : " disabled"}>${v ? `<span>${lab}</span>で決定` : "選んでください"}</button>`
+      + (ed.orig ? `<button type="button" class="sh-rm" data-rmd>この回を取り消す</button>` : "") + `</div>`;
     shC.innerHTML = h;
     if (f === "time") paintClock(true);
   }
