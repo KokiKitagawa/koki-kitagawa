@@ -294,7 +294,7 @@ export function buildOutputs(files){
           <p class="lplace"><span class="chip or">小岩のスタジオ／オンライン対応</span></p>`}
           ${solo ? "" : `<ul class="lstats big">${D.lessonStats.map(x=>`<li class="card">${x.tag?`<i class="ltag">${esc(x.tag)}</i>`:""}<b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>`}
           ${D.trialProof ? `<p class="trial-proof"><span aria-hidden="true"></span>${esc(D.trialProof)}</p>` : ""}
-          <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます</small></div><div class="p">¥${yen(L.trial.price)}</div>
+          <div class="card trial ${ph("lesson")}"><div><span class="chip or">FIRST</span><b>体験レッスン</b><small>初回のみ・60分・ギターはスタジオで借りられます<br>スタジオで受ける場合は、スタジオ代（1時間 約1,500円）が別にかかります（当日スタジオで）。オンラインはかかりません</small></div><div class="p">¥${yen(L.trial.price)}</div>
             <ol class="tsteps">${(P.lesson.trialSteps||[]).map((t,i)=>`<li><span>${i+1}</span>${esc(t)}</li>`).join("")}</ol>
             ${D.yoyaku ? `<a class="pick or" href="yoyaku.html">空いている日時を見て予約する</a>` : D.booking ? `<button class="pick or" type="button" data-book>空いている日時を見て予約する</button>` : `<button class="pick or" type="button" data-open="レッスン" data-plan="体験レッスン">体験を申し込む</button>`}${GL}</div>
           ${D.yoyaku ? `<p class="plans-lead"><b>月謝・単発のプランは、体験のあとにゆっくり選べます。</b></p>` : ""}

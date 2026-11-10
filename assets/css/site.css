@@ -2429,3 +2429,10 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
   .lteach-b{grid-column:1 / -1;margin-top:10px}
   .lteach-b p{font-size:14.5px}
 }
+
+/* 2026-11-10：体験の予約ページも、iPhone（とくに iPhone 8 など古い Safari）で右にはみ出さないように（北川くん）。
+   確認の画面・申し込む前のご案内は JS で書く文で <wbr> がないので、keep-all だと折り返せず箱ごと広がっていた（86 の生徒さんページと同じ） */
+.yk-page .ykw .yk-check,.yk-page .ykw #ykCheck,.yk-page .ykw .yk-brief,.yk-page .ykw .yk-sug,.yk-page .ykw .yk-mine,.yk-page .ykw .yk-done,.yk-page .ykw .yk-slots,.yk-page .ykw .yk-day{word-break:normal;overflow-wrap:anywhere;line-break:strict}
+.yk-page .ykw{max-width:100%;overflow-x:clip}
+.yk-page .ykw form,.yk-page .ykw fieldset,.yk-page #ykCheck,.yk-page #ykCheck>div,.yk-page #ykCheck dd,.yk-page .yk-brief,.yk-page .yk-brief dd{min-width:0;max-width:100%;box-sizing:border-box}
+.yk-page fieldset{min-inline-size:0}
