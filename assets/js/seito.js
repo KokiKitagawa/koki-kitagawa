@@ -398,6 +398,34 @@
   const holdTouch = e => { if (sheet === "time" && e.target.closest && e.target.closest(".sh-clock svg")) e.preventDefault(); };
   shC.addEventListener("touchstart", holdTouch, { passive: false });
   shC.addEventListener("touchmove", holdTouch, { passive: false });
+  /* 2026-11-10：LINE から開いたとき、下から出る面の上で下に指をすべらせると、LINE の画面ごと閉じてトークに戻っていた（弟さん）。
+     面の上では LINE を閉じさせない。面がいちばん上までスクロールしているときに下へ引っぱると、面が下がって、離すと閉じる */
+  const pnl = sh.querySelector(".sk-shp");
+  let pull = null;
+  sh.addEventListener("touchstart", e => {
+    if (!sheet || e.touches.length !== 1) { pull = null; return; }
+    pull = { y: e.touches[0].clientY, x: e.touches[0].clientX, onP: pnl.contains(e.target), dy: 0, on: false };
+  }, { passive: true });
+  sh.addEventListener("touchmove", e => {
+    if (!pull || !sheet || e.touches.length !== 1) return;
+    if (e.target.closest && e.target.closest(".sh-clock svg")) return;   // 時計は holdTouch で止めている
+    const dy = e.touches[0].clientY - pull.y, dx = e.touches[0].clientX - pull.x;
+    if (!pull.onP) { if (dy > 0 && (window.scrollY || 0) <= 0) e.preventDefault(); return; }   // 暗いところ：ページがいちばん上なら LINE を閉じさせない
+    if (!pull.on) {
+      if (dy > 0 && pnl.scrollTop <= 0) e.preventDefault(); else return;   // 面のいちばん上で下へ：LINE を閉じさせない
+      if (dy > 8 && Math.abs(dy) > Math.abs(dx)) pull.on = true; else return;
+    }
+    e.preventDefault();
+    pull.dy = Math.max(0, dy - 8);
+    pnl.style.transition = "none"; pnl.style.transform = "translateY(" + pull.dy + "px)";
+  }, { passive: false });
+  const pullEnd = () => {
+    if (!pull) return; const p = pull; pull = null; if (!p.on) return;
+    pnl.style.transition = "";
+    if (p.dy > 80) { pnl.style.transform = "translateY(105%)"; closeSheet(); setTimeout(() => { pnl.style.transform = ""; }, 260); }
+    else pnl.style.transform = "";
+  };
+  sh.addEventListener("touchend", pullEnd); sh.addEventListener("touchcancel", pullEnd);
   function shContent(f){
     $("skShT").textContent = FT[f];
     let h = "";
