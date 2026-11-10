@@ -2457,13 +2457,18 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 /* 2026-11-10：生徒さんページ・月の回数より先の「未定」（先月からの繰り越し分）は見出しをつけてたたむ。北川くん */
 .tkfold{list-style:none}
 .tkfold details{margin:4px 0 0}
-.tkfold summary{list-style:none;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;padding:13px 14px;border-radius:12px;background:rgba(92,200,245,.08);box-shadow:inset 0 0 0 1px rgba(92,200,245,.3);cursor:pointer}
+.tkfold summary{list-style:none;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;padding:13px 14px;border-radius:12px;background:rgba(236,95,147,.08);box-shadow:inset 0 0 0 1px rgba(236,95,147,.35);cursor:pointer}
 .tkfold summary::-webkit-details-marker{display:none}
 .tkfold summary b{font-size:14px;color:var(--ink)}
-.tkfold summary span{font-size:11.5px;color:#5cc8f5}
-.tkfold summary i{grid-column:2;grid-row:1/3;font-style:normal;font-size:12px;font-weight:700;color:#5cc8f5;white-space:nowrap}
+.tkfold summary span{font-size:11.5px;color:#f38fb4}
+.tkfold summary i{grid-column:2;grid-row:1/3;font-style:normal;font-size:12px;font-weight:700;color:#f38fb4;white-space:nowrap}
 .tkfold summary i em{font-style:normal}
 .tkfold .o1::after{content:" ▼"} .tkfold .o2::after{content:" ▲"}
 .tkfold details[open] .o1,.tkfold details:not([open]) .o2{display:none}
 .tkfold details[open] summary{margin-bottom:8px}
 .tkfold .tkt.free .tk-go{background:none;box-shadow:inset 0 0 0 1.5px var(--or);color:var(--or-hi)}
+
+/* 2026-11-10：先月からの繰り越し分のチケット＝ローズ（「済」の赤いハンコと分ける）。追加（単発）はオレンジのまま。北川くん */
+.tkt.kr .tk-r{--tc:#ec5f93;--tt:#fff}
+.tkt.free.kr .tk-r{outline-color:rgba(236,95,147,.45)}
+.tkt.free.kr .st{background:rgba(236,95,147,.08);color:#f38fb4;border-right-color:rgba(236,95,147,.35)}
