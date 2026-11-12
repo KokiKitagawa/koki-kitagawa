@@ -54,6 +54,9 @@ const applyFilter = (g, b) => {
     /* 2026-11-05 北川くん：切り替えたときは、下からフワッと出さずにそのまま出す */
     if(!li.hidden && li.classList.contains("rv") && !li.classList.contains("in")){ li.style.transition = "none"; li.style.transitionDelay = ""; li.classList.add("in", "settled"); void li.offsetWidth; li.style.transition = ""; } });
   const more = document.getElementById(g.dataset.grid + "More"), btn = more && document.querySelector(`.morebtn[data-more="${more.id}"]`);
+  /* 2026-11-12 北川くん「ギター参加から高さが変わる」：上の一覧が空（ギター参加・カラオケは「すべて見る」側にしかない）のときは、
+     下の一覧の上のすき間をなくして、どの種類でもレコードが同じ高さから並ぶように */
+  if(more){ const top = document.getElementById(g.dataset.grid); more.classList.toggle("lead", !!top && ![...top.children].some(li => !li.hidden)); }
   if(more){ if(!all){ if(!more.classList.contains("filtered")) more.dataset.was = more.classList.contains("open") ? "1" : ""; more.classList.add("filtered"); setMore(more, true); if(btn) btn.classList.add("filtered"); }
     else if(more.classList.contains("filtered")){ more.classList.remove("filtered"); if(btn) btn.classList.remove("filtered"); setMore(more, more.dataset.was === "1"); } }
   /* 選んだチップが見えるように横に寄せる・下の点も合わせる */

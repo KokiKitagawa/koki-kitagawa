@@ -2522,3 +2522,4 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 /* 2026-11-12：レコード・チケットの一覧を横にスワイプしたときの切り替え（出ていく→反対側から入る）（はみ出しは section.s.sbg の overflow:clip で切れる） */
 .fpage.slide{transition:transform .26s cubic-bezier(.2,.75,.25,1)}
 .fpage.slide.out{transition:transform .17s cubic-bezier(.5,0,.9,.6)}
+.more-box.lead .more-in>ul{padding-top:0!important}
