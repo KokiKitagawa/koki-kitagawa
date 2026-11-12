@@ -2482,3 +2482,6 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 .sk-tk .tk-lg span::before{content:"";width:14px;height:14px;border-radius:4px;background:var(--gr-hi)}
 .sk-tk .tk-lg .k::before{background:#ec5f93}
 .sk-tk .tk-lg .a::before{background:var(--or)}
+
+/* 2026-11-12：来月のタブ・今月20日までのおすすめ。北川くん */
+.sk-tks .tk-hint{list-style:none;padding:9px 12px;border-radius:10px;background:rgba(255,116,23,.1);color:var(--or-hi);font-size:12.5px;font-weight:700;line-height:1.5}

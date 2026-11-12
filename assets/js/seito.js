@@ -74,7 +74,7 @@
   function demoMe(){
     const now = Date.now(), m0 = monKey(now), y = +m0.slice(0, 4), n = +m0.slice(5, 7);
     const m1 = n === 12 ? (y + 1) + "-01" : y + "-" + String(n + 1).padStart(2, "0"), sl = demoSlots().filter(s => s.st);
-    return { ok: true, name: "山田 花子", plan: "月4回", base: 4, single: cfg.single, max: 4, days: 12,
+    return { ok: true, name: "山田 花子", plan: "月4回", base: 4, single: cfg.single, early: 20, max: 4, days: 12,
       months: demoOut ? [{ m: m0, base: 4, carry: 0, used: 4, left: 0 }, { m: m1, base: 4, carry: 0, used: 0, left: 4 }]
                       : [{ m: m0, base: 4, carry: 1, used: 4, left: 1 }, { m: m1, base: 4, carry: 0, used: 0, left: 4 }],
       quota: demoOut ? { [m0]: Array(25).fill(0), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) } : { [m0]: Array.from({ length: 25 }, (_, n) => Math.min(n, 1)), [m1]: Array.from({ length: 25 }, (_, n) => Math.min(n, 4)) },
@@ -252,10 +252,13 @@
         `<button type="button" class="tk-fix" data-fix="${x.t}">直す</button>`));
     });
     const free = L ? L[tkM].left : 0;
+    /* 2026-11-12 北川くん：来月のタブ、今月20日まで「20日までのご予約だと、選べる時間が多めです」 */
+    const today = new Date(Date.now() + 9 * 3600000), okDay = me.early || 0;
+    if (tkM === 1 && okDay && today.getUTCDate() <= okDay) out.unshift(`<li class="tk-hint">${today.getUTCMonth() + 1}/${okDay} までのご予約だと、選べる時間が多めです</li>`);
     /* 2026-11-10 北川くん：月の回数（月8回なら⑧）より先の「未定」＝先月からの繰り越し分は、見出しをつけてたたむ。未定がぜんぶ繰り越し分のときは、はじめから開いておく（「予約する」が隠れないように） */
     const shown = [], fold = [];
     for (let i = 0; i < free; i++, n++) (me.base && n + 1 > me.base ? fold : shown).push(tk(me.base && n + 1 > me.base ? "free kr" : "free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
-    if (fold.length) out.push(...shown, `<li class="tkfold"><details${(foldOpen == null ? !shown.length : foldOpen) ? " open" : ""}><summary><b>先月からの持ち越し ${fold.length}回</b><span>${en}中に使えます</span><i><em class="o1">見る</em><em class="o2">とじる</em></i></summary><ol class="sk-tks">${fold.join("")}</ol></details></li>`);
+    if (fold.length) out.push(...shown, `<li class="tkfold"><details${(foldOpen == null ? !shown.length : foldOpen) ? " open" : ""}><summary><b>先月からの持ち越し ${fold.length}回</b><span>${carryNote(fold.length, tkM, en)}</span><i><em class="o1">見る</em><em class="o2">とじる</em></i></summary><ol class="sk-tks">${fold.join("")}</ol></details></li>`);
     else out.push(...shown, ...fold);
     dn.filter(x => !x.getsu).forEach(x => out.push(zumi(x, "追加")));
     mine.filter(x => !x.getsu).forEach(x => out.push(one(x, "追加", "add")));
@@ -265,6 +268,14 @@
     $("skList").innerHTML = out.join("");
   }
   const T12 = d => new Date(d + "T12:00:00+09:00").getTime();
+  /* 2026-11-12：予約は持ち越しの回から先に使うので、月の終わりで消えるのは lost 回だけ（管理ページと同じ言い方） */
+  function carryNote(n, i, en){
+    const a = me.months[i], b = me.months[i + 1];
+    const lost = a && b ? Math.max(0, (a.base || 0) + (a.carry || 0) - (a.used || 0) - (b.carry || 0)) : n;
+    if (lost >= n) return `${en}中に使えます`;
+    if (!lost) return `使わなかった分は、${b ? monName(b.m) : "来月"}に持ち越せます`;
+    return `うち ${lost}回は${en}中に使えます`;
+  }
 
   /* ---------- 申し込む前のところ（下の帯・追加の確認・練習したい曲） ---------- */
   function drawPre(){
