@@ -2485,3 +2485,37 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 
 /* 2026-11-12：来月のタブ・今月20日までのおすすめ。北川くん */
 .sk-tks .tk-hint{list-style:none;padding:9px 12px;border-radius:10px;background:rgba(255,116,23,.1);color:var(--or-hi);font-size:12.5px;font-weight:700;line-height:1.5}
+
+/* ===== 2026-11-12 デザインのブラッシュアップ（北川くん） ===== */
+/* 1. お仕事のご依頼を独立した区切りに：見出しは sh() の「04 For Clients」。パネルの中の小見出しはなくし、説明文を見出しの下に */
+.cl-sec .workcta{margin-top:0}
+.cl-sec .wc-head .wc-lead{margin:0;max-width:640px;font-size:15px;line-height:1.9;color:var(--sub)}
+@media (max-width:820px){ .cl-sec .wc-head .wc-lead{font-size:14px} }
+/* 2. 小さい灰色の文字を、少し大きく・明るく（トップの実績・年表・レコード） */
+.hero .marks.v-a li>i{font-size:10.5px;color:rgba(243,245,249,.75)}
+.hero .marks.v-a li>span{font-size:12px}
+.ev small{color:#c3cad8}
+.tl.live .tly{opacity:.66}
+.recs .vrec .rtx i{font-size:11px}
+.recs .vrec .rtx small,.recs .vrec .rtx span{font-size:12px;color:var(--sub)}
+.sk3 .num span,.ev.key .k,.wc-head .wc-en{font-size:11.5px}
+@media (max-width:820px){
+  .hero .marks.v-a li>i{font-size:10px}
+  .hero .marks.v-a li>span{font-size:11.5px}
+  .ev small{font-size:12.5px}
+  .recs .vrec .rtx small{font-size:11.5px}
+}
+/* 3. 年表：スマホは各年の1つめと大きな仕事だけ（残りは「すべて見る」）。PC はぜんぶ出す */
+.tl-more{display:none}
+@media (max-width:820px){
+  #career .tl:not(.all) .ev:not(.fst):not(.key){display:none}
+  .tl-more{display:flex}
+}
+/* 4. できること：札（ふち・背景）をやめて、点つきの文字の並びに。MAJOR はオレンジの点、ほかは灰色の点 */
+.sk3 .tags{gap:6px 16px}
+.sk3 .tags li,.sk3 .tags li.mj{padding:0;background:none;box-shadow:none;border-radius:0;font-size:13.5px;font-weight:600;letter-spacing:.04em;color:var(--ink)}
+.sk3 .tags li:not(.mj):not(.go)::before{content:"";order:-1;flex:none;width:5px;height:5px;border-radius:50%;background:var(--faint)}
+@media (max-width:820px){ .sk3 .tags{gap:6px 14px} .sk3 .tags li,.sk3 .tags li.mj{font-size:13px} }
+/* 5. PROFILE の写真の「GUITARIST」：写真の下にはみ出さず、写真の中の左下に収める */
+.pw .bigword{bottom:.18em;left:.18em;font-size:clamp(44px,5vw,76px);-webkit-text-stroke-width:1.2px;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+@media (max-width:820px){ .pw .bigword{font-size:clamp(40px,13vw,56px);bottom:.2em;left:.2em} }

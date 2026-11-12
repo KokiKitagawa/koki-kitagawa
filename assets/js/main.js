@@ -439,3 +439,10 @@ document.querySelectorAll("[data-rail]").forEach(b => b.addEventListener("click"
   const card = el.querySelector(".song"); const step = card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(el).columnGap||0) : el.clientWidth*.8;
   el.scrollBy({left: step * Number(b.dataset.rail), behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth"});
 }));
+
+/* 2026-11-12：CAREER の年表。スマホは各年の1つめと大きな仕事だけ出して、残りは「すべて見る」（北川くん） */
+document.querySelectorAll(".tl-more").forEach(btn => btn.addEventListener("click", () => {
+  const tl = document.querySelector("#career .tl"), open = !tl.classList.contains("all");
+  if(!open && btn.getBoundingClientRect().top < 0) tl.scrollIntoView({block:"start"});
+  tl.classList.toggle("all", open); btn.setAttribute("aria-expanded", open);
+}));

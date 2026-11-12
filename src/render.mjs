@@ -184,9 +184,10 @@ export function buildOutputs(files){
     const T = D.timeline;
     return `<section class="s pb" id="career">${pbg("tubesBlue","blue")}<i class="seam-t" aria-hidden="true"></i><div class="wrap">
       ${sh("02","Career","経歴・実績")}
-      <ol class="tl">${T.map(y => `<li class="tly${y.items.some(i=>i.key)?" has-key":""}"><div class="y">${y.year}</div><div class="evs">${y.items.map(it => it.key
-        ? `<div class="ev key"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`
-        : `<div class="ev"><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`).join("")}</div></li>`).join("")}</ol>
+      <ol class="tl">${T.map(y => `<li class="tly${y.items.some(i=>i.key)?" has-key":""}"><div class="y">${y.year}</div><div class="evs">${y.items.map((it,j) => it.key
+        ? `<div class="ev key fst"><span class="k">${/SUMMER|フェス/i.test(it.t)?"FESTIVAL":/ステージ|ミュージカル/.test(it.t)?"STAGE":"SONGWRITING"}</span><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`
+        : `<div class="ev${j?"":" fst"}"><b>${esc(it.t)}</b>${it.s?`<small>${esc(it.s)}</small>`:""}</div>`).join("")}</div></li>`).join("")}</ol>
+      <button type="button" class="morebtn tl-more" aria-controls="career" aria-expanded="false"><b class="m-o">すべて見る<em>（${T.reduce((n,y)=>n+y.items.length,0)}）</em></b><b class="m-c">閉じる</b><i aria-hidden="true"></i></button>
       <p class="small" style="margin-top:22px">出演したライブ・舞台・テレビの一覧は <a href="#works" data-tab-go="stage" style="text-decoration:underline;text-underline-offset:4px">WORKS</a> にまとめています。</p>
     </div><i class="seam" aria-hidden="true"></i></section>`;
   }
@@ -256,8 +257,16 @@ export function buildOutputs(files){
         <a class="ol sp" href="${P.links.spotify}" target="_blank" rel="noopener">${svg("sp")}<span><b>Spotify</b><small>提供曲・参加曲をまとめて聴く</small></span></a>
         <a class="ol yt" href="${P.links.youtube}" target="_blank" rel="noopener">${svg("yt")}<span><b>YouTube</b><small>演奏を見る</small></span></a>
       </div>
+    </div></section>`;
+  }
+
+  /* 2026-11-12：お仕事のご依頼を WORKS から独立した区切りに（04 For Clients）。依頼したい人がいちばん見るところなので、ほかの区切りと同じ大きな見出しに（北川くん） */
+  function clients(){
+    const W = P.work;
+    return `<section class="s sbg cl-sec" id="clients"><i class="seam-t" aria-hidden="true"></i><div class="wrap">
+      ${sh("04","For Clients","お仕事のご依頼")}
       <div class="workcta">
-        <div class="wc-head"><span class="wc-en">FOR CLIENTS</span><h3>お仕事のご依頼</h3><p>作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p></div>
+        <div class="wc-head"><p class="wc-lead">作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p></div>
         <h4 class="wc-sub">できること</h4>
         ${canDo()}
         <h4 class="wc-sub">進め方</h4>
@@ -342,7 +351,7 @@ export function buildOutputs(files){
   const statsHTML = () => `<ul class="lt-stats">${D.lessonStats.map(x=>`<li><b>${esc(x.v)}<small>${esc(x.u)}</small></b><span>${esc(x.l)}</span></li>`).join("")}</ul>`;
   function lessonTeaser(){
     return `<section class="s sbg lteaser" id="lesson"><div class="wrap">
-      ${sh("04","Lesson","ギターレッスン")}
+      ${sh("05","Lesson","ギターレッスン")}
       <a class="lt-card reveal" href="lesson.html">
         <span class="lt-ph">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</span>
         <span class="lt-tx"><span class="chip or">小岩のスタジオ／オンライン</span>
@@ -422,7 +431,7 @@ export function buildOutputs(files){
   function contact(){
     const W = P.work;
     return `<section class="s pb" id="contact">${pbg("tubesAmber","amber")}<i class="seam-t" aria-hidden="true"></i><div class="wrap">
-      ${sh("05","Contact","お問い合わせ")}
+      ${sh("06","Contact","お問い合わせ")}
       <div class="ct">
         <div class="side">
           <p>${D.yoyaku ? `制作・演奏・ライブサポート等のお仕事のご依頼、取材などその他のお問い合わせは、こちらのフォームからご連絡ください。体験レッスンのご予約は<a class="ul" href="lesson.html">レッスンのページ</a>から。` : `レッスンのお申し込み、制作・演奏・ライブサポート等のお仕事は、こちらのフォームからご連絡ください。`}24時間以内にメールでご返信します。</p>
@@ -542,7 +551,7 @@ export function buildOutputs(files){
     return `<div class="ribbon wave${rev?" rev":""}" aria-hidden="true">${staffSvg(n, rev, 1440, 240, 54, "pc", 14, 48, 78)}${staffSvg(n, rev, 620, 200, 50, "sp", 8, 26, 44)}</div>`; };
 
   const bookModal = D.booking && !D.yoyaku ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
-  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+band(["Lesson","Beginner","Online","Pro"],true)+lessonTeaser()+contact()+bookModal;
+  const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+clients()+band(["Lesson","Beginner","Online","Pro"],true)+lessonTeaser()+contact()+bookModal;
   const lessonMain = lessonHero()+teacher()+lesson("01", true);
 
   const url = p.siteUrl;
@@ -592,7 +601,7 @@ export function buildOutputs(files){
     html = html.split('<button class="btn gr sm" type="button" data-open="お仕事">仕事を依頼する</button>').join(D.yoyaku ? '<a class="btn or sm only-pc" href="yoyaku.html">体験レッスンを予約</a>' : '');
     html = html.split('<button class="btn gr" type="button" data-open="お仕事">お仕事依頼</button>').join('');
     html = html.split('<button class="btn gr" type="button" data-open="お仕事">仕事を依頼する</button>').join('<a class="btn gr" href="./#contact">仕事を依頼する</a>');
-    for(const id of ["profile","career","works","contact"]) html = html.split(`href="#${id}"`).join(`href="./#${id}"`);
+    for(const id of ["profile","career","works","clients","contact"]) html = html.split(`href="#${id}"`).join(`href="./#${id}"`);
     html = html.replace(/<title>[^<]*<\/title>/, "<title>ギターレッスン（小岩・オンライン）| 北川弘喜 Koki Kitagawa</title>")
       .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="ギタリスト・作曲家 北川弘喜のギターレッスン。JR小岩駅近くのスタジオとオンラインで、初心者からプロを目指す方まで。体験レッスン60分 ${yen(D.lessonPlans.trial.price)}円。">`)
       .replace(/<meta property="og:title" content="[^"]*">/, '<meta property="og:title" content="北川弘喜のギターレッスン（小岩・オンライン）">')
