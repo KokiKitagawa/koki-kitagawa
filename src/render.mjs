@@ -550,7 +550,7 @@ export function buildOutputs(files){
   /* 2026-10-28：Google 向けの説明（目に見えない）。トップ＝人（北川弘喜）とサイトの名前、レッスンのページ＝レッスンの中身（場所・料金・受付時間）。
      料金は site.json、受付時間は yoyaku の予約枠（水木金 16〜23時・土日 12〜23時・月火 18〜23時＝2026-11-03 追加）と同じ */
   const ld = {"@context":"https://schema.org","@type":"Person","@id":url+"#person","name":p.name,"image":url+IMG.ogp,"alternateName":p.nameEn,"jobTitle":["ギタリスト","作曲家","編曲家","ギター講師"],
-    "description":"書けるギタリスト、弾ける作曲家。ライブ・舞台・TVのサポートギター、作詞・作曲・編曲、ギターレッスン。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
+    "description":"書けるギタリスト、弾ける作曲家。" + p.bio[0] + "ライブ・TVのサポートギター、作詞・作曲・編曲のほか、2021年から小岩（東京都江戸川区）とオンラインでギターレッスンを続けている。","address":{"@type":"PostalAddress","addressRegion":"東京都","addressLocality":"江戸川区"},
     "url":url,"sameAs":["instagram","tiktok","x","youtube","spotify"].map(k => p.links[k]).filter(Boolean),
     /* 2026-10-28：できること（knowsAbout） */
     "knowsAbout":["ギター演奏","ギターレコーディング","作曲","編曲","作詞","ギターレッスン"]};
@@ -559,6 +559,8 @@ export function buildOutputs(files){
     "composer":{"@id":url+"#person"},...((c.roles||[]).includes("作詞") ? {"lyricist":{"@id":url+"#person"}} : {}),...(c.year ? {"dateCreated":String(c.year)} : {}),
     "recordedAs":{"@type":"MusicRecording","name":c.title,"byArtist":{"@type":"MusicGroup","name":c.artist},...(c.spotify ? {"url":c.spotify} : {})}}));
   /* サイトの名前（Google の検索結果で、URL の上に出る名前） */
+  /* 2026-11-12：トップは「北川弘喜のプロフィールのページ」だと Google に伝える（名前の検索・AI の答えに出やすく） */
+  const ldProfile = {"@context":"https://schema.org","@type":"ProfilePage","url":url,"name":"北川弘喜 Koki Kitagawa 公式サイト","mainEntity":{"@id":url+"#person"}};
   const ldSite = {"@context":"https://schema.org","@type":"WebSite","name":"北川弘喜 Koki Kitagawa","alternateName":["北川弘喜","Koki Kitagawa","KOKI KITAGAWA"],"url":url,"inLanguage":"ja"};
   const HOURS = [[["Wednesday","Thursday","Friday"],"16:00"],[["Saturday","Sunday"],"12:00"],[["Monday","Tuesday"],"18:00"]].map(([d,o]) => ({"@type":"OpeningHoursSpecification","dayOfWeek":d,"opens":o,"closes":"23:00"}));
   const ldLesson = {"@context":"https://schema.org","@type":"Service","name":"北川弘喜のギターレッスン（小岩・オンライン）","serviceType":"ギターレッスン",
@@ -576,7 +578,7 @@ export function buildOutputs(files){
   for(const f of ASSETS) html = html.split(`"${f}"`).join(`"${f}?v=${stamp(files[f])}"`);
   const put = (mark, val) => { if(!html.includes(mark)) warnings.push("差込口が見つかりません: " + mark); html = html.split(mark).join(val); };
   put("<!--@meta-->", meta);
-  put("<!--@jsonld-->", (page==="lesson" ? [ldLesson] : [ld, ldSite, ...ldSongs]).map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
+  put("<!--@jsonld-->", (page==="lesson" ? [ldLesson] : [ldProfile, ld, ldSite, ...ldSongs]).map(x => `<script type="application/ld+json">${JSON.stringify(x).replace(/</g,"\\u003c")}</script>`).join("\n"));
   put("<!--@phstyle-->", phStyle);
   put("<!--@main-->", mainHTML);
   /* 予約ページがあるときは、上・下・メニューの「レッスンを申し込む」も予約カレンダーを開く（はじめての人の入口は体験レッスンなので） */
@@ -620,6 +622,18 @@ export function buildOutputs(files){
   /* 2026-10-27：Google アナリティクス（来た人の数・LINE や予約のボタンが押された数）。北川くんの OK で「よそのプログラムを読み込まない」の例外。
      URL の ?k=（生徒さんの鍵）・?l=（LINE の合言葉）を Google に送らないよう、アドレスは ? より前だけにする。生徒さん専用ページには入れない */
   for(const f of Object.keys(out)) out[f] = addWbr(out[f]);   /* 2026-10-28：ことばの途中で改行しない */
+  /* 2026-11-12：AI（ChatGPT・Google の AI による概要など）向けの、文字だけの案内（llms.txt）。中身はぜんぶ data から */
+  { const L = site.lessonPlans, cd = p.canDo.groups.map(g => g.name + "（" + g.desc + "）").join("／");
+    out["llms.txt"] = [
+      "# 北川弘喜（Koki Kitagawa）", "",
+      "> " + p.headline + "。ギタリスト・作曲家・編曲家・ギター講師。東京都江戸川区。", "",
+      "## プロフィール", ...p.bio.map(b => "- " + b), "",
+      "## お仕事", "- できること：" + cd, "- " + p.canDo.note, "- ご依頼・お問い合わせ（メール）：" + url + "#contact", "",
+      "## ギターレッスン", "- JR小岩駅近くのスタジオ（サウンドスタジオM小岩店）とオンライン（Google Meet）。初心者からプロ志向まで、3歳から。",
+      "- 体験レッスン 60分 " + yen(L.trial.price) + "円（スタジオの場合はスタジオ代が別）／単発 60分 " + yen(L.single.price) + "円／月謝 " + L.monthly.map(m => m.name + " " + yen(m.price) + "円").join("・"),
+      "- くわしく・体験の予約：" + url + "lesson.html", "",
+      "## リンク", "- 公式サイト：" + url, ...Object.entries(p.links).filter(([,v]) => v).map(([k,v]) => "- " + k + "：" + v), ""
+    ].join("\n"); }
   if(ga) for(const f of Object.keys(out)) if(f !== "seito.html") out[f] = out[f].replace("</head>", gaTag(ga) + "\n</head>");
   return { files: out, warnings };
 }
