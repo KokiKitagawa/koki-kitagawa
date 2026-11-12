@@ -2519,3 +2519,6 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 /* 5. PROFILE の写真の「GUITARIST」：写真の下にはみ出さず、写真の中の左下に収める */
 .pw .bigword{bottom:.18em;left:.18em;font-size:clamp(44px,5vw,76px);-webkit-text-stroke-width:1.2px;text-shadow:0 2px 18px rgba(0,0,0,.45)}
 @media (max-width:820px){ .pw .bigword{font-size:clamp(40px,13vw,56px);bottom:.2em;left:.2em} }
+/* 2026-11-12：レコード・チケットの一覧を横にスワイプしたときの切り替え（出ていく→反対側から入る）（はみ出しは section.s.sbg の overflow:clip で切れる） */
+.fpage.slide{transition:transform .26s cubic-bezier(.2,.75,.25,1)}
+.fpage.slide.out{transition:transform .17s cubic-bezier(.5,0,.9,.6)}

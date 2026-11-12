@@ -75,15 +75,23 @@ document.querySelectorAll(".filters[data-grid]").forEach(g => {
     if(!axis){ if(Math.abs(mx) < 8 && Math.abs(my) < 8) return; axis = Math.abs(mx) > Math.abs(my) * 1.2 ? "x" : "y"; if(axis === "y") return; }
     e.preventDefault(); dx = mx;
     const i = cur(), edge = (dx > 0 && i === 0) || (dx < 0 && i === chips().length - 1);
-    const d = edge ? dx * .22 : dx * .55;
+    const d = edge ? dx * .22 : dx * .9;   /* 2026-11-12：指にほぼそのままついてくる */
     pg.style.transform = `translateX(${d}px)`; }, {passive:false});
   const end = () => { if(axis !== "x"){ axis = ""; return; } axis = "";
     const i = cur(), n = chips().length, fast = Math.abs(dx) / Math.max(1, performance.now() - t0) > .45;
     const j = (Math.abs(dx) > 60 || (fast && Math.abs(dx) > 24)) ? i + (dx < 0 ? 1 : -1) : i;
     if(j === i || j < 0 || j >= n){ pg.classList.add("slide"); pg.style.transform = ""; return; }
-    /* 2026-11-05 北川くん：フェードはやめて、次の一覧がそのまま出てくる */
-    pg.classList.remove("slide"); pg.style.transform = ""; applyFilter(g, chips()[j]);
-    if(g.getBoundingClientRect().top < 0) g.scrollIntoView({block:"start"});
+    /* 2026-11-12 北川くん「切り替わりが気持ち悪い」：前は指を離した瞬間にパッと入れかわっていた。
+       いまの一覧がスワイプした向きにすっと出ていき、次の一覧が反対側から入ってくる（フェードはしない） */
+    const dir = dx < 0 ? -1 : 1, W = pg.offsetWidth;
+    if(matchMedia("(prefers-reduced-motion:reduce)").matches){ pg.classList.remove("slide"); pg.style.transform = ""; applyFilter(g, chips()[j]); return; }
+    pg.classList.add("slide","out"); pg.style.transform = `translateX(${dir * W}px)`;
+    setTimeout(() => {
+      pg.classList.remove("slide","out"); applyFilter(g, chips()[j]);
+      pg.style.transform = `translateX(${-dir * W * .6}px)`; void pg.offsetWidth;
+      pg.classList.add("slide"); pg.style.transform = "";
+      if(g.getBoundingClientRect().top < 0) g.scrollIntoView({block:"start"});
+    }, 170);
   };
   pg.addEventListener("touchend", end); pg.addEventListener("touchcancel", end);
 });
@@ -443,6 +451,8 @@ document.querySelectorAll("[data-rail]").forEach(b => b.addEventListener("click"
 /* 2026-11-12：CAREER の年表。スマホは各年の1つめと大きな仕事だけ出して、残りは「すべて見る」（北川くん） */
 document.querySelectorAll(".tl-more").forEach(btn => btn.addEventListener("click", () => {
   const tl = document.querySelector("#career .tl"), open = !tl.classList.contains("all");
-  if(!open && btn.getBoundingClientRect().top < 0) tl.scrollIntoView({block:"start"});
+  /* 2026-11-12 北川くん：閉じたときに下の WORKS まで飛んでいたので、ボタンが指の下に残るように画面を合わせる */
+  const top0 = btn.getBoundingClientRect().top;
   tl.classList.toggle("all", open); btn.setAttribute("aria-expanded", open);
+  if(!open){ window.scrollBy({top: btn.getBoundingClientRect().top - top0, behavior:"instant"}); }
 }));
