@@ -255,7 +255,7 @@
     /* 2026-11-10 北川くん：月の回数（月8回なら⑧）より先の「未定」＝先月からの繰り越し分は、見出しをつけてたたむ。未定がぜんぶ繰り越し分のときは、はじめから開いておく（「予約する」が隠れないように） */
     const shown = [], fold = [];
     for (let i = 0; i < free; i++, n++) (me.base && n + 1 > me.base ? fold : shown).push(tk(me.base && n + 1 > me.base ? "free kr" : "free", C(n + 1), "未定", "まだ予約していません", `<button type="button" class="tk-go" data-go>予約する</button>`));
-    if (fold.length) out.push(...shown, `<li class="tkfold"><details${(foldOpen == null ? !shown.length : foldOpen) ? " open" : ""}><summary><b>先月からの繰り越し ${fold.length}回</b><span>${en}中に使えます</span><i><em class="o1">見る</em><em class="o2">とじる</em></i></summary><ol class="sk-tks">${fold.join("")}</ol></details></li>`);
+    if (fold.length) out.push(...shown, `<li class="tkfold"><details${(foldOpen == null ? !shown.length : foldOpen) ? " open" : ""}><summary><b>先月からの持ち越し ${fold.length}回</b><span>${en}中に使えます</span><i><em class="o1">見る</em><em class="o2">とじる</em></i></summary><ol class="sk-tks">${fold.join("")}</ol></details></li>`);
     else out.push(...shown, ...fold);
     dn.filter(x => !x.getsu).forEach(x => out.push(zumi(x, "追加")));
     mine.filter(x => !x.getsu).forEach(x => out.push(one(x, "追加", "add")));

@@ -902,7 +902,7 @@ ${css}
         <div class="sk-hi"><span class="chip or" id="skPlan"></span><b id="skName"></b></div>
         <div class="sk-months" id="skMonths" hidden></div>
         <!-- 2026-11-10：月の回数を「チケット」で並べる（予約済み＝日時入り、未定＝点線のグレー）。北川くん -->
-        <div class="sk-tk" id="skTk"><div class="sk-tabs" id="skTabs" role="tablist" aria-label="月"></div><ol class="sk-tks" id="skList"></ol></div>
+        <div class="sk-tk" id="skTk"><div class="sk-tabs" id="skTabs" role="tablist" aria-label="月"></div><!-- 2026-11-12：チケットの色の凡例（北川くん） --><p class="tk-lg" aria-label="チケットの色"><span class="n">通常</span><span class="k">持ち越し</span><span class="a">追加</span></p><ol class="sk-tks" id="skList"></ol></div>
         <!-- 2026-11-10：チケットに書きこむ予約。書いた回（申し込み前）があるときだけ出す。北川くん -->
         <div class="sk-pre" id="skPre" hidden>
           <div class="sk-split" id="skSplit" hidden aria-live="polite"></div>

@@ -2475,3 +2475,10 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 
 /* 2026-11-10：体験の予約ページ・対面を選ぶところに、スタジオ代（約1,500円・当日スタジオで）を出す。北川くん */
 .yk-mode .kc-fee{display:block;margin:6px 0 0;padding:0;text-indent:0;font-feature-settings:"palt";font-style:normal;font-size:12.5px;font-weight:800;color:var(--or-hi);line-height:1.5}
+
+/* 2026-11-12：生徒さんページ・チケットの色の凡例（通常＝青・持ち越し＝ローズ・追加＝オレンジ）。北川くん */
+.sk-tk .tk-lg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 10px;font-size:12px;color:var(--sub)}
+.sk-tk .tk-lg span{display:inline-flex;align-items:center;gap:6px}
+.sk-tk .tk-lg span::before{content:"";width:14px;height:14px;border-radius:4px;background:var(--gr-hi)}
+.sk-tk .tk-lg .k::before{background:#ec5f93}
+.sk-tk .tk-lg .a::before{background:var(--or)}
