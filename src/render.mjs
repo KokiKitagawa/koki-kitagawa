@@ -295,6 +295,7 @@ export function buildOutputs(files){
     /* 月謝・単発のボタン：予約ページがあるときは「体験から始める」（気になるプランを予約ページへ渡す） */
     function pick(n){ return D.yoyaku ? "" :   /* 2026-10-28：予約ページがあるときは、月謝・単発のカードにボタンを出さない（北川くん「全部体験から始めるは気持ち悪い」）。入口は体験のカードの1つだけ */ `<button class="pick" type="button" data-open="レッスン" data-plan="${esc(n)}">このプランを選ぶ</button>`; }
     return `<section class="s sbg" id="lesson">${solo ? `<i class="seam-t" aria-hidden="true"></i>` : ""}<div class="wrap">
+      ${solo && (whos() + voices()) ? `<div class="ltrust" id="trust">${whos()}${voices()}</div>` : ""}
       ${solo ? sh(no,"Price","料金と体験レッスン") : sh(no,"Lesson","ギターレッスン")}
       <div class="les${solo ? " solo" : ""}">
         ${solo ? "" : `<div class="pw"><div class="photo reveal">${pic("lesson","ギターを持ち、こちらを見てほほえむ北川弘喜")}</div><span class="bigword or" aria-hidden="true">Let's play</span></div>`}
@@ -310,7 +311,7 @@ export function buildOutputs(files){
           <ul class="plans hs" id="plans">${L.monthly.map(plan).join("")}
             <li class="card plan ${ph("guitars")}"><div class="nm">単発</div><div class="ct">60分×1回</div><div class="p">¥${yen(base)}<small>/ 回</small></div><div class="per">好きなときに1回から</div>
             ${pick("単発")}${GL}</li></ul>${swipe(L.monthly.length+1)}
-          <p class="small" style="margin:14px 0 0">料金はすべて税込です。スタジオで受ける場合、スタジオ代（1時間 約1,500円）が別にかかります。オンラインはかかりません。</p>
+          <p class="small lnote" style="margin:14px 0 0">料金はすべて税込です。スタジオで受ける場合、スタジオ代（1時間 約1,500円）が別にかかります。オンラインはかかりません。</p>
           <details class="acc open-card les-info"><summary><b>受付の時間・お支払い・キャンセル</b></summary><div class="in">
             <table class="hours"><tr><th>水・木・金</th><td>16〜23時</td></tr>
             <tr><th>土・日</th><td>12〜23時</td></tr>
@@ -323,13 +324,13 @@ export function buildOutputs(files){
       ${solo ? access() : ""}
       <div class="les-extra">
         <div><h3><span>STEP</span>はじめるまで</h3>
-          <ol class="flow hs" id="flow">
+          <ol class="flow${solo ? "" : " hs"}" id="flow">
             ${D.yoyaku ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>スタジオもオンラインも、1つ選ぶだけ</small></li>
             <li class="card"><span class="n">02</span><b>予約が確定</b><small>LINE ならその場で確定。メールの方は、届いたリンクを開くと確定します</small></li>` : D.booking ? `<li class="card"><span class="n">01</span><b>空いている日時を選ぶ</b><small>カレンダーから、その場で予約できます</small></li>
             <li class="card"><span class="n">02</span><b>確認のメールが届く</b><small>場所と当日の流れをお送りします</small></li>` : `<li class="card"><span class="n">01</span><b>フォームから申し込む</b><small>ご用件で「レッスン」を選んで送信</small></li>
             <li class="card"><span class="n">02</span><b>日程を決める</b><small>2日以内にメールでご返信します</small></li>`}
             <li class="card"><span class="n">03</span><b>体験レッスン</b><small>初回60分。合えば月謝か単発へ</small></li>
-          </ol>${swipe(3)}</div>
+          </ol>${solo ? "" : swipe(3)}</div>
         <div class="faq reveal" id="faq"><h3><span>FAQ</span>よくある質問</h3>
           <details><summary>まったくの初心者でも大丈夫？</summary><p>大丈夫です。初心者からプロを目指す方まで、それぞれに合わせて進めます。</p></details>
           <details><summary>ギターを持っていなくても受けられる？</summary><p>${esc(P.lesson.guitarRental)}</p></details>
@@ -337,7 +338,7 @@ export function buildOutputs(files){
           <details><summary>体験のあと、しつこく勧誘されない？</summary><p>${esc(P.lesson.noPush)}</p></details>
           <details><summary>何歳から受けられる？</summary><p>${esc(P.lesson.ages)}</p></details>
         </div>
-      </div>${whos()}${voices()}
+      </div>${solo ? "" : whos() + voices()}
       ${D.yoyaku ? `<div class="les-book reveal">
         ${D.lineAdd ? `<a class="ct-book ln only-sp" href="${esc(D.lineAdd)}" target="_blank" rel="noopener"><span class="cb-tx"><span class="chip or">FIRST LESSON</span><b>LINE で体験レッスンを予約</b><small>60分 ¥${yen(D.lessonPlans.trial.price)}・小岩のスタジオかオンライン。友だち追加すると、すぐに予約のボタンが届きます。お知らせも LINE に届きます</small></span><i class="cb-arr cb-ln" aria-hidden="true">${LINE_ICON}</i></a>
         <a class="les-web only-sp" href="yoyaku.html">LINE を使わない方は、こちらの予約ページから →</a>` : ""}
@@ -552,7 +553,8 @@ export function buildOutputs(files){
 
   const bookModal = D.booking && !D.yoyaku ? `<div class="bk" id="bk" hidden role="dialog" aria-modal="true" aria-label="体験レッスンの予約"><div class="bk-in"><div class="bk-top"><b>体験レッスンの予約</b><button class="x" type="button" data-book-close aria-label="閉じる">×</button></div><iframe title="体験レッスンの予約カレンダー" data-src="${esc(D.bookingEmbed)}" loading="lazy"></iframe><a class="small" href="${esc(D.booking)}" target="_blank" rel="noopener">うまく表示されないときは、こちらから予約ページを開いてください</a></div></div>` : "";
   const main = hero()+band(["Guitar","Compose","Arrange","Live Support"])+profile()+career()+works()+clients()+band(["Lesson","Beginner","Online","Pro"],true)+lessonTeaser()+contact()+bookModal;
-  const lessonMain = lessonHero()+teacher()+lesson("01", true);
+  /* 2026-11-12：はじめての人が知りたい「こんな方が来ています」「生徒さんの声」を、講師の欄のすぐ下（料金の前）へ（北川くん） */
+  const lessonMain = lessonHero()+teacher()+lesson("01", true);   /* こんな方・生徒さんの声は lesson() の中、PRICE の見出しの上（同じ背景のまま） */
 
   const url = p.siteUrl;
   const meta = `<link rel="canonical" href="${url}">\n<meta property="og:url" content="${url}">\n<meta property="og:image" content="${url}${IMG.ogp}">\n<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta property="og:image:alt" content="ギターを弾く北川弘喜。書けるギタリスト、弾ける作曲家。">`;

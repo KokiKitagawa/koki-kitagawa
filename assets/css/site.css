@@ -2523,3 +2523,17 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 .fpage.slide{transition:transform .26s cubic-bezier(.2,.75,.25,1)}
 .fpage.slide.out{transition:transform .17s cubic-bezier(.5,0,.9,.6)}
 .more-box.lead .more-in>ul{padding-top:0!important}
+/* ===== 2026-11-12 レッスンのページのブラッシュアップ（北川くん） ===== */
+/* 1. 体験のカード：スマホは金額をタイトルの下へ。説明を横幅いっぱいに */
+@media (max-width:820px){
+  #lesson .trial{grid-template-columns:minmax(0,1fr);gap:4px}
+  #lesson .trial>div:first-child{display:contents}
+  #lesson .trial .chip{order:1;justify-self:start} #lesson .trial b{order:2} #lesson .trial .p{order:3;grid-row:auto;justify-self:start;font-size:30px;margin:2px 0 6px}
+  #lesson .trial small{order:4} #lesson .trial .tsteps{order:5} #lesson .trial .pick{order:6}
+  #lesson .trial small{font-size:13px;line-height:1.7}
+}
+/* 2. 安心材料（こんな方・生徒さんの声）を講師の欄の下に */
+.ltrust{position:relative;margin-bottom:clamp(72px,9vw,120px)}
+.ltrust .voices:first-child{margin-top:0}
+/* 5. 料金の下の注意書き */
+.lnote{color:#c3cad8!important;font-size:13px!important;line-height:1.8}
