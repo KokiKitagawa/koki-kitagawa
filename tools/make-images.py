@@ -35,7 +35,7 @@ ext=2400; wide=Image.new("RGB",(6000+ext,3375)); wide.paste(im,(ext,0))
 c=im.crop((0,0,1200,3375)); wide.paste(c,(0,0)); wide.paste(ImageOps.mirror(c),(1200,0))   # 左端1200pxはカーテンだけ。そのまま→反転→本体の順に並べると、つなぎ目が連続する
 out(wide,"hero-pc",2000,vig=.1,**P)
 im=src(ADD,"IMG_7341.JPG"); out(im.crop((900,0,4100,4000)),"hero-sp",900,**P)            # スマホは縦に切る
-im=src(ADD,"IMG_7306.JPG"); out(im.crop((1650,0,4850,4000)),"profile",900,**P)           # こちらを見ている1枚
+im=src(ADD,"IMG_7320.JPG"); out(im.crop((1350,0,4550,4000)),"profile",900,**P)           # 弾きながら少し横を見る1枚（2026-11-14 7306から差し替え）
 im=src(ADD,"IMG_7321.JPG"); out(im.crop((1250,0,4450,4000)),"lesson",900,gamma=1.05,sat=.9,warm=.6)  # やわらかい光
 im=src(ADD,"IMG_7342.JPG"); out(im.crop((1000,1700,6000,4000)),"hands",1400,**P)         # 手元とギター
 im=src(ADD,"IMG_7313.JPG"); out(im.crop((0,1125,6000,4000)),"play",1400,**P)
