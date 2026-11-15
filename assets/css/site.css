@@ -2539,3 +2539,7 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 .lnote{color:#c3cad8!important;font-size:13px!important;line-height:1.8}
 /* CONTACT：PC では左の文とボタンが、フォームの横についてくる（右のフォームが長くても左が空かない） */
 @media (min-width:821px){ .ct{align-items:stretch} .ct .side{position:sticky;top:calc(var(--head) + 40px);align-self:start} }
+
+/* 2026-11-15：体験の予約の完了画面もチケットで（yoyaku.js の tks）。確定待ちの文字 */
+.tkt .tk-wt{font-size:11px;font-weight:700;color:var(--or-hi);white-space:nowrap}
+.yk-done .sk-dtk{margin:16px 0 18px}

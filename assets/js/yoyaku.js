@@ -281,11 +281,14 @@
   function finish(d, r){
     const el = $("ykDone"), min = r.min || 30;
     if (window.gtag && !demo) gtag("event", "trial_booking", { mode: d.mode, via: r.line ? "line" : "mail" });
-    const list = d.slots.map(t => `<li><span class="chip or">${d.mode === "studio" ? "対面" : "オンライン"}</span><b>${full(t)}</b></li>`).join("");
+    /* 2026-11-15：申し込んだ日時もチケットで（生徒さんページと同じ形。北川くん）。確定＝青＋「✓確定」、まだ＝淡いオレンジ＋「確定待ち」 */
+    const tks = ok => `<ol class="sk-tks sk-dtk">` + d.slots.map((t, i) => `<li class="tkt ${ok ? "on" : "wait"}" style="--i:${i}"><div class="tk-r"><div class="st"><b>体験</b><i>${new Date(t + 9 * 3600e3).getUTCMonth() + 1}月</i></div>`
+      + `<div class="bd"><b>${md(t)}（${wd(t)}）${hm(t)}〜</b><small>${d.mode === "studio" ? "対面（スタジオ）" : "オンライン"}・60分</small></div>`
+      + `<div class="ac">${ok ? `<span class="tk-ok">確定</span>` : `<span class="tk-wt">確定待ち</span>`}</div></div></li>`).join("") + `</ol>`;
     if (r.line) {   // LINE から：その場で確定
       el.innerHTML = `<span class="chip gr">CONFIRMED</span><h3>予約が確定しました</h3>`
         + `<p>LINE に、確定のお知らせを送りました。${d.mode === "studio" ? "<b>スタジオのお部屋は、レッスンの前の日に北川が予約</b>して、場所を LINE でお知らせします。" : "当日の入り口（Google Meet のリンク）も、LINE のお知らせに入っています。"}</p>`
-        + `<ol class="yk-picked">${list}</ol>`
+        + tks(true)
         + `<p class="small">予約の確認・キャンセルは、LINE のメニューの「体験レッスンの予約・確認・キャンセル」からできます。${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
         + (cfg.line ? `<a class="btn or" href="${esc(cfg.line)}">LINE のトークにもどる</a>` : "");
       form.hidden = true; $("ykLine").hidden = true; el.hidden = false;
@@ -297,7 +300,7 @@
     if (r.lineOk && !r.mailWay) {
       el.innerHTML = `<div class="sk-gate yk-lgate"><span class="chip or">あと1つ</span><h3>LINE で予約を<wbr>確定しましょう</h3>`
         + `<p>確定のお知らせや、前の日のお知らせ・お部屋の場所が LINE に届きます。</p>`
-        + `<ol class="yk-picked">${list}</ol>`
+        + tks(false)
         + `<ol class="sk-gs"><li>下のボタンを押すと、LINE が開きます</li><li>入っている文を、そのまま送ってください</li><li>その場で予約が確定します</li></ol>`
         + `<a class="sk-lnb" id="ykLnOk" href="${esc(r.lineOk)}" target="_blank" rel="noopener"><span>LINE</span>LINE で予約を確定する</a>`
         + `<p class="sk-gw" id="ykLnWait" hidden>LINE で送ったら、このページに戻ってきてください。確定したか確かめています…</p>`
@@ -323,7 +326,7 @@
     }
     el.innerHTML = `<span class="chip or">あと1つ</span><h3>メールのリンクを開くと、予約が確定します</h3>`
       + `<p><b>${esc(d.email)}</b> に「予約を確定する」メールをお送りしました。<b>${min}分以内に、メールの中のリンクを開いてください。</b>開くまで、予約はまだ確定していません。</p>`
-      + `<ol class="yk-picked">${list}</ol>`
+      + tks(false)
       + `<p class="small">数分たってもメールが届かないときは<br>・迷惑メールのフォルダも見てください<br>・メールアドレスがまちがっているかもしれません。下のボタンから、アドレスを直してもう一度お申し込みください<br>・携帯会社のメールは、パソコンからのメールが届かない設定のことがあります${demo ? "<br>（これは見本です。実際には送っていません）" : ""}</p>`
       + `<button type="button" class="btn line" id="ykAgain">アドレスを直して申し込み直す</button>`;
     form.hidden = true; el.hidden = false;
