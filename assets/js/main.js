@@ -167,6 +167,18 @@ function press(b){
   cur = b; setUI(b, true); start(b);
 }
 arts.forEach(b => b.addEventListener("click", () => press(b)));
+/* 2026-11-15：トップの「▶ 演奏を聴く」は、押したら制作実績へ移って、代表曲（いちばん上のジャケット）をそのまま鳴らす（北川くん）。
+   指を置いた時点で Spotify の読み込みを始めておき、鳴るまでの待ち時間を短くする。鳴らせないときはいつもの「Spotify で聴く」の案内が出る */
+document.querySelectorAll("a.btn.listen").forEach(a => {
+  a.addEventListener("pointerdown", loadApi, {once:true});
+  a.addEventListener("click", e => {
+    const b = arts[0]; if(!b) return;
+    e.preventDefault(); showTab("music");
+    (document.getElementById("feat") || document.getElementById("works")).scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"center"});
+    if(cur===b && ctrl && !loading){ if(!b.closest(".song").classList.contains("playing")) ctrl.play(); return; }   // もう鳴っていれば止めない
+    press(b);
+  });
+});
 const featEl = document.getElementById("feat");
 if(featEl && "IntersectionObserver" in window){ const o = new IntersectionObserver(es => { if(es.some(e=>e.isIntersecting)){ loadApi(); o.disconnect(); } }, {rootMargin:"600px 0px"}); o.observe(featEl); }
 /* 制作実績のレコード：押すと上の再生ボタンと同じしくみで鳴らす（1回で切り替わる）。ジャケットのない作品は回るだけ */
