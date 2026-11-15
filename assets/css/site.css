@@ -2537,3 +2537,5 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 .ltrust .voices:first-child{margin-top:0}
 /* 5. 料金の下の注意書き */
 .lnote{color:#c3cad8!important;font-size:13px!important;line-height:1.8}
+/* CONTACT：PC では左の文とボタンが、フォームの横についてくる（右のフォームが長くても左が空かない） */
+@media (min-width:821px){ .ct{align-items:stretch} .ct .side{position:sticky;top:calc(var(--head) + 40px);align-self:start} }
