@@ -10,7 +10,9 @@
      （決めた日時は {t, mode, hours} で持つ。送るときは、日付の早い順に、受け方と長さが同じ続きごとに分けて送る＝サーバーと同じ数え方）。
      「1回に何時間」をやめて「レッスンの長さ（1時間で1回分）」に。「前回と同じ」で日時の画面へ。
    2026-11-10：1画面ずつ進む形をやめて、チケットに書きこむ形に（未定のチケットを押す → 対面/オンライン・長さ・日にち・時間を
-     下から出るシートで選ぶ → 「申し込み前」のチケット → 下の「○回分を申し込む」でまとめて申し込む）。北川くん */
+     下から出るシートで選ぶ → 「申し込み前」のチケット → 下の「○回分を申し込む」でまとめて申し込む）。北川くん
+   2026-11-18：チケットの欄は、どの順でも押して選べる（北川くん）。日にちを先に選んでもよい（対面/オンラインがまだのときは、
+     どちらかで空いている日・時間を出し、あとで選んだ受け方に合わない分だけ空に戻す）。時間だけは日にちのあと */
 (() => {
   const $ = id => document.getElementById(id);
   const cfg = JSON.parse($("ykcfg").textContent);
@@ -288,8 +290,11 @@
     $("ykSend").innerHTML = `<span>${pick.length}日・合計${N}時間</span><b>${N}回分を申し込む</b>`;
     const box = $("skSplit");
     box.hidden = !s.tan;
-    if (s.tan) box.innerHTML = `<p><b>${s.tan}回は追加の単発レッスン</b>（1回 ${yen(me.single)}・税込）になります。${me.base ? "月の回数を使い切るためです。" : ""}お支払いは、現金かカード（Square）です。</p>`;
-    $("skOkW").hidden = !s.tan;
+    /* 2026-11-19 北川くん：「単発のみ」の人は毎回が単発。追加の確認（チェック）は出さず、料金だけ書く */
+    if (s.tan) box.innerHTML = me.base
+      ? `<p><b>${s.tan}回は追加の単発レッスン</b>（1回 ${yen(me.single)}・税込）になります。月の回数を使い切るためです。お支払いは、現金かカード（Square）です。</p>`
+      : `<p><b>単発レッスン ${s.tan}回</b>（1回 ${yen(me.single)}・税込）です。お支払いは、現金かカード（Square）です。</p>`;
+    $("skOkW").hidden = !s.tan || !me.base;
     if (!s.tan) hideErr($("skOkErr"));
   }
   function draw(){ drawList(); drawPre(); }
@@ -321,17 +326,27 @@
 
   const filled = f => f === "mode" ? !!ed.mode : f === "hours" ? !!ed.hours : f === "day" ? !!ed.day : !!ed.t;
   const nextField = () => ed ? (FIELDS.find(f => !filled(f)) || "") : "";
-  const canOpen = f => !!ed && FIELDS.slice(0, FIELDS.indexOf(f)).every(filled);
+  const canOpen = f => !!ed && (f !== "time" || filled("day"));   // 2026-11-18：どの順でも。時間だけは日にちのあと
+  const pickable = f => canOpen(f) ? f : "day";
 
   /* ---------- 空いている日にち・時間 ---------- */
   /* 選んだ長さだけ続けて空いている「始まり」の時間。ほかの書いたチケットと重なるものは除く（受け方がちがうときは前後に移動の時間） */
   function starts(){
     const mode = ed.mode, hours = 1, os = others();   // 1時間ずつ（続けるかは時計で）
-    const ok = new Set((me.slots || []).filter(s => mode === "online" ? s.on !== 0 : s.st).map(s => s.s));
+    const ok = new Set((me.slots || []).filter(s => mode === "online" ? s.on !== 0 : mode === "studio" ? s.st : (s.st || s.on !== 0)).map(s => s.s));
     return (me.slots || []).filter(s => { for (let i = 0; i < hours; i++) if (!ok.has(s.s + i * H)) return false; return true; })
-      .map(s => s.s).filter(t => !os.some(p => { const g = p.mode === mode ? 0 : MOVE; return t < p.t + p.hours * H + g && p.t < t + hours * H + g; }));
+      .map(s => s.s).filter(t => !os.some(p => { const g = !mode || p.mode === mode ? 0 : MOVE; return t < p.t + p.hours * H + g && p.t < t + hours * H + g; }));
   }
   function byDay(){ const by = {}; starts().filter(t => monKey(t) === ed.m).forEach(t => { (by[dayKey(t)] = by[dayKey(t)] || []).push(t); }); return by; }
+  /* 2026-11-18：その受け方にしたとき、選んである日にち・時間がそのまま使えるか（対面/オンラインのシートで、使えない方を薄くする） */
+  function fits(m){
+    if (!ed.day) return true;
+    const sv = ed.mode; ed.mode = m; const ok = new Set(byDay()[ed.day] || []); ed.mode = sv;
+    if (!ok.size) return false;
+    if (!ed.t) return true;
+    for (let i = 0; i < ed.hours; i++) if (!ok.has(ed.t + i * H)) return false;
+    return true;
+  }
   /* 前の欄を変えたら、合わなくなった日にち・時間だけ空に戻す */
   function fix(){
     const by = byDay();
@@ -453,9 +468,14 @@
   function shContent(f){
     $("skShT").textContent = FT[f];
     let h = "";
-    if (f === "mode") h = `<div class="sh-mo">`
-      + `<button type="button" class="${V("mode") === "studio" ? "on" : ""}" data-v="studio"><b>対面<em>小岩のスタジオ</em></b><small>スタジオ代 1時間 約1,500円（当日）。お部屋は前の日に北川が予約します</small></button>`
-      + `<button type="button" class="${V("mode") === "online" ? "on" : ""}" data-v="online"><b>オンライン<em>Google Meet</em></b><small>スタジオ代なし</small></button></div>`;
+    if (f === "mode") {
+      /* 2026-11-18：日にち・時間を先に選んだときは、その日時で空いていない方を薄くして押せなくする */
+      const mb = (v, cls, body) => { const ok = fits(v);
+        return `<button type="button" class="${V("mode") === v ? "on" : ""}${ok ? "" : " ng"}" ${ok ? `data-v="${v}"` : `disabled aria-disabled="true"`}>${body}${ok ? "" : `<small class="sh-ng">選んだ${ed.t ? "日時" : "日"}は空いていません</small>`}</button>`; };
+      h = `<div class="sh-mo">`
+      + mb("studio", "", `<b>対面<em>小岩のスタジオ</em></b><small>スタジオ代 1時間 約1,500円（当日）。お部屋は前の日に北川が予約します</small>`)
+      + mb("online", "", `<b>オンライン<em>Google Meet</em></b><small>スタジオ代なし</small>`) + `</div>`;
+    }
     else if (f === "day") {
       /* 2026-11-10：カレンダーをおしゃれに（空いている日は枠の数を点で・今日は輪・書いた日は小さな札・選んだ日はオレンジ） */
       const by = byDay(), m = ed.m, y = +m.slice(0, 4), mo = +m.slice(5, 7), dn = new Date(Date.UTC(y, mo, 0)).getUTCDate();
@@ -464,7 +484,7 @@
       for (let d = 1; d <= dn; d++) { const k = `${m}-${String(d).padStart(2, "0")}`, w = (w0 + d - 1) % 7, c = (by[k] || []).length, cl = `w${w}${k === today ? " td" : ""}`;
         cells += c ? `<button type="button" class="${cl}${V("day") === k ? " on" : ""}${mark.has(k) ? " mk" : ""}" data-v="${k}" aria-label="${mo}月${d}日 ${c}枠"><b>${d}</b><i>${"<s></s>".repeat(Math.min(c, 4))}</i></button>`
                    : `<span class="no ${cl}"><b>${d}</b></span>`; }
-      h = `<div class="sh-cap"><p class="sh-mon"><b>${mo}</b>月</p><p class="sh-sub">${ML(ed.mode)}<br>空いている日 <em>${nd}</em>日</p></div><div class="sh-cal">${cells}</div>`
+      h = `<div class="sh-cap"><p class="sh-mon"><b>${mo}</b>月</p><p class="sh-sub">${ed.mode ? ML(ed.mode) : "対面・オンライン"}<br>空いている日 <em>${nd}</em>日</p></div><div class="sh-cal">${cells}</div>`
         + `<p class="sh-leg"><span><s></s>空いている枠</span><span class="lt">今日</span>${mark.size ? `<span class="lm">書いた日</span>` : ""}</p>`
         + (nd ? "" : `<p class="sh-none">${monName(m)}は、空いている日がありません。${ed.mode === "studio" ? "オンラインにするか、" : ""}${tkM === 0 && months()[1] ? "来月のチケットから選ぶか、" : ""}北川にご相談ください。</p>`);
     } else {
@@ -472,7 +492,7 @@
       const ts = byDay()[ed.day] || [], os = others().filter(p => dayKey(p.t) === ed.day), hr = t => J(t).getUTCHours();
       const list = ts.map(t => ({ t })).concat(os.map(p => ({ t: p.t, p }))).sort((a, b) => a.t - b.t);
       const parts = [["昼", 0, 16], ["夕方", 16, 18], ["夜", 18, 24]].map(([n, a, b]) => [n, list.filter(x => hr(x.t) >= a && hr(x.t) < b)]).filter(x => x[1].length);
-      const d0 = T12(ed.day), cap = `<div class="sh-cap"><p class="sh-mon"><b>${md(d0)}</b><small>（${wd(d0)}）</small></p><p class="sh-sub">${ML(ed.mode)}<br>押す・なぞると塗れます<br>続けて${maxH()}時間まで</p></div>`;
+      const d0 = T12(ed.day), cap = `<div class="sh-cap"><p class="sh-mon"><b>${md(d0)}</b><small>（${wd(d0)}）</small></p><p class="sh-sub">${ed.mode ? ML(ed.mode) : "対面・オンライン"}<br>押す・なぞると塗れます<br>続けて${maxH()}時間まで</p></div>`;
       /* 2026-11-10：時計を塗りつぶす形（北川くんの案）。昼12時〜夜24時を1周に。押したところから、レッスンの長さの分がオレンジで塗られる。
          朝（12時より前）の枠がある日は、前の3列のボタンにする */
       if (list.every(x => hr(x.t) >= 12)) h = cap + clock(d0, ts, os);
@@ -491,7 +511,7 @@
   function openSheet(f){
     if (!ed) return;
     if (!f) { draw(); return; }
-    if (!canOpen(f)) f = nextField();
+    if (!canOpen(f)) f = "day";
     if (sheet === f) return;
     const was = !!sheet; sheet = f; pend = null;
     clearTimeout(shTimer);
@@ -522,7 +542,7 @@
     if (e.target.classList.contains("sk-shb")) {
       sh.style.visibility = "hidden"; const u = document.elementFromPoint(e.clientX, e.clientY); sh.style.visibility = "";
       const fc = u && u.closest(".tkt.ed [data-f]");
-      if (fc) { openSheet(canOpen(fc.dataset.f) ? fc.dataset.f : nextField()); return; }
+      if (fc) { openSheet(pickable(fc.dataset.f)); return; }
       if (u && u.closest(".tkt.ed [data-edx]")) { stopEdit(); return; }
     }
     if (e.target.closest("[data-shx]")) { closeSheet(); return; }
@@ -569,7 +589,7 @@
   $("skTabs").addEventListener("click", e => { const b = e.target.closest("[data-tm]"); if (!b) return; tkM = Number(b.dataset.tm); drawList(); });
   $("skList").addEventListener("click", e => {
     if (e.target.closest("[data-go]")) { startEdit(months()[tkM]); return; }   // 未定のチケットの「予約する」
-    const fc = e.target.closest("[data-f]"); if (fc) { openSheet(canOpen(fc.dataset.f) ? fc.dataset.f : nextField()); return; }
+    const fc = e.target.closest("[data-f]"); if (fc) { openSheet(pickable(fc.dataset.f)); return; }
     if (e.target.closest("[data-edx]")) { stopEdit(); return; }
     const fx = e.target.closest("[data-fix]"); if (fx) { const o = pick.find(p => p.t === Number(fx.dataset.fix)); if (o) startEdit(monKey(o.t), o); return; }
     const li = e.target.closest("li[data-id]"); if (li && e.target.closest("[data-cx]")) cxOpen(li);
@@ -619,7 +639,7 @@
   $("ykSend").addEventListener("click", () => {
     if (!pick.length) return;
     const s = split();
-    if (s.tan && !$("skOk").checked) { showErr($("skOkErr"), "追加（単発）になる分があります。よろしければ、チェックを入れてください。"); $("skOkW").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    if (s.tan && me.base && !$("skOk").checked) { showErr($("skOkErr"), "追加（単発）になる分があります。よろしければ、チェックを入れてください。"); $("skOkW").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     hideErr($("skOkErr"));
     const btn = $("ykSend"), err = $("ykErr"), rs = runs(), done = [], keep = btn.innerHTML;
     const keepTk = tkM; doneLab = {}; months().forEach((m, i) => { tkM = i; drawList(); Object.assign(doneLab, labMap); }); tkM = keepTk; drawList();
@@ -634,7 +654,7 @@
         if (!r.ok) {
           if (done.length) { finish(done, r.msg || "送信できませんでした。"); return; }   // 途中まで決まったときは、決まった分を見せる
           showErr(err, r.msg || "送信できませんでした。"); err.scrollIntoView({ behavior: "smooth", block: "center" });
-          if (r.needOk) { $("skOkW").hidden = false; }
+          if (r.needOk && me.base) { $("skOkW").hidden = false; }
           if (r.gone) { pick = []; load(); }
           return;
         }
