@@ -66,7 +66,7 @@ export function buildOutputs(files){
   const p = J("data/profile.json"), site = J("data/site.json"), images = J("data/images.json");
   const pick = (o, ks) => Object.fromEntries(ks.map(k => [k, o[k] ?? null]));
   const D = {
-    profile: pick(p, ["name","nameEn","bio","career","gear","work","lesson","links","canDo"]),
+    profile: pick(p, ["name","nameEn","bio","career","gear","work","lesson","links","canDo","agency"]),
     credits: J("data/credits.json").map(c => { const d = pick(c, ["title","artist","category","roles","year","jacket","spotify","spotifyRank","album"]);
       return c.category === "karaoke" ? Object.assign(d, {title:"非公開", artist:"有名歌い手"}) : d; }),   // カラオケは作品名を出さない
     live: J("data/live.json").map(x => pick(x, ["title","year","venue","artist","role"])),
@@ -261,12 +261,18 @@ export function buildOutputs(files){
   }
 
   /* 2026-11-12：お仕事のご依頼を WORKS から独立した区切りに（04 For Clients）。依頼したい人がいちばん見るところなので、ほかの区切りと同じ大きな見出しに（北川くん） */
+  /* 2026-11-22：作曲・編曲・作詞の依頼は所属の Plick Pluck が窓口（塩屋さんの指定・北川くん OK）。data/profile.json の agency */
+  function agencyBox(){
+    const A = P.agency || {}; if(!A.publish || !A.url) return "";
+    return `<div class="agency"><p><b>${esc(A.note)}</b></p><p class="ag-links"><a class="ul" href="${esc(A.url)}" target="_blank" rel="noopener">${esc((A.names||[])[0]||"")} の<wbr>ホームページ</a><a class="ul" href="mailto:${esc(A.email)}">${esc(A.email)}</a></p></div>`;
+  }
   function clients(){
     const W = P.work;
     return `<section class="s sbg cl-sec" id="clients"><i class="seam-t" aria-hidden="true"></i><div class="wrap">
       ${sh("04","For Clients","お仕事のご依頼")}
       <div class="workcta">
-        <div class="wc-head"><p class="wc-lead">作曲・編曲・ギターREC・楽曲制作のご相談はこちら。${esc(W.policy)}</p></div>
+        <div class="wc-head"><p class="wc-lead">ギターREC・ライブサポートなど、演奏のお仕事のご相談はこちら。${esc(W.policy)}</p></div>
+        ${agencyBox()}
         <h4 class="wc-sub">できること</h4>
         ${canDo()}
         <h4 class="wc-sub">進め方</h4>
@@ -428,7 +434,7 @@ export function buildOutputs(files){
   /* 2026-10-17：レッスンの申し込みは予約ページに一本化。フォームの「レッスン」は、ご質問だけの短いフォームにした */
   /* 2026-10-21：Contact はお仕事のご依頼とその他のお問い合わせ専用（体験の予約・レッスンのご質問は LESSON の一番下へ） */
   const KINDS = D.yoyaku ? ["お仕事","その他"] : ["レッスン","お仕事","その他"];
-  const KDESC = {"レッスンのご質問":"予約の前のご質問・生徒さんのご連絡","レッスン":"体験・月謝・単発","お仕事":"作曲・編曲・ギターREC・ライブサポート","その他":"取材・ご相談など"};
+  const KDESC = {"レッスンのご質問":"予約の前のご質問・生徒さんのご連絡","レッスン":"体験・月謝・単発","お仕事":"ギターREC・ライブサポートなど","その他":"取材・ご相談など"};
   function contact(){
     const W = P.work;
     return `<section class="s pb" id="contact">${pbg("tubesAmber","amber")}<i class="seam-t" aria-hidden="true"></i><div class="wrap">
@@ -459,7 +465,8 @@ export function buildOutputs(files){
             <div><label for="f_when">希望の曜日・時間</label><input id="f_when" placeholder="例：水曜の夜、土日の昼"></div>
           </div>`}
           <div class="xf" data-for="お仕事">
-            <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["作詞・作曲","編曲・トラック制作","ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
+            ${agencyBox()}
+            <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
             <fieldset class="opts" id="f_whoBox"><legend>ご依頼主<i>必須</i></legend>${["会社・団体","個人"].map(x=>`<label class="opt"><input type="radio" name="f_who" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
             <div id="companyBox" hidden><label for="f_company">会社名・団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="例：株式会社〇〇"><p class="err" hidden></p></div>
             <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option>${W.budgets.map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>

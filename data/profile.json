@@ -32,18 +32,23 @@
     }
   ],
   "agency": {
-    "publish": false,
-    "label": "作家エージェント契約",
-    "names": [],
-    "viaAgency": false,
-    "viaAgencyNote": "作編曲の依頼は事務所を経由しなくてよい（本人確認済み）"
+    "publish": true,
+    "label": "作家のお仕事の窓口",
+    "names": [
+      "Plick Pluck"
+    ],
+    "url": "https://www.plick-pluck.co.jp",
+    "email": "info@plick-pluck.co.jp",
+    "note": "作曲・編曲・作詞のご依頼は、所属の Plick Pluck までお問い合わせください。",
+    "viaAgency": true,
+    "viaAgencyNote": "2026-11-22：作曲・編曲・作詞の依頼は Plick Pluck 経由（Plick Pluck 塩屋さんの指定・北川くん OK）。ギター演奏・REC・ライブサポート・レッスンは本人が直接受ける"
   },
   "gear": {
     "publish": true,
     "groups": [
       {
         "name": "制作・録音",
-   "en": "RECORDING",
+        "en": "RECORDING",
         "items": [
           "Pro Tools",
           "Universal Audio Apollo Twin X",
@@ -53,7 +58,7 @@
       },
       {
         "name": "ギター",
-   "en": "GUITARS",
+        "en": "GUITARS",
         "items": [
           "Suhr Modern",
           "Gibson Custom Shop Les Paul Standard",
@@ -62,7 +67,7 @@
       },
       {
         "name": "アンプ・キャビネット",
-   "en": "AMPS & CABS",
+        "en": "AMPS & CABS",
         "items": [
           "Bogner Ecstasy Classic",
           "Marshall JCM900 Hi Gain Master Volume",
@@ -72,7 +77,7 @@
       },
       {
         "name": "モデラー",
-   "en": "MODELERS",
+        "en": "MODELERS",
         "items": [
           "Fractal Audio Axe-Fx II XL+",
           "Line 6 Helix Floor"
@@ -149,7 +154,7 @@
     "faq": [
       {
         "q": "料金はいくらくらいですか？",
-        "a": "ギター録音（エレキのバッキング・リード、アコギ）は3万5千円から、編曲は22万円からが目安です。作詞・作曲は、印税でのお取り引きをお願いしています。曲の長さ・パートの数・使い道・納期で変わるので、内容をうかがってからお見積もりをお送りします。ご予算や条件に合わせてご相談にも応じますので、まずはお気軽にお問い合わせください。"
+        "a": "ギター録音（エレキのバッキング・リード、アコギ）は3万5千円からが目安です。曲の長さ・パートの数・使い道・納期で変わるので、内容をうかがってからお見積もりをお送りします。ご予算や条件に合わせてご相談にも応じますので、まずはお気軽にお問い合わせください。作曲・編曲・作詞のご依頼は、所属の Plick Pluck が窓口です。"
       },
       {
         "q": "納期はどのくらいですか？",
@@ -165,7 +170,7 @@
       },
       {
         "q": "作った曲の権利はどうなりますか？",
-        "a": "作詞・作曲は、印税でのお取り引きをお願いしています。"
+        "a": "作曲・編曲・作詞のお仕事は、所属の Plick Pluck を通してお受けしています。条件は Plick Pluck までお問い合わせください。"
       },
       {
         "q": "録音には立ち会えますか？",

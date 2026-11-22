@@ -2544,3 +2544,11 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 /* 2026-11-15：体験の予約の完了画面もチケットで（yoyaku.js の tks）。確定待ちの文字 */
 .tkt .tk-wt{font-size:11px;font-weight:700;color:var(--or-hi);white-space:nowrap}
 .yk-done .sk-dtk{margin:16px 0 18px}
+
+/* 2026-11-22：作曲・編曲・作詞は Plick Pluck が窓口（お仕事の欄とフォーム） */
+.agency{margin:22px 0 4px;padding:16px 18px;border:1px solid var(--line2);border-left:3px solid var(--gr-hi);border-radius:12px;background:var(--gr-soft)}
+.agency p{margin:0;font-size:14px;line-height:1.8;color:var(--sub)}
+.agency p b{color:var(--ink);font-weight:700}
+.agency .ag-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:6px}
+.agency .ag-links a{min-height:32px;display:inline-flex;align-items:center}
+.f .agency{margin:0 0 6px}
