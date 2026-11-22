@@ -261,7 +261,7 @@ export function buildOutputs(files){
   }
 
   /* 2026-11-12：お仕事のご依頼を WORKS から独立した区切りに（04 For Clients）。依頼したい人がいちばん見るところなので、ほかの区切りと同じ大きな見出しに（北川くん） */
-  /* 2026-11-22：作曲・編曲・作詞の依頼は所属の Plick Pluck が窓口（塩屋さんの指定・北川くん OK）。data/profile.json の agency */
+  /* 2026-11-22：作曲・編曲・作詞の依頼は Plick Pluck が窓口（所属ではない）（塩屋さんの指定・北川くん OK）。data/profile.json の agency */
   function agencyBox(){
     const A = P.agency || {}; if(!A.publish || !A.url) return "";
     return `<div class="agency"><p><b>${esc(A.note)}</b></p><p class="ag-links"><a class="ul" href="${esc(A.url)}" target="_blank" rel="noopener">${esc((A.names||[])[0]||"")} の<wbr>ホームページ</a><a class="ul" href="mailto:${esc(A.email)}">${esc(A.email)}</a></p></div>`;
@@ -271,7 +271,7 @@ export function buildOutputs(files){
     return `<section class="s sbg cl-sec" id="clients"><i class="seam-t" aria-hidden="true"></i><div class="wrap">
       ${sh("04","For Clients","お仕事のご依頼")}
       <div class="workcta">
-        <div class="wc-head"><p class="wc-lead">ギターREC・ライブサポートなど、演奏のお仕事のご相談はこちら。${esc(W.policy)}</p></div>
+        <div class="wc-head"><p class="wc-lead">ギターREC・ライブサポートなど、演奏のお仕事は直接ご相談ください。${esc(W.policy)}</p></div>
         ${agencyBox()}
         <h4 class="wc-sub">できること</h4>
         ${canDo()}
