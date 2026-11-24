@@ -329,7 +329,7 @@ export function buildOutputs(files){
             <tr><th>土・日</th><td>12〜23時</td></tr>
             <tr><th>月・火</th><td>18〜23時</td></tr>
             <tr><th>お支払い</th><td>${payLines("")}</td></tr>
-            <tr><th>キャンセル・振替</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
+            <tr><th>キャンセル</th><td>${`<span class="pay"><b>月謝・単発</b>${esc(P.lesson.cancel)}</span><span class="pay"><b>体験レッスン</b>${esc(P.lesson.trialCancel)}</span>`}</td></tr></table>
             <p class="small" style="margin-top:12px">予約ページに出ている時間が、いま予約できる時間です。</p></div></details>
         </div>
       </div>
@@ -988,7 +988,7 @@ ${css}
         <tr><th>スタジオ代</th><td>${esc(L.studioFee)}</td></tr>
         <tr><th>お支払い</th><td>${pay.map(x => `<span class="pay"><b>${esc(x[0])}</b>${esc(x[1])}</span>`).join("")}</td></tr>
         <tr><th>キャンセル</th><td>${esc(L.cancel)}</td></tr>
-        <tr><th>振替</th><td>その月に使わなかった回（予約しなかった回・3日前 23:59 までにキャンセルした回・スタジオのお部屋が取れなかった回）は、次の月まで使えます。たとえば月4回なら、今月2回・来月6回にできます。その次の月へは持ち越せません。追加（単発）の回は、次の月には回りません。</td></tr>
+        <tr><th>使わなかった回</th><td>その月に使わなかった回（予約しなかった回・3日前 23:59 までにキャンセルした回・スタジオのお部屋が取れなかった回）は、次の月まで使えます。たとえば月4回なら、今月2回・来月6回にできます。その次の月へは持ち越せません。追加（単発）の回は、次の月には回りません。</td></tr>
         <tr><th>追加（単発）</th><td>月の回数を使い切ったあとも、1回 ¥${yen(site.lessonPlans.single.price)}（税込・60分）で予約できます。</td></tr>
       </table>
     </section>
