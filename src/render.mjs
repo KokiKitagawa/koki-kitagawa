@@ -262,9 +262,15 @@ export function buildOutputs(files){
 
   /* 2026-11-12：お仕事のご依頼を WORKS から独立した区切りに（04 For Clients）。依頼したい人がいちばん見るところなので、ほかの区切りと同じ大きな見出しに（北川くん） */
   /* 2026-11-22：作曲・編曲・作詞の依頼は Plick Pluck が窓口（所属ではない）（塩屋さんの指定・北川くん OK）。data/profile.json の agency */
-  function agencyBox(){
+  const SONG_JOB = "作曲・編曲・作詞（楽曲提供）";
+  function agencyBox(extra){
     const A = P.agency || {}; if(!A.publish || !A.url) return "";
-    return `<div class="agency"><p><b>${esc(A.note)}</b></p><p class="ag-links"><a class="ul" href="${esc(A.url)}" target="_blank" rel="noopener">${esc((A.names||[])[0]||"")} の<wbr>ホームページ</a><a class="ul" href="mailto:${esc(A.email)}">${esc(A.email)}</a></p></div>`;
+    return `<div class="agency"><p><b>${esc(A.note)}</b>${extra?`<br>${esc(extra)}`:""}</p><p class="ag-links"><a class="ul" href="${esc(A.url)}" target="_blank" rel="noopener">${esc((A.names||[])[0]||"")} の<wbr>ホームページ</a><a class="ul" href="mailto:${esc(A.email)}">${esc(A.email)}</a></p></div>`;
+  }
+  /* 2026-11-24：お仕事の欄の Plick Pluck の案内は、目立ちすぎないよう一番下に小さく1行で（北川くん） */
+  function agencyNote(){
+    const A = P.agency || {}; if(!A.publish || !A.url) return "";
+    return `<p class="ag-note">※ 作曲・編曲・作詞（楽曲提供）のご依頼は、<a class="ul" href="${esc(A.url)}" target="_blank" rel="noopener">${esc((A.names||[])[0]||"")}</a> が窓口です。</p>`;
   }
   function clients(){
     const W = P.work;
@@ -272,7 +278,6 @@ export function buildOutputs(files){
       ${sh("04","For Clients","お仕事のご依頼")}
       <div class="workcta">
         <div class="wc-head"><p class="wc-lead">ギターREC・ライブサポートなど、演奏のお仕事は直接ご相談ください。${esc(W.policy)}</p></div>
-        ${agencyBox()}
         <h4 class="wc-sub">できること</h4>
         ${canDo()}
         <h4 class="wc-sub">進め方</h4>
@@ -281,6 +286,7 @@ export function buildOutputs(files){
         <h4 class="wc-sub">よくある質問</h4>
         <div class="faq wfaq">${(W.faq||[]).map(f=>`<details><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}</div>
         <button class="btn gr" type="button" data-open="お仕事">フォームで相談する</button>
+        ${agencyNote()}
       </div>
     </div></section>`;
   }
@@ -465,17 +471,18 @@ export function buildOutputs(files){
             <div><label for="f_when">希望の曜日・時間</label><input id="f_when" placeholder="例：水曜の夜、土日の昼"></div>
           </div>`}
           <div class="xf" data-for="お仕事">
-            ${agencyBox()}
-            <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["ギターREC","ライブサポート","カラオケ音源","その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
+            ${""/* 2026-11-24：Plick Pluck の案内は「楽曲提供」を選んだ人にだけ出す（ほかの依頼がまちがって Plick Pluck へ行かないように・北川くん） */}
+            <fieldset class="opts" id="f_jobs"><legend>ご依頼の内容<i>必須・複数OK</i></legend>${["ギターREC","ライブサポート","カラオケ音源",SONG_JOB,"その他"].map(x=>`<label class="opt"><input type="checkbox" name="f_job" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
+            <div id="f_agency" hidden>${agencyBox("楽曲提供のご依頼は、このフォームではなく Plick Pluck へご連絡ください。ギターREC・ライブサポートなど演奏のお仕事は、このままフォームから北川へどうぞ。")}</div>
             <fieldset class="opts" id="f_whoBox"><legend>ご依頼主<i>必須</i></legend>${["会社・団体","個人"].map(x=>`<label class="opt"><input type="radio" name="f_who" value="${x}"><span>${x}</span></label>`).join("")}<p class="err" hidden></p></fieldset>
             <div id="companyBox" hidden><label for="f_company">会社名・団体名<i>必須</i></label><input id="f_company" autocomplete="organization" placeholder="例：株式会社〇〇"><p class="err" hidden></p></div>
-            <div><label for="f_budget">ご予算<i>必須</i></label><select id="f_budget"><option value="">選んでください</option>${W.budgets.map(x=>`<option>${esc(x)}</option>`).join("")}</select><p class="err" hidden></p></div>
-            <details class="yk-more"><summary><b>わかれば<wbr>書く<wbr>（任意）</b><small>使い道・<wbr>納期・<wbr>参考音源。<wbr>書いてもらえると、<wbr>お見積もりが<wbr>早くなります</small></summary>
+            <details class="yk-more"><summary><b>わかれば<wbr>書く<wbr>（任意）</b><small>使い道・<wbr>納期・<wbr>ご予算・<wbr>参考音源。<wbr>書いてもらえると、<wbr>お見積もりが<wbr>早くなります</small></summary>
             <div class="yk-more-in">
               <div class="two">
                 <div><label for="f_use">使い道</label><select id="f_use"><option value="">選んでください</option>${W.uses.map(x=>`<option>${esc(x)}</option>`).join("")}</select></div>
                 <div><label for="f_due">納期</label><input id="f_due" placeholder="例：11月末まで"></div>
               </div>
+              <div><label for="f_budget">ご予算</label><input id="f_budget" placeholder="例：〇万円くらい"></div>
               <div><label for="f_ref">参考音源のURL</label><input id="f_ref" type="url" inputmode="url" placeholder="https://"></div>
             </div></details>
           </div>

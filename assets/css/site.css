@@ -2552,3 +2552,7 @@ section.s.lteach{padding:clamp(44px,6vw,80px) 0 clamp(8px,2vw,24px)}
 .agency .ag-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:6px}
 .agency .ag-links a{min-height:32px;display:inline-flex;align-items:center}
 .f .agency{margin:0 0 6px}
+
+/* 2026-11-24 お仕事の欄の Plick Pluck の案内（小さく1行） */
+.ag-note{margin:14px 0 0;font-size:12.5px;line-height:1.7;color:var(--sub);opacity:.85}
+.ag-note a{color:inherit}

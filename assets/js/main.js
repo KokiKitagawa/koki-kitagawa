@@ -406,6 +406,10 @@ if(bk){
 const from = (new URLSearchParams(location.search).get("from")||"").toLowerCase();
 if(document.getElementById("form")){
 document.getElementById("f_from").value = ({ig:"Instagram",x:"X",yt:"YouTube",tt:"TikTok",sp:"Spotify"})[from] || "";
+/* 2026-11-24：「楽曲提供」を選んだときだけ Plick Pluck の案内を出す */
+const SONG_JOB = "作曲・編曲・作詞（楽曲提供）", agBox = document.getElementById("f_agency");
+const agSync = () => { if(agBox) agBox.hidden = !document.querySelector(`input[name="f_job"][value="${SONG_JOB}"]:checked`); };
+document.querySelectorAll('input[name="f_job"]').forEach(x => x.addEventListener("change", agSync));
 document.getElementById("form").addEventListener("submit", e => {
   e.preventDefault(); let ok = true, first = null;
   const check = (id, test, msg) => { const el = document.getElementById(id), er = el.closest("div,fieldset").querySelector(".err"); const bad = !test(el.value.trim());
@@ -417,10 +421,11 @@ document.getElementById("form").addEventListener("submit", e => {
   if(kind==="レッスン") check("f_plan", v => v, "希望プランを選んでください");
   if(kind==="お仕事"){ const wb = document.getElementById("f_whoBox"), we = wb.querySelector(".err"), nw = !whoVal();
     we.hidden = !nw; we.textContent = nw ? "ご依頼主を選んでください" : ""; if(nw){ ok = false; first = first || wb.querySelector("input"); }
-    if(whoVal()==="会社・団体") check("f_company", v => v, "会社名・団体名を入れてください");
-    check("f_budget", v => v, "ご予算を選んでください"); }
+    if(whoVal()==="会社・団体") check("f_company", v => v, "会社名・団体名を入れてください"); }
   if(kind==="お仕事"){ const box = document.getElementById("f_jobs"), er = box.querySelector(".err"), none = !box.querySelector("input:checked");
-    er.hidden = !none; er.textContent = none ? "ご依頼の内容を1つ以上選んでください" : ""; if(none){ ok = false; first = first || box.querySelector("input"); } }
+    const js = [...box.querySelectorAll("input:checked")].map(x => x.value), onlySong = js.length > 0 && js.every(x => x === SONG_JOB);
+    const msgE = none ? "ご依頼の内容を1つ以上選んでください" : onlySong ? "楽曲提供のご依頼は、Plick Pluck へご連絡ください（上の案内をご覧ください）" : "";
+    er.hidden = !msgE; er.textContent = msgE; if(msgE){ ok = false; first = first || box.querySelector("input"); } }
   if(kind!=="レッスン" && kind!=="お仕事") check("f_msg", v => v, "メッセージを入れてください");
   if(!ok){ (first.type==="hidden" ? document.querySelector('input[name="kind"]') : first).focus(); return; }
   const F = CFG.form, v = id => document.getElementById(id).value.trim(), btn = document.getElementById("send");
@@ -437,8 +442,8 @@ document.getElementById("form").addEventListener("submit", e => {
     const ag = dn.querySelector(".again"); if(ag) ag.disabled = false;
     if(!ag){ const a = document.createElement("button"); a.type = "button"; a.className = "btn line sm again"; a.textContent = "別の内容を送る"; dn.append(a);
       a.addEventListener("click", () => { const keep = {k: kindEl.value, n: v("f_name"), m: v("f_mail")}; fm.querySelectorAll("input,textarea,button,select").forEach(x => x.disabled = false);
-        ["f_msg","f_company","f_use","f_due","f_ref","f_when"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
-        fm.querySelectorAll('input[name="f_job"],input[name="f_place"]').forEach(x => x.checked = false);
+        ["f_msg","f_company","f_use","f_due","f_ref","f_when","f_budget"].forEach(id => { const el = document.getElementById(id); if(el) el.value = ""; });
+        fm.querySelectorAll('input[name="f_job"],input[name="f_place"]').forEach(x => x.checked = false); agSync();
         document.getElementById("f_name").value = keep.n; document.getElementById("f_mail").value = keep.m; setKind(keep.k);
         btn.textContent = "この内容で送る"; dn.hidden = true; fm.scrollIntoView({behavior:"smooth", block:"start"}); }); }
     if(window.gtag) gtag("event", "contact_sent", {kind}); };
