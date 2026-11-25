@@ -81,14 +81,6 @@ export function buildOutputs(files){
 
   const P = D.profile, C = D.credits;
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  /* 仕事の依頼「できること」のアイコン（線だけの絵。色はカードごとに CSS で） */
-  const WI = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
-  const WICON = {
-    pen: WI('<path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20z"/><path d="M14 7l3 3"/>'),
-    mix: WI('<path d="M6 4v16M12 4v16M18 4v16"/><rect x="4" y="13" width="4" height="3" rx="1"/><rect x="10" y="7" width="4" height="3" rx="1"/><rect x="16" y="15" width="4" height="3" rx="1"/>'),
-    rec: WI('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/>'),
-    stage: WI('<path d="M12 3l-7 15M12 3l7 15"/><path d="M3 21h18"/><circle cx="12" cy="3" r="1.2"/>')
-  };
   const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[k]}"/></svg>`;
   const SNS = [["instagram","ig","Instagram"],["tiktok","tt","TikTok"],["x","x","X"],["youtube","yt","YouTube"],["spotify","sp","Spotify"]];
   const snsHTML = (label=false) => SNS.map(([k,i,n]) => `<a class="c-${i}" href="${P.links[k]}" target="_blank" rel="noopener" aria-label="${n}">${svg(i)}${label?`<span>${n}</span>`:""}</a>`).join("");
@@ -99,8 +91,6 @@ export function buildOutputs(files){
 
   const comp = C.filter(c => c.category==="compose"), gtr = C.filter(c => c.category==="guitar"), kara = C.filter(c => c.category==="karaoke");
   const feat = C.filter(c => c.spotify && c.category==="compose").sort((a,b) => (a.spotifyRank||9)-(b.spotifyRank||9));
-  const TAG = {"作曲":"COMPOSE","編曲":"ARRANGE","ギター":"GUITAR","レコーディング":"RECORDING","制作":"PRODUCTION"};
-  const tagsOf = c => [...new Set((c.roles||[]).map(r => TAG[r]).filter(Boolean))];
   const tv = D.media.filter(m => m.type==="tv"), stage = D.media.filter(m => m.type==="stage");
 
   function hero(){

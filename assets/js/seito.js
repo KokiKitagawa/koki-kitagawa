@@ -35,9 +35,7 @@
   let me = null, pick = [], ed = null, sheet = "", lastPref = null, step = 0, first = true;
   /* pick は [{ t, mode, hours }]（書き終わった「申し込み前」の回）。受け方がちがうレッスンの間は、移動の時間（コード.gs の 設定.移動の分）をあける */
   const MOVE = 60 * 60e3, ML = m => m === "online" ? "オンライン" : "対面", MS = s => s === "スタジオ" ? "対面" : s;   // 2026-11-10：画面では「対面」（裏側は「スタジオ」のまま）
-  const rng = (a, b) => a === b ? `${a}` : b === a + 1 ? `${a}・${b}` : `${a}〜${b}`;
-  const byT = () => pick.slice().sort((a, b) => a.t - b.t), at0 = t => pick.find(p => p.t === t);
-  const totalH = () => pick.reduce((a, p) => a + p.hours, 0);
+  const byT = () => pick.slice().sort((a, b) => a.t - b.t);
 
   /* ---------- 回数の数え方（コード.gs の「回数を数える」「月謝にできる数」と同じ） ---------- */
   const USED = ["仮", "確定", "キャンセル（1回分）"];
@@ -200,12 +198,6 @@
     const { base, start } = me.cnt, sp = split(list), ls = me.cnt.ls.concat(sp ? sp.items.map(x => ({ m: x.m, state: "確定", getsu: x.getsu })) : []);
     const ms = months(), st = count(base, start, ls, ms.concat(nextM(ms[ms.length - 1])));
     return ms.map(m => ({ m, left: canGetsu(base, start, ls, m, st[m].left) }));
-  }
-  function nthText(x){
-    const m = monName(x.m), a = x.nth + 1, b = x.nth + x.getsu;
-    const g = x.getsu ? (x.nth != null ? `${m}の${rng(a, b)}回目` : `月謝 ${x.getsu}回分`) : "";
-    const t = x.tan ? `追加（単発）${x.tan}回・${yen(me.single * x.tan)}` : "";
-    return [g, t].filter(Boolean).join("＋");
   }
   /* チケットの番号は、並べた順に数える（n＝その前までの回数） */
   const labOf = (x, n) => x.getsu ? (me.base ? circ(n + 1, n + x.getsu) : "月謝") + (x.tan ? "＋" : "") : "追加";

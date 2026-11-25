@@ -112,7 +112,7 @@ document.querySelectorAll("[data-tab-go]").forEach(a => a.addEventListener("clic
    止まったままになり、もう1回押さないと鳴らなかった。いまは読み込みが終わった合図（ready）を待ってから再生する。
    読み込み中に前の曲の「止まった」知らせが来ても、ボタンの見た目を戻さない（押した曲だけが光る）。
    押したかどうかは click だけで決める（ホバーの見た目には頼らない）ので、iPhone でも1回のタップで動く。 */
-const arts = [...document.querySelectorAll(".art[data-track]")], host = document.getElementById("spHost");
+const arts = [...document.querySelectorAll(".art[data-track]")];
 let heard = false;
 /* 鳴らせなかったときの小さな案内（下に数秒だけ）。押すと Spotify でその曲を開く */
 const tip = document.createElement("a"); tip.className = "sp-tip"; tip.target = "_blank"; tip.rel = "noopener"; tip.hidden = true; document.body.appendChild(tip);
