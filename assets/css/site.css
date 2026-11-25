@@ -1243,13 +1243,9 @@ form.f.yk>*{min-width:0}
 #career .seam{--seam:#300c45}
 #lesson .seam{--seam:var(--black)}
 
-/* B4：トップの写真が、スクロールに合わせて少しだけ沈む（文字とボタンの位置は変わらない） */
-@supports (animation-timeline:scroll()){
-  @media (prefers-reduced-motion:no-preference){
-    .hero picture{animation:hero-drift linear both;animation-timeline:scroll(root block);animation-range:0 100vh;will-change:transform}
-  }
-}
-@keyframes hero-drift{from{transform:none}to{transform:translate3d(0,9%,0) scale(1.06)}}
+/* B4：トップの写真が、スクロールに合わせて少しだけ沈む（文字とボタンの位置は変わらない）。
+   2026-11-25：CSS のスクロール連動（animation-timeline）だと iPhone のフルページのスクショで写真が黒くなるので、動きは main.js で付ける */
+@media (prefers-reduced-motion:no-preference){ .hero picture{will-change:transform} }
 
 /* B5：料金カードを触ると、光がスッと横切る */
 .glint{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:3}

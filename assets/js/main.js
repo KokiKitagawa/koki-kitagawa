@@ -476,3 +476,22 @@ document.querySelectorAll(".tl-more").forEach(btn => btn.addEventListener("click
   tl.classList.toggle("all", open); btn.setAttribute("aria-expanded", open);
   if(!open){ window.scrollBy({top: btn.getBoundingClientRect().top - top0, behavior:"instant"}); }
 }));
+
+/* B4：トップの写真が、スクロールに合わせて少しだけ沈む（1画面ぶんスクロールで 9% 下・1.06倍）。
+   2026-11-25：CSS のスクロール連動をやめて、ここで動かす（iPhone のフルページのスクショで写真が黒くならないように）。
+   写真より下を見ているあいだは値が変わらないので、書きかえない。「視差効果を減らす」の人は動かさない */
+(() => {
+  const pic = document.querySelector(".hero picture");
+  if(!pic || matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  let last = -1, tick = false;
+  const set = () => {
+    tick = false;
+    const p = Math.round(Math.min(1, Math.max(0, scrollY / innerHeight)) * 1000) / 1000;
+    if(p === last) return;
+    last = p;
+    pic.style.transform = p ? `translate3d(0,${(9 * p).toFixed(2)}%,0) scale(${(1 + .06 * p).toFixed(4)})` : "";
+  };
+  addEventListener("scroll", () => { if(!tick){ tick = true; requestAnimationFrame(set); } }, {passive:true});
+  addEventListener("resize", set, {passive:true});
+  set();
+})();
